@@ -1,31 +1,39 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}Home - AI Crypto Investment{% endblock %}
 
 {% block content %}
-<div class="hero-section">
-    <h1>Welcome to AI Crypto Investment</h1>
-    <p>Empowering your wealth with AI & blockchain</p>
-    <a href="{{ url_for('register') }}" class="btn btn-primary mt-3">Get Started</a>
-</div>
+<div class="bg-gray-900 text-white min-h-screen">
+  <!-- Hero Section -->
+  <section class="text-center py-20 px-4">
+    <h1 class="text-4xl md:text-6xl font-bold mb-6">Smart Crypto Investing with AI</h1>
+    <p class="text-lg md:text-xl text-gray-300 mb-8">Automated, secure, and smarter investments for your crypto portfolio.</p>
+    <a href="/register" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-xl transition duration-300">
+      Get Started
+    </a>
+  </section>
 
-<div class="container mt-4">
-    <div class="section-box text-center">
-        <h4>💡 Smart Investment Plans</h4>
-        <p>Choose from multiple AI-driven crypto investment options with real-time analytics and growth tracking.</p>
-        <a href="{{ url_for('dashboard') }}#plans" class="btn btn-outline-primary">View Plans</a>
+  <!-- Features Section -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-8 py-16 px-8 max-w-7xl mx-auto">
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+      <h3 class="text-xl font-bold mb-2 text-yellow-400">AI-Driven Insights</h3>
+      <p class="text-gray-300">Get data-backed investment suggestions from our intelligent algorithms trained on market trends.</p>
     </div>
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+      <h3 class="text-xl font-bold mb-2 text-yellow-400">Secure Wallet Control</h3>
+      <p class="text-gray-300">Your funds are protected in a secure admin-controlled wallet with real-time tracking.</p>
+    </div>
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+      <h3 class="text-xl font-bold mb-2 text-yellow-400">KYC Verified</h3>
+      <p class="text-gray-300">We follow all KYC standards to keep your account compliant and protected.</p>
+    </div>
+  </section>
 
-    <div class="section-box text-center">
-        <h4>👥 Referral Program</h4>
-        <p>Invite your friends and earn USDT rewards instantly when they invest.</p>
-        <a href="{{ url_for('referral') }}" class="btn btn-outline-success">Start Referring</a>
-    </div>
-
-    <div class="section-box text-center">
-        <h4>📊 Market & AI Quantify</h4>
-        <p>Explore live market data and let AI help you make data-driven decisions.</p>
-        <a href="{{ url_for('markets') }}" class="btn btn-outline-dark">View Markets</a>
-    </div>
+  <!-- CTA Section -->
+  <section class="text-center py-20 bg-gray-800">
+    <h2 class="text-3xl font-semibold mb-4">Ready to Invest Smarter?</h2>
+    <a href="/register" class="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-xl transition duration-300">
+      Join Now
+    </a>
+  </section>
 </div>
 {% endblock %}
