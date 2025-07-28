@@ -5,7 +5,7 @@ def init_db():
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
 
-    # Users table with REAL wallet column
+    # Users table
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,6 +45,24 @@ def get_user_by_email(email):
     conn.close()
     return user
 
+def get_user_wallet(email):
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    c.execute("SELECT wallet FROM users WHERE email = ?", (email,))
+    result = c.fetchone()
+    conn.close()
+    return result[0] if result else 0
+
+def update_wallet_balance(email, amount, tx_type):
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    if tx_type == 'deposit':
+        c.execute("UPDATE users SET wallet = wallet + ? WHERE email = ?", (amount, email))
+    elif tx_type == 'withdraw':
+        c.execute("UPDATE users SET wallet = wallet - ? WHERE email = ?", (amount, email))
+    conn.commit()
+    conn.close()
+
 def add_transaction(email, tx_type, amount):
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
@@ -61,16 +79,6 @@ def get_user_transactions(email):
     results = c.fetchall()
     conn.close()
     return [{"type": row[0], "amount": row[1], "date": row[2]} for row in results]
-
-def update_wallet_balance(email, amount, tx_type):
-    conn = sqlite3.connect('users.db')
-    c = conn.cursor()
-    if tx_type == 'deposit':
-        c.execute("UPDATE users SET wallet = wallet + ? WHERE email = ?", (amount, email))
-    elif tx_type == 'withdraw':
-        c.execute("UPDATE users SET wallet = wallet - ? WHERE email = ?", (amount, email))
-    conn.commit()
-    conn.close()
 
 def save_kyc(email, filepath):
     conn = sqlite3.connect('users.db')
