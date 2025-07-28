@@ -1,6 +1,20 @@
-<form method="POST">
-    Email: <input type="email" name="email"><br>
-    Wallet Address: <input type="text" name="wallet"><br>
-    Password: <input type="password" name="password"><br>
-    <button type="submit">Register</button>
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<h3>Register</h3>
+<form method="post">
+  <div class="mb-3">
+    <label>Email</label>
+    <input type="email" name="email" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label>Wallet Address</label>
+    <input type="text" name="wallet" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label>Password</label>
+    <input type="password" name="password" class="form-control" required>
+  </div>
+  <button class="btn btn-success">Register</button>
 </form>
+{% endblock %}
