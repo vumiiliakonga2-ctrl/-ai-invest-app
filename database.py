@@ -15,10 +15,10 @@ def init_db():
     conn.commit()
     conn.close()
 
-def add_user(email, hashed_password, wallet):
+def add_user(email, hashed_password):
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
-    c.execute('INSERT INTO users (email, password, wallet) VALUES (?, ?, ?)', (email, hashed_password, wallet))
+    c.execute('INSERT INTO users (email, password) VALUES (?, ?, ?)', (email, hashed_password))
     conn.commit()
     conn.close()
 
