@@ -22,6 +22,7 @@ def add_user(email, hashed_password):
     conn.commit()
     conn.close()
 
+
 def get_user_by_email(email):
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
