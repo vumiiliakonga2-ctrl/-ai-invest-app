@@ -18,7 +18,7 @@ def init_db():
 def add_user(email, hashed_password):
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
-    c.execute('INSERT INTO users (email, password) VALUES (?, ?, ?)', (email, hashed_password))
+    c.execute('INSERT INTO users (email, password) VALUES (?, ?)', (email, hashed_password))
     conn.commit()
     conn.close()
 
