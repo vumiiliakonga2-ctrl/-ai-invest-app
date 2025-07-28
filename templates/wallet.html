@@ -1,24 +1,45 @@
 {% extends "base.html" %}
-{% block title %}Wallet - AI Crypto{% endblock %}
+{% block title %}Wallet - AI Investment{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <h2 class="text-center text-warning mb-4 fw-bold">💼 Your Wallet</h2>
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Your Wallet</h2>
 
-  <!-- Wallet Balance Card -->
-  <div class="card bg-dark text-white text-center shadow-lg mb-4">
-    <div class="card-body">
-      <h5 class="card-title text-muted">Current Balance</h5>
-      <p class="card-text display-5 fw-bold text-success">{{ wallet }}</p>
+  <div class="row mb-4">
+    <div class="col-md-6 mx-auto">
+      <div class="card text-white bg-dark shadow">
+        <div class="card-body text-center">
+          <h4 class="card-title">Wallet Balance</h4>
+          <p class="card-text display-6 text-warning fw-bold">{{ wallet }}</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Deposit & Withdraw Buttons -->
-  <div class="row g-4 mb-5">
-    <div class="col-6">
-      <a href="#" class="btn btn-outline-success w-100 py-3 fw-bold">
-        <i class="fa-solid fa-arrow-down"></i> Deposit
-      </a>
-    </div>
-    <div class="col-6">
-      <a href="#" class="btn btn-outline-danger w-100 py-3 fw-bold"
+  <h5 class="text-center mb-3">Transaction History</h5>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tx in transactions %}
+        <tr>
+          <td>{{ tx.date }}</td>
+          <td>{{ tx.type }}</td>
+          <td>{{ tx.amount }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3" class="text-center">No transactions yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
