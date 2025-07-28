@@ -5,6 +5,7 @@
 <div class="container mt-5">
   <h2 class="text-center mb-4">Your Wallet</h2>
 
+  <!-- Wallet Balance Card -->
   <div class="row mb-4">
     <div class="col-md-6 mx-auto">
       <div class="card text-white bg-dark shadow">
@@ -16,6 +17,35 @@
     </div>
   </div>
 
+  <!-- Crypto Deposit Section -->
+  <div class="row mb-4">
+    <div class="col-md-8 mx-auto">
+      <div class="card bg-light shadow">
+        <div class="card-body text-center">
+          <h5 class="card-title text-dark">Deposit to Your USDT Address</h5>
+          <p>Send USDT (TRC20) to the address below:</p>
+          <div class="bg-dark text-white p-2 rounded mb-3">
+            <code id="usdt-address">TXYZYourCryptoWalletAddressHere</code>
+          </div>
+          <button class="btn btn-outline-warning" onclick="copyAddress()">Copy Address</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual Action Buttons -->
+  <div class="text-center mb-5">
+    <form action="/confirm-deposit" method="POST" class="d-inline-block me-3">
+      <input type="hidden" name="amount" value="50" />
+      <button class="btn btn-success">I've Sent USDT (Deposit)</button>
+    </form>
+    <form action="/withdraw" method="POST" class="d-inline-block">
+      <input type="hidden" name="amount" value="20" />
+      <button class="btn btn-danger">Withdraw</button>
+    </form>
+  </div>
+
+  <!-- Transaction History Table -->
   <h5 class="text-center mb-3">Transaction History</h5>
   <div class="table-responsive">
     <table class="table table-bordered table-hover">
@@ -42,4 +72,12 @@
     </table>
   </div>
 </div>
+
+<script>
+  function copyAddress() {
+    const address = document.getElementById("usdt-address").innerText;
+    navigator.clipboard.writeText(address);
+    alert("Wallet address copied to clipboard!");
+  }
+</script>
 {% endblock %}
