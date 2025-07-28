@@ -1,51 +1,73 @@
 {% extends "base.html" %}
-{% block title %}Dashboard - AI Crypto Investment{% endblock %}
+{% block title %}Dashboard - AI Crypto{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-900 text-white p-6">
-  <h2 class="text-3xl font-bold mb-6">Dashboard</h2>
+<div class="container py-5">
+  <h1 class="mb-4 text-center text-warning fw-bold">Welcome to Your Dashboard</h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
-      <h3 class="text-xl font-semibold text-yellow-400 mb-2">Total Investment</h3>
-      <p class="text-2xl">$ {{ total_investment }}</p>
+  <!-- User Info Cards -->
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card text-white bg-dark shadow-lg">
+        <div class="card-body">
+          <h5 class="card-title text-warning">Your Email</h5>
+          <p class="card-text fs-5">{{ email }}</p>
+        </div>
+      </div>
     </div>
-    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
-      <h3 class="text-xl font-semibold text-yellow-400 mb-2">AI Growth Estimate</h3>
-      <p class="text-2xl text-green-400">{{ growth_rate }}%</p>
-    </div>
-    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
-      <h3 class="text-xl font-semibold text-yellow-400 mb-2">Wallet Balance</h3>
-      <p class="text-2xl">${{ wallet_balance }}</p>
+
+    <div class="col-md-6">
+      <div class="card text-white bg-success shadow-lg">
+        <div class="card-body">
+          <h5 class="card-title text-light">Wallet Balance</h5>
+          <p class="card-text fs-4 fw-bold">{{ wallet }}</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="mt-10">
-    <a href="/deposit" class="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-xl transition duration-300">
-      Deposit Funds
-    </a>
+  <!-- Scrollable Fake Withdrawals -->
+  <div class="mt-5">
+    <h3 class="text-center text-warning mb-3">💸 Live Withdrawals</h3>
+    <div class="position-relative overflow-hidden rounded bg-light shadow" style="height: 160px;">
+      <div class="position-absolute w-100 animate-scroll px-3 py-2">
+        {% for w in withdrawals %}
+        <div class="d-flex justify-content-between border-bottom py-2">
+          <span class="fw-semibold text-dark">{{ w.user }}</span>
+          <span class="text-success fw-bold">{{ w.amount }}</span>
+          <span class="text-muted small">{{ w.time }}</span>
+        </div>
+        {% endfor %}
+        <!-- Repeat for smooth scroll -->
+        {% for w in withdrawals %}
+        <div class="d-flex justify-content-between border-bottom py-2">
+          <span class="fw-semibold text-dark">{{ w.user }}</span>
+          <span class="text-success fw-bold">{{ w.amount }}</span>
+          <span class="text-muted small">{{ w.time }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="row mt-5 g-4">
+    <div class="col-md-3 col-6">
+      <a href="/kyc" class="btn btn-outline-warning w-100 py-3 fw-bold">Submit KYC</a>
+    </div>
+    <div class="col-md-3 col-6">
+      <a href="/markets" class="btn btn-outline-success w-100 py-3 fw-bold">View Markets</a>
+    </div>
+    <div class="col-md-3 col-6">
+      <a href="/quantify" class="btn btn-outline-info w-100 py-3 fw-bold">Quantify</a>
+    </div>
+    <div class="col-md-3 col-6">
+      <a href="/referral" class="btn btn-outline-primary w-100 py-3 fw-bold">Referral Link</a>
+    </div>
+  </div>
+
+  <div class="text-center mt-5">
+    <a href="/logout" class="btn btn-danger px-4 py-2 fw-bold">Logout</a>
   </div>
 </div>
 {% endblock %}
-<!-- Live Withdrawals - Scrolling -->
-<div class="mt-12 max-w-md mx-auto">
-  <h2 class="text-xl font-semibold text-yellow-400 mb-4 text-center">💸 Live Withdrawals</h2>
-
-  <div class="overflow-hidden h-40 relative rounded-xl border border-gray-700">
-    <div id="withdrawal-scroll" class="absolute w-full space-y-4 animate-scroll">
-      {% for w in withdrawals %}
-        <div class="flex justify-between text-sm bg-gray-800 p-3 rounded-xl shadow text-gray-300">
-          <span><strong>{{ w.user }}</strong> withdrew</span>
-          <span class="text-green-400 font-bold">{{ w.amount }}</span>
-        </div>
-      {% endfor %}
-      <!-- Repeat for seamless scroll -->
-      {% for w in withdrawals %}
-        <div class="flex justify-between text-sm bg-gray-800 p-3 rounded-xl shadow text-gray-300">
-          <span><strong>{{ w.user }}</strong> withdrew</span>
-          <span class="text-green-400 font-bold">{{ w.amount }}</span>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-</div>
