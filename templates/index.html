@@ -1,9 +1,31 @@
 {% extends 'base.html' %}
-{% block title %}Home{% endblock %}
+
+{% block title %}Home - AI Crypto Investment{% endblock %}
+
 {% block content %}
-<h1 class="text-center">Welcome to AI Crypto Investment</h1>
-<div class="text-center mt-4">
-  <a href="{{ url_for('register') }}" class="btn btn-primary">Register</a>
-  <a href="{{ url_for('login') }}" class="btn btn-outline-primary">Login</a>
+<div class="hero-section">
+    <h1>Welcome to AI Crypto Investment</h1>
+    <p>Empowering your wealth with AI & blockchain</p>
+    <a href="{{ url_for('register') }}" class="btn btn-primary mt-3">Get Started</a>
+</div>
+
+<div class="container mt-4">
+    <div class="section-box text-center">
+        <h4>💡 Smart Investment Plans</h4>
+        <p>Choose from multiple AI-driven crypto investment options with real-time analytics and growth tracking.</p>
+        <a href="{{ url_for('dashboard') }}#plans" class="btn btn-outline-primary">View Plans</a>
+    </div>
+
+    <div class="section-box text-center">
+        <h4>👥 Referral Program</h4>
+        <p>Invite your friends and earn USDT rewards instantly when they invest.</p>
+        <a href="{{ url_for('referral') }}" class="btn btn-outline-success">Start Referring</a>
+    </div>
+
+    <div class="section-box text-center">
+        <h4>📊 Market & AI Quantify</h4>
+        <p>Explore live market data and let AI help you make data-driven decisions.</p>
+        <a href="{{ url_for('markets') }}" class="btn btn-outline-dark">View Markets</a>
+    </div>
 </div>
 {% endblock %}
