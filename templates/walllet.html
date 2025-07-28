@@ -1,18 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Wallet - AI Crypto Investment{% endblock %}
+{% block title %}Wallet - AI Crypto{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-900 text-white p-6">
-  <h2 class="text-3xl font-bold mb-6">Wallet Overview</h2>
+<div class="container py-5">
+  <h2 class="text-center text-warning mb-4 fw-bold">💼 Your Wallet</h2>
 
-  <div class="bg-gray-800 p-6 rounded-2xl shadow-lg mb-8">
-    <h3 class="text-yellow-400 text-xl mb-2">Current Balance</h3>
-    <p class="text-3xl">${{ wallet_balance }}</p>
+  <!-- Wallet Balance Card -->
+  <div class="card bg-dark text-white text-center shadow-lg mb-4">
+    <div class="card-body">
+      <h5 class="card-title text-muted">Current Balance</h5>
+      <p class="card-text display-5 fw-bold text-success">{{ wallet }}</p>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <a href="/deposit" class="block bg-yellow-400 hover:bg-yellow-500 text-black text-center font-semibold py-4 rounded-xl">Deposit Funds</a>
-    <a href="/withdraw" class="block bg-yellow-500 hover:bg-yellow-600 text-black text-center font-semibold py-4 rounded-xl">Withdraw Funds</a>
-  </div>
-</div>
-{% endblock %}
+  <!-- Deposit & Withdraw Buttons -->
+  <div class="row g-4 mb-5">
+    <div class="col-6">
+      <a href="#" class="btn btn-outline-success w-100 py-3 fw-bold">
+        <i class="fa-solid fa-arrow-down"></i> Deposit
+      </a>
+    </div>
+    <div class="col-6">
+      <a href="#" class="btn btn-outline-danger w-100 py-3 fw-bold"
