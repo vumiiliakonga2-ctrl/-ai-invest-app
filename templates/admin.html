@@ -1,6 +1,29 @@
-{% extends 'base.html' %}
-{% block title %}Admin Panel{% endblock %}
+{% extends "base.html" %}
+{% block title %}Admin Panel - AI Crypto Investment{% endblock %}
+
 {% block content %}
-<h3>Admin Dashboard</h3>
-<p>Manage users, view reports, and handle KYC verifications here.</p>
+<div class="min-h-screen bg-gray-900 text-white p-6">
+  <h2 class="text-3xl font-bold mb-6">Admin Panel</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+      <h3 class="text-xl font-semibold text-yellow-400 mb-2">Pending KYC</h3>
+      {% for user in pending_kyc %}
+        <div class="bg-gray-700 p-4 rounded-xl mb-2">
+          <p><strong>{{ user.fullname }}</strong> - {{ user.email }}</p>
+          <a href="/admin/verify/{{ user.id }}" class="text-green-400 hover:underline">Verify</a>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+      <h3 class="text-xl font-semibold text-yellow-400 mb-2">Deposits</h3>
+      {% for deposit in recent_deposits %}
+        <div class="bg-gray-700 p-4 rounded-xl mb-2">
+          <p><strong>{{ deposit.user_email }}</strong> - ${{ deposit.amount }}</p>
+          <a href="/admin/confirm/{{ deposit.id }}" class="text-green-400 hover:underline">Confirm</a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}
