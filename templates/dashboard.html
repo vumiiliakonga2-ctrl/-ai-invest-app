@@ -1,19 +1,29 @@
-{% extends 'base.html' %}
-{% block title %}Dashboard{% endblock %}
+{% extends "base.html" %}
+{% block title %}Dashboard - AI Crypto Investment{% endblock %}
+
 {% block content %}
-<h3>Dashboard</h3>
-<p>Welcome, {{ email }}!</p>
+<div class="min-h-screen bg-gray-900 text-white p-6">
+  <h2 class="text-3xl font-bold mb-6">Dashboard</h2>
 
-<hr>
-<h5 id="plans">Investment Plans</h5>
-<ul class="list-group">
-  <li class="list-group-item">Starter Plan - $100 Minimum</li>
-  <li class="list-group-item">Pro Plan - $500 Minimum</li>
-  <li class="list-group-item">Elite Plan - $1000 Minimum</li>
-</ul>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+      <h3 class="text-xl font-semibold text-yellow-400 mb-2">Total Investment</h3>
+      <p class="text-2xl">$ {{ total_investment }}</p>
+    </div>
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+      <h3 class="text-xl font-semibold text-yellow-400 mb-2">AI Growth Estimate</h3>
+      <p class="text-2xl text-green-400">{{ growth_rate }}%</p>
+    </div>
+    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
+      <h3 class="text-xl font-semibold text-yellow-400 mb-2">Wallet Balance</h3>
+      <p class="text-2xl">${{ wallet_balance }}</p>
+    </div>
+  </div>
 
-<hr>
-<h5 id="wallet">Your Wallet</h5>
-<p><strong>Wallet:</strong> Linked and secured</p>
-<a href="{{ url_for('kyc') }}" class="btn btn-warning">Complete KYC</a>
+  <div class="mt-10">
+    <a href="/deposit" class="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 rounded-xl transition duration-300">
+      Deposit Funds
+    </a>
+  </div>
+</div>
 {% endblock %}
