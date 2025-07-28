@@ -54,6 +54,18 @@ def kyc():
             save_kyc(session['email'], filepath)
             return redirect(url_for('dashboard'))  # <- redirect after success
     return render_template('kyc.html')
+    
+@app.route('/referral')
+def referral():
+    return render_template('referral.html')
+
+@app.route('/markets')
+def markets():
+    return render_template('markets.html')
+
+@app.route('/quantify')
+def quantify():
+    return render_template('quantify.html')
 
 
 @app.route('/admin')
