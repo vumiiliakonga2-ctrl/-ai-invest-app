@@ -42,7 +42,6 @@ def dashboard():
     if 'email' not in session:
         return redirect(url_for('login'))
     return render_template('dashboard.html', email=session['email'])
-
 @app.route('/kyc', methods=['GET', 'POST'])
 def kyc():
     if 'email' not in session:
@@ -53,8 +52,9 @@ def kyc():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filepath)
             save_kyc(session['email'], filepath)
-            return "KYC Uploaded!"
+            return redirect(url_for('dashboard'))  # <- redirect after success
     return render_template('kyc.html')
+
 
 @app.route('/admin')
 def admin():
