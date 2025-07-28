@@ -1,19 +1,51 @@
 import sqlite3
+from datetime import datetime
+
+def add_transaction(email, tx_type, amount):
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    c.execute("INSERT INTO transactions (email, type, amount, date) VALUES (?, ?, ?, ?)", 
+              (email, tx_type, amount, date))
+    conn.commit()
+    conn.close()
+
+def get_user_transactions(email):
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    c.execute("SELECT type, amount, date FROM transactions WHERE email = ? ORDER BY date DESC LIMIT 10", (email,))
+    results = c.fetchall()
+    conn.close()
+    return [{"type": row[0], "amount": row[1], "date": row[2]} for row in results]
 
 def init_db():
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
+
+    # Users table
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE,
-            password TEXT,
-            wallet TEXT,
-            kyc_file TEXT
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            wallet TEXT
         )
     ''')
+
+    # Transactions table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            type TEXT NOT NULL,  -- 'Deposit' or 'Withdraw'
+            amount TEXT NOT NULL,
+            date TEXT NOT NULL
+        )
+    ''')
+
     conn.commit()
     conn.close()
+
 
 def add_user(email, hashed_password):
     conn = sqlite3.connect('users.db')
