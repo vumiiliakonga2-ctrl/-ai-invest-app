@@ -1,22 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Markets</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-  <div class="container mt-4">
-    <h2>Live Markets</h2>
-    <p>Track live prices of BTC, ETH, USDT and more.</p>
-    <ul class="list-group">
-      <li class="list-group-item">Bitcoin (BTC): $29,000</li>
-      <li class="list-group-item">Ethereum (ETH): $1,800</li>
-      <li class="list-group-item">USDT: $1.00</li>
-      <li class="list-group-item">BNB: $240</li>
-    </ul>
-  </div>
-
-  {% include 'nav.html' %}
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Markets{% endblock %}
+{% block content %}
+<h3>Market Overview</h3>
+<p>Track top crypto markets and their trends.</p>
+<ul>
+  <li>Bitcoin (BTC) - $67,000</li>
+  <li>Ethereum (ETH) - $3,400</li>
+  <li>Solana (SOL) - $150</li>
+</ul>
+{% endblock %}
