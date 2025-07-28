@@ -29,9 +29,10 @@ def register():
             flash("Registered successfully. Please login.", "success")
             return redirect(url_for('login'))
         except:
-            flash("User already exists.", "error")
-            return redirect(url_for('login'))
-    return render_template('login.html')
+            flash("User already exists or database error.", "error")
+            print("Registration error:", e)
+            return redirect(url_for('register'))
+    return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
