@@ -1,4 +1,12 @@
-<form method="POST" enctype="multipart/form-data">
-    Upload ID Document: <input type="file" name="kycfile"><br>
-    <button type="submit">Upload</button>
+{% extends 'base.html' %}
+{% block title %}Upload KYC{% endblock %}
+{% block content %}
+<h3>KYC Upload</h3>
+<form method="post" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label>Select KYC File</label>
+    <input type="file" name="kycfile" class="form-control" required>
+  </div>
+  <button class="btn btn-success">Upload</button>
 </form>
+{% endblock %}
