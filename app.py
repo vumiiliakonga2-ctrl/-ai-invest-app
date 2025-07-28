@@ -76,6 +76,16 @@ def dashboard():
     random.shuffle(fake_withdrawals)
     
     return render_template('dashboard.html', email=email, wallet=wallet, withdrawals=fake_withdrawals)
+@app.route('/wallet', methods=['GET', 'POST'])
+def wallet_page():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    user = get_user_by_email(session['email'])
+    wallet_balance = user[3] if user and user[3] else "0 USDT"
+
+    return render_template('wallet.html', email=session['email'], wallet=wallet_balance)
+
 @app.route('/kyc', methods=['GET', 'POST'])
 def kyc():
     if 'email' not in session:
