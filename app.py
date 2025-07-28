@@ -21,17 +21,17 @@ def index():
 def register():
     if request.method == 'POST':
         email = request.form['email']
-        wallet = request.form['wallet']
+       
         password = request.form['password']
         hashed_password = generate_password_hash(password)
         try:
-            add_user(email, hashed_password, wallet)
+            add_user(email, hashed_password)
             flash("Registered successfully. Please login.", "success")
             return redirect(url_for('login'))
         except:
             flash("User already exists.", "error")
-            return redirect(url_for('register'))
-    return render_template('register.html')
+            return redirect(url_for('login'))
+    return render_template('login.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
