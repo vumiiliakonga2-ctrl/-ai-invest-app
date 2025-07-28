@@ -28,9 +28,9 @@ def register():
             add_user(email, hashed_password)
             flash("Registered successfully. Please login.", "success")
             return redirect(url_for('login'))
-        except:
+        except Exception as e :
             flash("User already exists or database error.", "error")
-            print("Registration error:", e)
+           print("Registr ation error:", e)
             return redirect(url_for('register'))
     return render_template('register.html')
 
