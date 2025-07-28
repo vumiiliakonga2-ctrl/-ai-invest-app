@@ -27,3 +27,25 @@
   </div>
 </div>
 {% endblock %}
+<!-- Live Withdrawals - Scrolling -->
+<div class="mt-12 max-w-md mx-auto">
+  <h2 class="text-xl font-semibold text-yellow-400 mb-4 text-center">💸 Live Withdrawals</h2>
+
+  <div class="overflow-hidden h-40 relative rounded-xl border border-gray-700">
+    <div id="withdrawal-scroll" class="absolute w-full space-y-4 animate-scroll">
+      {% for w in withdrawals %}
+        <div class="flex justify-between text-sm bg-gray-800 p-3 rounded-xl shadow text-gray-300">
+          <span><strong>{{ w.user }}</strong> withdrew</span>
+          <span class="text-green-400 font-bold">{{ w.amount }}</span>
+        </div>
+      {% endfor %}
+      <!-- Repeat for seamless scroll -->
+      {% for w in withdrawals %}
+        <div class="flex justify-between text-sm bg-gray-800 p-3 rounded-xl shadow text-gray-300">
+          <span><strong>{{ w.user }}</strong> withdrew</span>
+          <span class="text-green-400 font-bold">{{ w.amount }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
