@@ -117,6 +117,42 @@ def withdraw():
 
     return redirect(url_for('wallet_page'))
 
+@app.route('/confirm-deposit', methods=['POST'])
+def confirm_deposit():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    email = session['email']
+    amount = float(request.form['amount'])
+
+    # Add deposit
+    update_wallet_balance(email, amount, 'deposit')
+    add_transaction(email, 'Deposit', amount)
+
+    flash("Deposit confirmed successfully!", "success")
+    return redirect(url_for('wallet_page'))
+
+
+@app.route('/withdraw', methods=['POST'])
+def withdraw():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    email = session['email']
+    amount = float(request.form['amount'])
+
+    # Subtract if enough balance
+    from database import get_user_wallet
+    current_balance = float(get_user_wallet(email))
+    if amount > current_balance:
+        flash("Insufficient balance for withdrawal", "danger")
+    else:
+        update_wallet_balance(email, -amount, 'withdraw')
+        add_transaction(email, 'Withdraw', amount)
+        flash("Withdrawal request submitted!", "success")
+
+    return redirect(url_for('wallet_page'))
+
 @app.route('/kyc', methods=['GET', 'POST'])
 def kyc():
     if 'email' not in session:
