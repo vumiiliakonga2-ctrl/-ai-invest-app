@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from database import init_db, add_user, get_user_by_email, save_kyc
 import os
-from flask_sqlalchemy import SQLAlchemy
-from models import db, User
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -10,6 +8,9 @@ app.secret_key = 'supersecretkey'
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Call init_db at startup to ensure users table exists
+init_db()
 
 @app.route('/')
 def index():
@@ -58,10 +59,6 @@ def kyc():
 @app.route('/admin')
 def admin():
     return render_template('admin.html')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # You can change the filename
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
 
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
