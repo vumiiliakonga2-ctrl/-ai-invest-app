@@ -1,26 +1,29 @@
-<nav class="navbar navbar-light bg-light navbar-expand fixed-bottom border-top">
-  <div class="container justify-content-around">
-    <a class="nav-link text-center" href="{{ url_for('index') }}">
-      <i class="fa-solid fa-house fa-lg"></i><br><small>Home</small>
+<!-- Bottom Navigation Bar -->
+<nav class="navbar navbar-light bg-light navbar-expand fixed-bottom border-top shadow-sm">
+  <div class="container justify-content-around text-center">
+    <a class="nav-link" href="{{ url_for('index') }}">
+      <i class="fa-solid fa-house fa-lg"></i><br>
+      <small>Home</small>
     </a>
-    <a class="nav-link text-center" href="{{ url_for('dashboard') }}#plans">
-      <i class="fa-solid fa-bars-progress fa-lg"></i><br><small>Plans</small>
+    <a class="nav-link" href="{{ url_for('dashboard') }}#plans">
+      <i class="fa-solid fa-bars-progress fa-lg"></i><br>
+      <small>Plans</small>
     </a>
-    <a class="nav-link text-center" href="{{ url_for('dashboard') }}#wallet">
-      <i class="fa-solid fa-wallet fa-lg"></i><br><small>Wallet</small>
+    <a class="nav-link" href="{{ url_for('dashboard') }}#wallet">
+      <i class="fa-solid fa-wallet fa-lg"></i><br>
+      <small>Wallet</small>
     </a>
-    <a class="nav-link text-center" href="{{ url_for('referral') }}">
-      <i class="fa-solid fa-users fa-lg"></i><br><small>Referral</small>
+    <a class="nav-link" href="{{ url_for('referral') }}">
+      <i class="fa-solid fa-users fa-lg"></i><br>
+      <small>Referral</small>
     </a>
-    <a class="nav-link text-center" href="{{ url_for('markets') }}">
-      <i class="fa-solid fa-chart-line fa-lg"></i><br><small>Markets</small>
+    <a class="nav-link" href="{{ url_for('markets') }}">
+      <i class="fa-solid fa-chart-line fa-lg"></i><br>
+      <small>Markets</small>
     </a>
-    <a class="nav-link text-center" href="{{ url_for('quantify') }}">
-      <i class="fa-solid fa-robot fa-lg"></i><br><small>Quantify</small>
+    <a class="nav-link" href="{{ url_for('quantify') }}">
+      <i class="fa-solid fa-robot fa-lg"></i><br>
+      <small>Quantify</small>
     </a>
   </div>
 </nav>
-
-<!-- Bootstrap & Font Awesome -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
