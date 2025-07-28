@@ -2,6 +2,15 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from database import init_db, add_user, get_user_by_email, save_kyc
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+import random
+
+fake_withdrawals = [
+    {"user": "j***@gmail.com", "amount": "50 USDT", "time": "just now"},
+    {"user": "a***@yahoo.com", "amount": "120 USDT", "time": "2 mins ago"},
+    {"user": "m***@proton.me", "amount": "200 USDT", "time": "5 mins ago"},
+    {"user": "s***@hotmail.com", "amount": "75 USDT", "time": "8 mins ago"},
+    {"user": "r***@gmail.com", "amount": "340 USDT", "time": "10 mins ago"},
+]
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -55,6 +64,9 @@ def dashboard():
     if 'email' not in session:
         return redirect(url_for('login'))
     return render_template('dashboard.html', email=session['email'])
+    ...
+    random.shuffle(fake_withdrawals)
+    return render_template('dashboard.html', ..., withdrawals=fake_withdrawals)
 
 @app.route('/kyc', methods=['GET', 'POST'])
 def kyc():
