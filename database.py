@@ -65,6 +65,15 @@ def get_user_wallet(email):
     result = c.fetchone()
     conn.close()
     return result[0] if result else 0
+def add_withdraw_request(email, amount):
+    from datetime import datetime
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    c.execute("INSERT INTO withdraw_requests (email, amount, status, date) VALUES (?, ?, ?, ?)",
+              (email, amount, 'pending', date))
+    conn.commit()
+    conn.close()
 
 def update_wallet_balance(email, amount, tx_type):
     conn = sqlite3.connect('users.db')
