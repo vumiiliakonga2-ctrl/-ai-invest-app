@@ -134,12 +134,10 @@
                 <td>{{ withdraw.address }}</td>
                 <td>{{ withdraw.status }}</td>
                 <td>
-                    <form method="POST" action="{{ url_for('approve_withdraw') }}" style="display:inline;">
-                        <input type="hidden" name="id" value="{{ withdraw.id }}">
+                    <form method="GET" action="{{ url_for('approve_withdrawal_route', withdraw_id=withdraw.id) }}" style="display:inline;">
                         <button class="btn-approve" type="submit">Approve</button>
                     </form>
-                    <form method="POST" action="{{ url_for('reject_withdraw') }}" style="display:inline;">
-                        <input type="hidden" name="id" value="{{ withdraw.id }}">
+                    <form method="GET" action="{{ url_for('reject_withdrawal_route', withdraw_id=withdraw.id) }}" style="display:inline;">
                         <button class="btn-reject" type="submit">Reject</button>
                     </form>
                 </td>
