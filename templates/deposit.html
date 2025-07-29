@@ -3,35 +3,89 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h3 class="text-center mb-4">Choose Deposit Method</h3>
+  <h3 class="text-center mb-4">Choose Deposit Method</h3>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, msg in messages %}
-        <div class="alert alert-{{ category }}">{{ msg }}</div>
-      {% endfor %}
-    {% endwith %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, msg in messages %}
+      <div class="alert alert-{{ category }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
 
-    <form method="POST" action="{{ url_for('submit_deposit') }}">
-        <div class="mb-3">
-            <label for="amount" class="form-label">Amount (USDT)</label>
-            <input type="number" class="form-control" name="amount" required step="0.01">
-        </div>
-
-        <div class="mb-3">
-            <label for="method" class="form-label">Select Method</label>
-            <select class="form-select" name="method" required>
-                <option value="">-- Select --</option>
-                <option value="USDT (TRC20)">USDT (TRC20)</option>
-                <option value="M-Pesa">M-Pesa</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-            </select>
-        </div>
-
-        <button class="btn btn-success w-100">Submit Deposit</button>
-    </form>
-
-    <div class="mt-4 text-muted small">
-        After submitting, admin will verify and update your wallet.
+  <form method="POST" action="{{ url_for('submit_deposit') }}">
+    <div class="mb-3">
+      <label for="amount" class="form-label">Amount (USDT)</label>
+      <input type="number" class="form-control" name="amount" required step="0.01" min="1">
     </div>
+
+    <div class="mb-3">
+      <label for="method" class="form-label">Select Method</label>
+      <select class="form-select" id="method-select" name="method" required>
+        <option value="">-- Select --</option>
+        <option value="usdt">USDT (TRC20)</option>
+        <option value="mpesa">M-Pesa</option>
+        <option value="bank">Bank Transfer</option>
+      </select>
+    </div>
+
+    <!-- Instructions panels -->
+    <div id="method-instructions" class="mb-4">
+      <!-- USDT -->
+      <div id="usdt-instructions" class="d-none text-center">
+        <p>Send USDT (TRC20) to the address below:</p>
+        <div class="bg-dark text-white p-3 rounded mb-2">
+          <code id="usdt-address">TXYZYourCryptoWalletAddressHere</code>
+        </div>
+        <button type="button" class="btn btn-outline-warning mb-2" onclick="copyAddress()">Copy Address</button>
+      </div>
+
+      <!-- M-Pesa -->
+      <div id="mpesa-instructions" class="d-none">
+        <p>Send money via M-Pesa to:</p>
+        <ul>
+          <li><strong>Paybill:</strong> 123456</li>
+          <li><strong>Account No:</strong> {{ email }}</li>
+        </ul>
+        <p>Use your email as account number so we can match your deposit.</p>
+      </div>
+
+      <!-- Bank Transfer -->
+      <div id="bank-instructions" class="d-none">
+        <p>Bank Transfer details:</p>
+        <ul>
+          <li><strong>Bank:</strong> ABC Bank</li>
+          <li><strong>Account Name:</strong> AI Investment Ltd</li>
+          <li><strong>Account No:</strong> 7890123456</li>
+          <li><strong>Branch:</strong> Nairobi</li>
+        </ul>
+        <p>Use your email as narration so we can match your deposit.</p>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Submit Deposit Request</button>
+  </form>
 </div>
+
+<script>
+  const select = document.getElementById('method-select');
+  const panels = {
+    usdt: document.getElementById('usdt-instructions'),
+    mpesa: document.getElementById('mpesa-instructions'),
+    bank: document.getElementById('bank-instructions'),
+  };
+
+  select.addEventListener('change', () => {
+    // hide all
+    Object.values(panels).forEach(div => div.classList.add('d-none'));
+    // show selected
+    const sel = select.value;
+    if (panels[sel]) panels[sel].classList.remove('d-none');
+  });
+
+  function copyAddress() {
+    const addr = document.getElementById('usdt-address').innerText;
+    navigator.clipboard.writeText(addr)
+      .then(() => alert('USDT address copied!'))
+      .catch(() => alert('Failed to copy.'));
+  }
+</script>
 {% endblock %}
