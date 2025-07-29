@@ -282,61 +282,69 @@ def invest():
     plans = generate_all_plans(unlocked_vip)
     user = get_user_by_email(email)
 
-    # Tailwind-safe static class map
+    # ✅ Bootstrap-safe inline color styles
     vip_colors = {
         1: {
-            "bg": "bg-yellow-100",
-            "border": "border-yellow-400",
-            "text": "text-yellow-600",
-            "button": "bg-yellow-500 hover:bg-yellow-600"
+            "bg": "#fff8dc",       # light yellow
+            "border": "#ffd700",   # gold
+            "text": "#b8860b",     # dark goldenrod
+            "button_bg": "#ffcc00",
+            "button_text": "Invest Now"
         },
         2: {
-            "bg": "bg-blue-100",
-            "border": "border-blue-400",
-            "text": "text-blue-600",
-            "button": "bg-blue-500 hover:bg-blue-600"
+            "bg": "#e6f0ff",       # light blue
+            "border": "#3399ff",
+            "text": "#003366",
+            "button_bg": "#3399ff",
+            "button_text": "Invest Now"
         },
         3: {
-            "bg": "bg-purple-100",
-            "border": "border-purple-400",
-            "text": "text-purple-600",
-            "button": "bg-purple-500 hover:bg-purple-600"
+            "bg": "#f3e6ff",
+            "border": "#9933ff",
+            "text": "#6600cc",
+            "button_bg": "#9933ff",
+            "button_text": "Invest Now"
         },
         4: {
-            "bg": "bg-pink-100",
-            "border": "border-pink-400",
-            "text": "text-pink-600",
-            "button": "bg-pink-500 hover:bg-pink-600"
+            "bg": "#ffe6f0",
+            "border": "#ff66b2",
+            "text": "#cc0066",
+            "button_bg": "#ff66b2",
+            "button_text": "Invest Now"
         },
         5: {
-            "bg": "bg-orange-100",
-            "border": "border-orange-400",
-            "text": "text-orange-600",
-            "button": "bg-orange-500 hover:bg-orange-600"
+            "bg": "#fff0e6",
+            "border": "#ff9933",
+            "text": "#cc6600",
+            "button_bg": "#ff9933",
+            "button_text": "Invest Now"
         },
         6: {
-            "bg": "bg-green-100",
-            "border": "border-green-400",
-            "text": "text-green-600",
-            "button": "bg-green-500 hover:bg-green-600"
+            "bg": "#e6ffe6",
+            "border": "#33cc33",
+            "text": "#006600",
+            "button_bg": "#33cc33",
+            "button_text": "Invest Now"
         },
         7: {
-            "bg": "bg-red-100",
-            "border": "border-red-400",
-            "text": "text-red-600",
-            "button": "bg-red-500 hover:bg-red-600"
+            "bg": "#ffe6e6",
+            "border": "#ff3333",
+            "text": "#990000",
+            "button_bg": "#ff3333",
+            "button_text": "Invest Now"
         }
     }
 
-    # Add Tailwind-safe styles directly to each plan
+    # ✅ Apply the color styles to each plan
     for plan in plans:
-        color = vip_colors.get(plan["vip"], {
-            "bg": "bg-gray-100",
-            "border": "border-gray-400",
-            "text": "text-gray-600",
-            "button": "bg-gray-500 hover:bg-gray-600"
+        colors = vip_colors.get(plan["vip"], {
+            "bg": "#f1f1f1",
+            "border": "#ccc",
+            "text": "#666",
+            "button_bg": "#999",
+            "button_text": "Invest"
         })
-        plan.update(color)
+        plan.update(colors)
 
     return render_template("investment.html", plans=plans, email=email, wallet=user['wallet'])
 
