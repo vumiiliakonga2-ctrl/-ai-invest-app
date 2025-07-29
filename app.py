@@ -98,11 +98,23 @@ def wallet_page():
     if 'email' not in session:
         return redirect(url_for('login'))
 
-    user = get_user_by_email(session['email'])
+    email = session['email']
+    user = get_user_by_email(email)
     wallet_balance = user['wallet'] if user and user['wallet'] else "0 USDT"
-    transactions = get_user_transactions(session['email'])
+    transactions = get_user_transactions(email)
 
-    return render_template('wallet.html', email=session['email'], wallet=wallet_balance, transactions=transactions)
+    from database import get_locked_assets, get_locked_investments
+    locked_balance = get_locked_assets(email)
+    locked_details = get_locked_investments(email)
+
+    return render_template(
+        'wallet.html',
+        email=email,
+        wallet=wallet_balance,
+        transactions=transactions,
+        locked_balance=locked_balance,
+        locked_details=locked_details
+    )
 
 @app.route('/deposit', methods=['GET'])
 def deposit_page():
