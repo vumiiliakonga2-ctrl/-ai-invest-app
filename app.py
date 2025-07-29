@@ -247,6 +247,42 @@ def reject_withdrawal_route(withdraw_id):
     reject_withdrawal(withdraw_id)
     flash("Withdrawal rejected", "warning")
     return redirect(url_for('admin'))
+@app.route('/invest')
+def invest():
+    from database import get_total_deposit, get_vip_from_deposit, generate_all_plans
+    email = session['email']
+    deposit = get_total_deposit(email)
+
+    vip_info = get_vip_from_deposit(deposit)
+    unlocked_vip = vip_info['vip'] if vip_info else None
+
+    plans = generate_all_plans(unlocked_vip)
+    return render_template('investment.html', plans=plans)
+    
+@app.route('/confirm_investment', methods=['POST'])
+def confirm_investment():
+    email = session['email']
+    amount = float(request.form['amount'])
+    vip = int(request.form['vip'])
+    percent = float(request.form['percent'])
+
+    start_date = datetime.utcnow()
+    unlock_date = start_date + timedelta(days=90)
+
+    update_wallet_balance(email, -amount)
+    supabase.table('user_investments').insert({
+        "user_email": email,
+        "amount": amount,
+        "vip_level": vip,
+        "daily_return": percent,
+        "start_date": start_date.isoformat(),
+        "unlock_date": unlock_date.isoformat(),
+        "last_paid": start_date.isoformat(),
+        "status": "active"
+    }).execute()
+
+    flash("Investment confirmed. Capital and earnings locked for 90 days.", "success")
+    return redirect(url_for('dashboard'))
 
 @app.route('/logout')
 def logout():
