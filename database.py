@@ -87,7 +87,7 @@ def get_vip_from_deposit(amount):
         vip += 1
 
     return None
-    def generate_all_plans(unlocked_vip):
+def generate_all_plans(unlocked_vip):
     plans = []
     vip = 1
     percent = 15
