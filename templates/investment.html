@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Invest{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Investment Plans</h2>
+
+  <div class="row">
+    {% for plan in plans %}
+    <div class="col-md-4 mb-4">
+      <div class="card {% if plan.unlocked %}border-success{% else %}border-secondary{% endif %}">
+        <div class="card-body">
+          <h5 class="card-title">VIP {{ plan.vip }}</h5>
+          <p class="card-text">
+            Daily Return: <strong>{{ plan.percent }}%</strong><br>
+            Range: ${{ plan.min }} - ${{ plan.max }}
+          </p>
+          {% if plan.unlocked %}
+            <form action="/start-investment" method="POST">
+              <input type="hidden" name="vip" value="{{ plan.vip }}">
+              <input type="hidden" name="percent" value="{{ plan.percent }}">
+              <input type="hidden" name="min" value="{{ plan.min }}">
+              <input type="hidden" name="max" value="{{ plan.max }}">
+              <div class="form-group">
+                <input type="number" name="amount" class="form-control mb-2" placeholder="Enter amount" required>
+              </div>
+              <button class="btn btn-success w-100">Invest</button>
+            </form>
+          {% else %}
+            <button class="btn btn-outline-secondary w-100" disabled>Locked</button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="text-center mt-5">
+    <p>Available Wallet Balance: <strong>${{ wallet }}</strong></p>
+  </div>
+</div>
+{% endblock %}
