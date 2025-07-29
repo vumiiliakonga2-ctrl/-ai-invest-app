@@ -282,7 +282,7 @@ def invest():
     plans = generate_all_plans(unlocked_vip)
     user = get_user_by_email(email)
 
-    # VIP level-based color styling
+    # Tailwind-safe static class map
     vip_colors = {
         1: {
             "bg": "bg-yellow-100",
@@ -328,7 +328,7 @@ def invest():
         }
     }
 
-    # Attach color styling to each plan
+    # Add Tailwind-safe styles directly to each plan
     for plan in plans:
         color = vip_colors.get(plan["vip"], {
             "bg": "bg-gray-100",
