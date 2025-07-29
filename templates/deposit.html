@@ -1,21 +1,37 @@
 {% extends "base.html" %}
-{% block title %}Deposit Funds - AI Crypto Investment{% endblock %}
+{% block title %}Deposit - AI Investment{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6">
-  <div class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-lg">
-    <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">Deposit Funds</h2>
-    <form method="POST" action="/deposit" class="space-y-5">
-      <input type="number" name="amount" placeholder="Enter Amount (USD)" required class="w-full px-4 py-3 bg-gray-700 rounded-xl text-white placeholder-gray-400" />
-      <select name="method" required class="w-full px-4 py-3 bg-gray-700 rounded-xl text-white">
-        <option value="">Select Payment Method</option>
-        <option value="usdt">USDT (TRC20)</option>
-        <option value="mpesa">M-PESA</option>
-      </select>
-      <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl">
-        Proceed
-      </button>
+<div class="container mt-5">
+    <h3 class="text-center mb-4">Choose Deposit Method</h3>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ category }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('submit_deposit') }}">
+        <div class="mb-3">
+            <label for="amount" class="form-label">Amount (USDT)</label>
+            <input type="number" class="form-control" name="amount" required step="0.01">
+        </div>
+
+        <div class="mb-3">
+            <label for="method" class="form-label">Select Method</label>
+            <select class="form-select" name="method" required>
+                <option value="">-- Select --</option>
+                <option value="USDT (TRC20)">USDT (TRC20)</option>
+                <option value="M-Pesa">M-Pesa</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+            </select>
+        </div>
+
+        <button class="btn btn-success w-100">Submit Deposit</button>
     </form>
-  </div>
+
+    <div class="mt-4 text-muted small">
+        After submitting, admin will verify and update your wallet.
+    </div>
 </div>
 {% endblock %}
