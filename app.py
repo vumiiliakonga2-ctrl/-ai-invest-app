@@ -120,6 +120,7 @@ def submit_withdraw_request():
     from database import get_user_wallet
     email = session['email']
     amount = float(request.form['amount'])
+    address = request.form['address']
     password = request.form['password']
 
     user = get_user_by_email(email)
@@ -134,7 +135,7 @@ def submit_withdraw_request():
 
     # Save pending request
     from database import add_withdraw_request
-    add_withdraw_request(email, amount)
+    add_withdraw_request(email, amount,address)
 
     flash("Withdrawal request sent for admin approval", "success")
     return redirect(url_for('wallet_page'))
