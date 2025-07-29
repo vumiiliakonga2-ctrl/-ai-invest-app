@@ -11,6 +11,10 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ────────────────────────────────
 # USER MANAGEMENT
 # ────────────────────────────────
+def get_all_users():
+    result = supabase.table("users").select("id, email, wallet, kyc_file").execute()
+    return result.data
+
 def get_pending_deposits():
     result = supabase.table("deposit_requests")\
         .select("*")\
@@ -85,6 +89,10 @@ def add_transaction(email, tx_type, amount):
         "amount": amount,
         "date": now
     }).execute()
+def get_all_transactions():
+    result = supabase.table("transactions").select("*").order("date", desc=True).execute()
+    return result.data
+
 
 def get_user_transactions(email):
     result = supabase.table("transactions")\
