@@ -93,6 +93,14 @@ def update_wallet_balance(email, amount, tx_type):
         c.execute("UPDATE users SET wallet = wallet - ? WHERE email = ?", (amount, email))
     conn.commit()
     conn.close()
+def add_deposit_request(email, amount, method):
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    c.execute("INSERT INTO deposit_requests (email, amount, method, status, date) VALUES (?, ?, ?, ?, ?)",
+              (email, amount, method, 'pending', date))
+    conn.commit()
+    conn.close()
 
 def add_transaction(email, tx_type, amount):
     conn = sqlite3.connect('users.db')
