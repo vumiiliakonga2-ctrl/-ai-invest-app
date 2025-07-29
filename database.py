@@ -11,6 +11,41 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ────────────────────────────────
 # USER MANAGEMENT
 # ────────────────────────────────
+def get_pending_deposits():
+    result = supabase.table("deposit_requests")\
+        .select("*")\
+        .eq("status", "pending")\
+        .order("date", desc=True)\
+        .execute()
+    return result.data
+
+def approve_deposit(deposit_id):
+    deposit = supabase.table("deposit_requests").select("*").eq("id", deposit_id).execute().data[0]
+    supabase.table("deposit_requests").update({"status": "approved"}).eq("id", deposit_id).execute()
+    update_wallet_balance(deposit["email"], deposit["amount"], "deposit")
+    add_transaction(deposit["email"], "deposit", deposit["amount"])
+
+def reject_deposit(deposit_id):
+    return supabase.table("deposit_requests").update({"status": "rejected"}).eq("id", deposit_id).execute()
+
+
+def get_pending_withdrawals():
+    result = supabase.table("withdraw_requests")\
+        .select("*")\
+        .eq("status", "pending")\
+        .order("date", desc=True)\
+        .execute()
+    return result.data
+
+def approve_withdrawal(withdraw_id):
+    withdraw = supabase.table("withdraw_requests").select("*").eq("id", withdraw_id).execute().data[0]
+    supabase.table("withdraw_requests").update({"status": "approved"}).eq("id", withdraw_id).execute()
+    update_wallet_balance(withdraw["email"], withdraw["amount"], "withdraw")
+    add_transaction(withdraw["email"], "withdraw", withdraw["amount"])
+
+def reject_withdrawal(withdraw_id):
+    return supabase.table("withdraw_requests").update({"status": "rejected"}).eq("id", withdraw_id).execute()
+
 def add_user(email, hashed_password):
     result = supabase.table("users").insert({
         "email": email,
