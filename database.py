@@ -156,9 +156,6 @@ def approve_withdrawal_request(withdraw_id):
 def reject_withdrawal_request(withdraw_id):
     supabase.table("withdrawals").update({"status": "rejected"}).eq("id", withdraw_id).execute()
 
-def get_all_deposits():
-    result = supabase.table("deposits").select("*").order("timestamp", desc=True).execute()
-    return result.data
 def get_all_withdrawals():
     result = supabase.table("withdrawals").select("*").order("timestamp", desc=True).execute()
     return result.data
