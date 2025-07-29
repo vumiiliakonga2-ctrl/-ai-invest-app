@@ -4,6 +4,18 @@
 {% block content %}
 <div class="container mt-5">
     <h3 class="text-center mb-4">Submit Withdrawal Request</h3>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <form method="POST" action="{{ url_for('submit_withdraw_request') }}">
         <div class="mb-3">
             <label for="amount" class="form-label">Amount (USDT)</label>
