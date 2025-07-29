@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Investment Plans{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">VIP Investment Plans</h2>
+  <div class="row">
+    {% for plan in plans %}
+    <div class="col-md-4 mb-4">
+      <div class="card shadow 
+        {% if plan.unlocked %}border-success{% else %}border-secondary{% endif %}" 
+        style="border-width: 3px;">
+        <div class="card-body text-center">
+          <h5 class="card-title">
+            VIP {{ plan.vip }}
+            {% if plan.unlocked %}
+            <span class="badge bg-success">Unlocked</span>
+            {% else %}
+            <span class="badge bg-secondary">Locked</span>
+            {% endif %}
+          </h5>
+          <p class="card-text">
+            <strong>Daily Return:</strong> {{ plan.percent }}%<br>
+            <strong>Min:</strong> {{ plan.min }} USDT<br>
+            <strong>Max:</strong> {{ plan.max }} USDT
+          </p>
+          {% if plan.unlocked %}
+          <a href="#" class="btn btn-outline-success">Invest</a>
+          {% else %}
+          <button class="btn btn-outline-secondary" disabled>Locked</button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
