@@ -9,7 +9,7 @@ from database import (
     approve_withdrawal_request, reject_withdrawal_request
 )
 from database import get_withdraw_by_id, get_user_by_email, update_withdraw_status, update_wallet_balance, add_transaction
-
+from database import get_user_by_email, process_user_earnings
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
@@ -74,17 +74,21 @@ def login():
 
     return render_template('login.html')
 
-
 @app.route('/dashboard')
 def dashboard():
     if 'email' not in session:
         return redirect(url_for('login'))
     
+    # Get user details
     user = get_user_by_email(session['email'])
 
     if user:
         email = user['email']
         wallet = user['wallet'] if user['wallet'] else "0 USDT"
+
+        # ✅ Process their daily earnings here
+        process_user_earnings(email)
+
     else:
         email = session['email']
         wallet = "0 USDT"
@@ -92,6 +96,8 @@ def dashboard():
     random.shuffle(fake_withdrawals)
     
     return render_template('dashboard.html', email=email, wallet=wallet, withdrawals=fake_withdrawals)
+
+
 
 @app.route('/wallet', methods=['GET'])
 def wallet_page():
