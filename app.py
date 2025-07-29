@@ -211,31 +211,29 @@ def reject_deposit_route(deposit_id):
 def approve_withdrawal_route(withdraw_id):
     withdraw = get_withdraw_by_id(withdraw_id)
     if not withdraw:
-        return
+        flash("Withdrawal not found", "danger")
+        return redirect(url_for('admin'))
 
-    # ✅ Already approved/rejected? Do nothing.
     if withdraw["status"] != "pending":
-        return
+        flash("Already processed", "info")
+        return redirect(url_for('admin'))
 
     amount = withdraw["amount"]
-
-    # ✅ BLOCK any zero or negative amounts
     if amount <= 0:
-        print("Blocked: Invalid withdrawal amount.")
-        return
+        flash("Invalid amount", "danger")
+        return redirect(url_for('admin'))
 
     user = get_user_by_email(withdraw["email"])
-
-    # ✅ BLOCK if user has insufficient balance
     if user["wallet"] < amount:
-        print("Blocked: Insufficient balance.")
-        return
+        flash("Insufficient user balance", "danger")
+        return redirect(url_for('admin'))
 
-    # ✅ Process approval
     update_withdraw_status(withdraw_id, "approved")
     update_wallet_balance(user["email"], -amount)
     add_transaction(user["email"], "withdrawal", amount)
 
+    flash("Withdrawal approved", "success")
+    return redirect(url_for('admin'))  # ✅ THIS LINE IS MANDATORY
 
 @app.route('/admin/reject-withdraw/<withdraw_id>')
 def reject_withdrawal_route(withdraw_id):
