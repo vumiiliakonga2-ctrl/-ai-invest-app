@@ -193,14 +193,14 @@ def admin():
     withdrawals = get_pending_withdrawals()
 
     return render_template('admin.html', deposits=deposits, withdrawals=withdrawals)
-@app.route('/admin/approve-deposit/<int:deposit_id>')
+@app.route('/admin/approve-deposit/<string:deposit_id>')
 def approve_deposit_route(deposit_id):
     from database import approve_deposit
     approve_deposit(deposit_id)
     flash("Deposit approved", "success")
     return redirect(url_for('admin'))
 
-@app.route('/admin/reject-deposit/<int:deposit_id>')
+@app.route('/admin/reject-deposit/<string:deposit_id>')
 def reject_deposit_route(deposit_id):
     from database import reject_deposit
     reject_deposit(deposit_id)
