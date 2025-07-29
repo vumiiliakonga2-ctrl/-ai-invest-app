@@ -1,29 +1,153 @@
-{% extends "base.html" %}
-{% block title %}Admin Panel - AI Crypto Investment{% endblock %}
+<!-- templates/admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - AI Invest</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #0e1117;
+            color: #f1f1f1;
+        }
+        .sidebar {
+            width: 220px;
+            height: 100vh;
+            background-color: #161b22;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 60px;
+            border-right: 1px solid #333;
+        }
+        .sidebar a {
+            display: block;
+            padding: 15px 20px;
+            color: #ccc;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #21262d;
+            color: #fff;
+        }
+        .main {
+            margin-left: 220px;
+            padding: 30px;
+        }
+        .section {
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        h2 {
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #1a1f28;
+        }
+        tr:hover {
+            background-color: #222;
+        }
+        .btn-approve, .btn-reject {
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn-approve {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-reject {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
 
-{% block content %}
-<div class="min-h-screen bg-gray-900 text-white p-6">
-  <h2 class="text-3xl font-bold mb-6">Admin Panel</h2>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
-      <h3 class="text-xl font-semibold text-yellow-400 mb-2">Pending KYC</h3>
-      {% for user in pending_kyc %}
-        <div class="bg-gray-700 p-4 rounded-xl mb-2">
-          <p><strong>{{ user.fullname }}</strong> - {{ user.email }}</p>
-          <a href="/admin/verify/{{ user.id }}" class="text-green-400 hover:underline">Verify</a>
-        </div>
-      {% endfor %}
-    </div>
-    <div class="bg-gray-800 p-6 rounded-2xl shadow-lg">
-      <h3 class="text-xl font-semibold text-yellow-400 mb-2">Deposits</h3>
-      {% for deposit in recent_deposits %}
-        <div class="bg-gray-700 p-4 rounded-xl mb-2">
-          <p><strong>{{ deposit.user_email }}</strong> - ${{ deposit.amount }}</p>
-          <a href="/admin/confirm/{{ deposit.id }}" class="text-green-400 hover:underline">Confirm</a>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
+<div class="sidebar">
+    <a href="{{ url_for('admin') }}">Dashboard</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
 </div>
-{% endblock %}
+
+<div class="main">
+    <h1>Admin Dashboard</h1>
+
+    <div class="section">
+        <h2>👤 Users</h2>
+        {% for user in users %}
+            <p>{{ user.email }} | Wallet: {{ user.wallet }} USDT</p>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2>📥 Deposit Requests</h2>
+        <table>
+            <tr>
+                <th>Email</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+            </tr>
+            {% for deposit in deposits %}
+            <tr>
+                <td>{{ deposit.email }}</td>
+                <td>{{ deposit.amount }}</td>
+                <td>{{ deposit.method }}</td>
+                <td>{{ deposit.status }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>📤 Withdrawal Requests</h2>
+        <table>
+            <tr>
+                <th>Email</th>
+                <th>Amount</th>
+                <th>Address</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            {% for withdraw in withdrawals %}
+            <tr>
+                <td>{{ withdraw.email }}</td>
+                <td>{{ withdraw.amount }}</td>
+                <td>{{ withdraw.address }}</td>
+                <td>{{ withdraw.status }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('approve_withdraw') }}" style="display:inline;">
+                        <input type="hidden" name="id" value="{{ withdraw.id }}">
+                        <button class="btn-approve" type="submit">Approve</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('reject_withdraw') }}" style="display:inline;">
+                        <input type="hidden" name="id" value="{{ withdraw.id }}">
+                        <button class="btn-reject" type="submit">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
