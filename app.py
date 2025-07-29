@@ -277,12 +277,25 @@ def invest():
     total_deposit = sum(float(d["amount"]) for d in deposits) if deposits else 0.0
 
     vip_info = get_vip_from_deposit(total_deposit)
-    unlocked_vip = vip_info['vip'] if vip_info else 1  # fallback to VIP 1
+    unlocked_vip = vip_info['vip'] if vip_info else 1
 
     plans = generate_all_plans(unlocked_vip)
     user = get_user_by_email(email)
 
-    return render_template('investment.html', plans=plans, email=email, wallet=user['wallet'])
+    vip_colors = {
+        1: "bg-yellow-100 border-yellow-400",
+        2: "bg-blue-100 border-blue-400",
+        3: "bg-purple-100 border-purple-400",
+        4: "bg-pink-100 border-pink-400",
+        5: "bg-orange-100 border-orange-400",
+        6: "bg-teal-100 border-teal-400",
+        7: "bg-red-100 border-red-400"
+    }
+
+    for plan in plans:
+        plan["color"] = vip_colors.get(plan["vip"], "bg-gray-100 border-gray-400")
+
+    return render_template("investment.html", plans=plans, email=email, wallet=user['wallet'])
 
 @app.route('/confirm_investment', methods=['POST'])
 def confirm_investment():
