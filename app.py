@@ -136,8 +136,7 @@ def submit_withdraw_request():
     if 'email' not in session:
         return redirect(url_for('login'))
 
-    from database import get_user_wallet
-    from database import add_withdraw_request
+    from database import get_user_wallet, add_withdraw_request
 
     email = session['email']
     amount = float(request.form['amount'])
@@ -147,6 +146,11 @@ def submit_withdraw_request():
     user = get_user_by_email(email)
     if not user or not check_password_hash(user['password'], password):
         flash("Invalid password", "danger")
+        return redirect(url_for('withdraw_request'))
+
+    # ✅ Block negative or zero amounts
+    if amount <= 0:
+        flash("Amount must be greater than zero", "danger")
         return redirect(url_for('withdraw_request'))
 
     current_balance = float(get_user_wallet(email))
@@ -231,7 +235,7 @@ def approve_withdrawal_route(withdraw_id):
         return redirect(url_for('admin'))
 
     update_withdraw_status(withdraw_id, "approved")
-    update_wallet_balance(user["email"], -amount)
+    update_wallet_balance(user["email"], amount, "withdraw")
     add_transaction(user["email"], "withdrawal", amount)
 
     flash("Withdrawal approved", "success")
