@@ -1,6 +1,5 @@
 import sqlite3
 from datetime import datetime
-
 def init_db():
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
@@ -21,11 +20,25 @@ def init_db():
         CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT NOT NULL,
-            type TEXT NOT NULL,  -- 'deposit' or 'withdraw'
+            type TEXT NOT NULL,
             amount REAL NOT NULL,
             date TEXT NOT NULL
         )
     ''')
+
+    # Withdraw requests table (new)
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS withdraw_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            amount REAL NOT NULL,
+            status TEXT DEFAULT 'pending',
+            date TEXT NOT NULL
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
 
     conn.commit()
     conn.close()
