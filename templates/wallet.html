@@ -35,10 +35,7 @@
 
   <!-- Manual Action Buttons -->
   <div class="text-center mb-5">
-    <form action="/confirm-deposit" method="POST" class="d-inline-block me-3">
-      <input type="hidden" name="amount" value="50" />
-      <button class="btn btn-success">I've Sent USDT (Deposit)</button>
-    </form>
+   <a href="{{ url_for('deposit_page') }}" class="btn btn-success me-3">Deposit</a>
    <a href="{{ url_for('withdraw_request') }}" class="btn btn-danger">Withdraw</a>
 
   </div>
