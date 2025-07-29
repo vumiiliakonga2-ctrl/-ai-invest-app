@@ -11,6 +11,19 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ────────────────────────────────
 # USER MANAGEMENT
 # ────────────────────────────────
+def get_vip_level_from_deposit(total):
+    if total < 89:
+        return 1
+    elif 89 <= total <= 289:
+        return 2
+    elif 290 <= total <= 589:
+        return 3
+    elif 590 <= total <= 889:
+        return 4
+    elif 890 <= total <= 1689:
+        return 5
+    # ... and so on
+
 def add_to_wallet(email, amount):
     user = supabase.table("users").select("wallet").eq("email", email).single().execute().data
     current_balance = float(user["wallet"]) if user and user["wallet"] else 0.0
