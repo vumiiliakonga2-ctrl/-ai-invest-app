@@ -20,9 +20,6 @@ UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Init DB
-init_db()
-
 @app.route('/')
 def index():
     return redirect(url_for('login'))
