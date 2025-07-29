@@ -28,9 +28,9 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form('email')
        
-        password = request.form['password']
+        password = request.form('password')
         hashed_password = generate_password_hash(password)
         try:
             add_user(email, hashed_password)
