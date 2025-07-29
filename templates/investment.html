@@ -1,95 +1,29 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="container mt-5">
-  <h2 class="text-center mb-4">Investment Plans</h2>
+{% block title %}Investment Plans - AI Crypto{% endblock %}
 
-  <div class="flex overflow-x-auto gap-4 px-2 pb-4">
+{% block content %}
+<div class="container py-5">
+  <h2 class="text-center text-primary fw-bold mb-4">Available Investment Plans</h2>
+
+  <div class="d-flex flex-row overflow-auto gap-4 px-2 pb-4">
     {% for plan in plans %}
-      {% if plan.vip == 1 %}
-        <div class="min-w-[250px] p-4 rounded-2xl shadow-lg transition-transform transform hover:scale-105 bg-yellow-100 border-l-4 border-yellow-400 {% if not plan.unlocked %}opacity-60{% endif %}">
-          <h5 class="text-xl font-bold text-gray-800">VIP 1</h5>
-          <p class="text-sm mt-1">Returns: <span class="text-yellow-600 font-semibold">{{ plan.percent }}%</span> daily</p>
-          <p class="text-sm">Range: ${{ plan.min }} - ${{ plan.max }}</p>
+      <div class="card shadow-lg"
+           style="min-width: 250px; {% if plan.unlocked %}background-color: {{ plan.bg }}; border-left: 5px solid {{ plan.border }};{% else %}background-color: #f1f1f1; opacity: 0.6;{% endif %}">
+        <div class="card-body">
+          <h5 class="card-title fw-bold">VIP {{ plan.vip }}</h5>
+          <p class="card-text">
+            Returns: <span style="color: {{ plan.text }};" class="fw-bold">{{ plan.percent }}%</span> daily
+          </p>
+          <p class="card-text">Range: ${{ plan.min }} - ${{ plan.max }}</p>
+
           {% if plan.unlocked %}
-            <p class="text-yellow-600 mt-2 font-medium">Unlocked</p>
-            <button class="mt-3 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">Invest</button>
+            <p class="fw-semibold" style="color: {{ plan.text }};">Unlocked</p>
+            <button class="btn fw-bold text-white" style="background: {{ plan.button_bg }};">{{ plan.button_text }}</button>
           {% else %}
-            <p class="text-gray-500 mt-2">Locked</p>
+            <p class="text-muted">Locked</p>
           {% endif %}
         </div>
-      {% elif plan.vip == 2 %}
-        <div class="min-w-[250px] p-4 rounded-2xl shadow-lg transition-transform transform hover:scale-105 bg-blue-100 border-l-4 border-blue-400 {% if not plan.unlocked %}opacity-60{% endif %}">
-          <h5 class="text-xl font-bold text-gray-800">VIP 2</h5>
-          <p class="text-sm mt-1">Returns: <span class="text-blue-600 font-semibold">{{ plan.percent }}%</span> daily</p>
-          <p class="text-sm">Range: ${{ plan.min }} - ${{ plan.max }}</p>
-          {% if plan.unlocked %}
-            <p class="text-blue-600 mt-2 font-medium">Unlocked</p>
-            <button class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Invest</button>
-          {% else %}
-            <p class="text-gray-500 mt-2">Locked</p>
-          {% endif %}
-        </div>
-      {% elif plan.vip == 3 %}
-        <div class="min-w-[250px] p-4 rounded-2xl shadow-lg transition-transform transform hover:scale-105 bg-purple-100 border-l-4 border-purple-400 {% if not plan.unlocked %}opacity-60{% endif %}">
-          <h5 class="text-xl font-bold text-gray-800">VIP 3</h5>
-          <p class="text-sm mt-1">Returns: <span class="text-purple-600 font-semibold">{{ plan.percent }}%</span> daily</p>
-          <p class="text-sm">Range: ${{ plan.min }} - ${{ plan.max }}</p>
-          {% if plan.unlocked %}
-            <p class="text-purple-600 mt-2 font-medium">Unlocked</p>
-            <button class="mt-3 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">Invest</button>
-          {% else %}
-            <p class="text-gray-500 mt-2">Locked</p>
-          {% endif %}
-        </div>
-      {% elif plan.vip == 4 %}
-        <div class="min-w-[250px] p-4 rounded-2xl shadow-lg transition-transform transform hover:scale-105 bg-pink-100 border-l-4 border-pink-400 {% if not plan.unlocked %}opacity-60{% endif %}">
-          <h5 class="text-xl font-bold text-gray-800">VIP 4</h5>
-          <p class="text-sm mt-1">Returns: <span class="text-pink-600 font-semibold">{{ plan.percent }}%</span> daily</p>
-          <p class="text-sm">Range: ${{ plan.min }} - ${{ plan.max }}</p>
-          {% if plan.unlocked %}
-            <p class="text-pink-600 mt-2 font-medium">Unlocked</p>
-            <button class="mt-3 bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded">Invest</button>
-          {% else %}
-            <p class="text-gray-500 mt-2">Locked</p>
-          {% endif %}
-        </div>
-      {% elif plan.vip == 5 %}
-        <div class="min-w-[250px] p-4 rounded-2xl shadow-lg transition-transform transform hover:scale-105 bg-orange-100 border-l-4 border-orange-400 {% if not plan.unlocked %}opacity-60{% endif %}">
-          <h5 class="text-xl font-bold text-gray-800">VIP 5</h5>
-          <p class="text-sm mt-1">Returns: <span class="text-orange-600 font-semibold">{{ plan.percent }}%</span> daily</p>
-          <p class="text-sm">Range: ${{ plan.min }} - ${{ plan.max }}</p>
-          {% if plan.unlocked %}
-            <p class="text-orange-600 mt-2 font-medium">Unlocked</p>
-            <button class="mt-3 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">Invest</button>
-          {% else %}
-            <p class="text-gray-500 mt-2">Locked</p>
-          {% endif %}
-        </div>
-      {% elif plan.vip == 6 %}
-        <div class="min-w-[250px] p-4 rounded-2xl shadow-lg transition-transform transform hover:scale-105 bg-green-100 border-l-4 border-green-400 {% if not plan.unlocked %}opacity-60{% endif %}">
-          <h5 class="text-xl font-bold text-gray-800">VIP 6</h5>
-          <p class="text-sm mt-1">Returns: <span class="text-green-600 font-semibold">{{ plan.percent }}%</span> daily</p>
-          <p class="text-sm">Range: ${{ plan.min }} - ${{ plan.max }}</p>
-          {% if plan.unlocked %}
-            <p class="text-green-600 mt-2 font-medium">Unlocked</p>
-            <button class="mt-3 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Invest</button>
-          {% else %}
-            <p class="text-gray-500 mt-2">Locked</p>
-          {% endif %}
-        </div>
-      {% elif plan.vip == 7 %}
-        <div class="min-w-[250px] p-4 rounded-2xl shadow-lg transition-transform transform hover:scale-105 bg-red-100 border-l-4 border-red-400 {% if not plan.unlocked %}opacity-60{% endif %}">
-          <h5 class="text-xl font-bold text-gray-800">VIP 7</h5>
-          <p class="text-sm mt-1">Returns: <span class="text-red-600 font-semibold">{{ plan.percent }}%</span> daily</p>
-          <p class="text-sm">Range: ${{ plan.min }} - ${{ plan.max }}</p>
-          {% if plan.unlocked %}
-            <p class="text-red-600 mt-2 font-medium">Unlocked</p>
-            <button class="mt-3 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Invest</button>
-          {% else %}
-            <p class="text-gray-500 mt-2">Locked</p>
-          {% endif %}
-        </div>
-      {% endif %}
+      </div>
     {% endfor %}
   </div>
 </div>
