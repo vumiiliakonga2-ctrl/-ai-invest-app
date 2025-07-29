@@ -270,12 +270,13 @@ def invest():
     if 'email' not in session:
         return redirect(url_for('login'))
 
-    from database import get_total_deposit, get_vip_from_deposit, generate_all_plans, get_user_by_email
+    from database import get_all_deposits, get_vip_from_deposit, generate_all_plans, get_user_by_email
 
     email = session['email']
-    deposit = get_total_deposit(email)
+    deposits = get_all_deposits(email)
+    total_deposit = sum(float(d["amount"]) for d in deposits) if deposits else 0.0
 
-    vip_info = get_vip_from_deposit(deposit)
+    vip_info = get_vip_from_deposit(total_deposit)
     unlocked_vip = vip_info['vip'] if vip_info else 1  # fallback to VIP 1
 
     plans = generate_all_plans(unlocked_vip)
