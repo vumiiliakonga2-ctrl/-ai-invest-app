@@ -32,6 +32,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT NOT NULL,
             amount REAL NOT NULL,
+            address TEXT NOT NULL,
             status TEXT DEFAULT 'pending',
             date TEXT NOT NULL
         )
