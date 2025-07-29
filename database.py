@@ -7,7 +7,7 @@ print("SUPABASE_DB_HOST:", os.environ.get("SUPABASE_DB_HOST"))
 def get_db_connection():
     return psycopg2.connect(
         host=os.environ.get("SUPABASE_DB_HOST"),
-        database=os.environ.get["SUPABASE_DB_NAME"],
+        database=os.environ.get("SUPABASE_DB_NAME"),
         user=os.environ.get("SUPABASE_DB_USER"),
         password=os.environ.get("SUPABASE_DB_PASSWORD"),
         port=5432
