@@ -282,16 +282,18 @@ def invest():
     plans = generate_all_plans(unlocked_vip)
     user = get_user_by_email(email)
 
+    # ✅ Assign unique colors per VIP
     vip_colors = {
         1: "bg-yellow-100 border-yellow-400",
         2: "bg-blue-100 border-blue-400",
         3: "bg-purple-100 border-purple-400",
         4: "bg-pink-100 border-pink-400",
         5: "bg-orange-100 border-orange-400",
-        6: "bg-teal-100 border-teal-400",
+        6: "bg-green-100 border-green-400",
         7: "bg-red-100 border-red-400"
     }
 
+    # ✅ Attach color to each plan
     for plan in plans:
         plan["color"] = vip_colors.get(plan["vip"], "bg-gray-100 border-gray-400")
 
