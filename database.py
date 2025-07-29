@@ -11,6 +11,21 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ────────────────────────────────
 # USER MANAGEMENT
 # ────────────────────────────────
+def add_to_wallet(email, amount):
+    user = supabase.table("users").select("wallet").eq("email", email).single().execute().data
+    current_balance = float(user["wallet"]) if user and user["wallet"] else 0.0
+    new_balance = current_balance + amount
+
+    supabase.table("users").update({"wallet": new_balance}).eq("email", email).execute()
+
+    # Optional: log it to transactions table
+    supabase.table("transactions").insert({
+        "user_email": email,
+        "type": "earning",
+        "amount": round(amount, 2),
+        "date": datetime.utcnow().isoformat()
+    }).execute()
+
 def process_user_earnings(email):
     today = datetime.utcnow()
     investments = supabase.table("user_investments") \
