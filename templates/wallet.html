@@ -39,10 +39,8 @@
       <input type="hidden" name="amount" value="50" />
       <button class="btn btn-success">I've Sent USDT (Deposit)</button>
     </form>
-    <form action="/withdraw" method="POST" class="d-inline-block">
-      <input type="hidden" name="amount" value="20" />
-      <button class="btn btn-danger">Withdraw</button>
-    </form>
+   <a href="{{ url_for('withdraw_request') }}" class="btn btn-danger">Withdraw</a>
+
   </div>
 
   <!-- Transaction History Table -->
