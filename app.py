@@ -267,16 +267,22 @@ def reject_withdrawal_route(withdraw_id):
     return redirect(url_for('admin'))
 @app.route('/invest')
 def invest():
-    from database import get_total_deposit, get_vip_from_deposit, generate_all_plans
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    from database import get_total_deposit, get_vip_from_deposit, generate_all_plans, get_user_by_email
+
     email = session['email']
     deposit = get_total_deposit(email)
 
     vip_info = get_vip_from_deposit(deposit)
-    unlocked_vip = vip_info['vip'] if vip_info else None
+    unlocked_vip = vip_info['vip'] if vip_info else 1  # fallback to VIP 1
 
     plans = generate_all_plans(unlocked_vip)
-    return render_template('investment.html', plans=plans)
-    
+    user = get_user_by_email(email)
+
+    return render_template('investment.html', plans=plans, email=email, wallet=user['wallet'])
+
 @app.route('/confirm_investment', methods=['POST'])
 def confirm_investment():
     email = session['email']
