@@ -52,14 +52,25 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+
         user = get_user_by_email(email)
+        print("LOGIN DEBUG: email =", email)
+        print("User from DB:", user)
+
+        if user:
+            print("Stored hashed password:", user[2])
+            print("Password entered:", password)
+            print("Password match:", check_password_hash(user[2], password))
+
         if user and check_password_hash(user[2], password):
             session['email'] = email
             return redirect(url_for('dashboard'))
         else:
             flash("Invalid email or password", "error")
             return redirect(url_for('login'))
+
     return render_template('login.html')
+
 
 @app.route('/dashboard')
 def dashboard():
