@@ -1,4 +1,3 @@
-<!-- templates/admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -105,6 +104,7 @@
                 <th>Amount</th>
                 <th>Method</th>
                 <th>Status</th>
+                <th>Action</th>
             </tr>
             {% for deposit in deposits %}
             <tr>
@@ -112,6 +112,18 @@
                 <td>{{ deposit.amount }}</td>
                 <td>{{ deposit.method }}</td>
                 <td>{{ deposit.status }}</td>
+                <td>
+                    {% if deposit.status == 'pending' %}
+                    <form method="GET" action="{{ url_for('approve_deposit_route', deposit_id=deposit.id) }}" style="display:inline;">
+                        <button class="btn-approve" type="submit">Approve</button>
+                    </form>
+                    <form method="GET" action="{{ url_for('reject_deposit_route', deposit_id=deposit.id) }}" style="display:inline;">
+                        <button class="btn-reject" type="submit">Reject</button>
+                    </form>
+                    {% else %}
+                    <em>{{ deposit.status | capitalize }}</em>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </table>
@@ -134,12 +146,16 @@
                 <td>{{ withdraw.address }}</td>
                 <td>{{ withdraw.status }}</td>
                 <td>
+                    {% if withdraw.status == 'pending' %}
                     <form method="GET" action="{{ url_for('approve_withdrawal_route', withdraw_id=withdraw.id) }}" style="display:inline;">
                         <button class="btn-approve" type="submit">Approve</button>
                     </form>
                     <form method="GET" action="{{ url_for('reject_withdrawal_route', withdraw_id=withdraw.id) }}" style="display:inline;">
                         <button class="btn-reject" type="submit">Reject</button>
                     </form>
+                    {% else %}
+                    <em>{{ withdraw.status | capitalize }}</em>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
