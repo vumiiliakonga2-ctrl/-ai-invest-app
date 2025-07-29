@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from database import init_db, add_user, get_user_by_email, save_kyc
+from database import add_user, get_user_by_email, save_kyc
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import random
