@@ -236,7 +236,7 @@ def approve_withdrawal_route(withdraw_id):
 
     update_withdraw_status(withdraw_id, "approved")
     update_wallet_balance(user["email"], amount, "withdraw")
-    add_transaction(user["email"], "withdrawal", amount)
+    add_transaction(user["email"], "withdraw", amount)
 
     flash("Withdrawal approved", "success")
     return redirect(url_for('admin'))  # ✅ THIS LINE IS MANDATORY
