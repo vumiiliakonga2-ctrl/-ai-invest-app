@@ -90,20 +90,24 @@ def wallet_page():
 
     return render_template('wallet.html', email=session['email'], wallet=wallet_balance, transactions=transactions)
 
-
-@app.route('/confirm-deposit', methods=['POST'])
-def confirm_deposit():
+@app.route('/deposit', methods=['GET'])
+def deposit_page():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    return render_template('deposit.html', email=session['email'])
+@app.route('/submit-deposit', methods=['POST'])
+def submit_deposit():
     if 'email' not in session:
         return redirect(url_for('login'))
 
     email = session['email']
     amount = float(request.form['amount'])
+    method = request.form['method']
 
-    # Add deposit
-    update_wallet_balance(email, amount, 'deposit')
-    add_transaction(email, 'Deposit', amount)
+    from database import add_deposit_request
+    add_deposit_request(email, amount, method)
 
-    flash("Deposit confirmed successfully!", "success")
+    flash("Deposit request submitted for admin review", "success")
     return redirect(url_for('wallet_page'))
 
 
