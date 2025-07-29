@@ -35,14 +35,13 @@
 
   <!-- Manual Action Buttons -->
   <div class="text-center mb-5">
-   <a href="{{ url_for('deposit_page') }}" class="btn btn-success me-3">Deposit</a>
-   <a href="{{ url_for('withdraw_request') }}" class="btn btn-danger">Withdraw</a>
-
+    <a href="{{ url_for('deposit_page') }}" class="btn btn-success me-3">Deposit</a>
+    <a href="{{ url_for('withdraw_request') }}" class="btn btn-danger">Withdraw</a>
   </div>
 
   <!-- Transaction History Table -->
   <h5 class="text-center mb-3">Transaction History</h5>
-  <div class="table-responsive">
+  <div class="table-responsive mb-5">
     <table class="table table-bordered table-hover">
       <thead class="table-dark">
         <tr>
@@ -65,6 +64,38 @@
         {% endfor %}
       </tbody>
     </table>
+  </div>
+
+  <!-- Locked Assets Section -->
+  <div class="row mt-5">
+    <div class="col-md-8 mx-auto">
+      <div class="card border-secondary shadow">
+        <div class="card-header bg-secondary text-white text-center">
+          <h5 class="mb-0">Locked Assets</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-2"><strong>Total Locked:</strong> 
+            <span class="text-danger fw-bold">
+              ${{ '%.2f' | format(locked_balance) if locked_balance else '0.00' }}
+            </span>
+          </p>
+
+          <h6 class="mt-4">Unlock Schedule:</h6>
+          {% if locked_details %}
+          <ul class="list-group">
+            {% for item in locked_details %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>${{ item.amount }}</span>
+              <span class="badge bg-primary">{{ item.unlock_date[:10] }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-muted">You have no locked capital currently.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
