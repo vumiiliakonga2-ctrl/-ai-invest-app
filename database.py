@@ -11,6 +11,13 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ────────────────────────────────
 # USER MANAGEMENT
 # ────────────────────────────────
+def get_locked_assets(email):
+    result = supabase.table("user_investments").select("amount").eq("user_email", email).eq("status", "active").execute()
+    return sum(row["amount"] for row in result.data)
+
+def get_locked_investments(email):
+    return supabase.table("user_investments").select("amount", "unlock_date").eq("user_email", email).eq("status", "active").execute().data
+
 def get_vip_from_deposit(amount):
     vip = 1
     percent = 15
