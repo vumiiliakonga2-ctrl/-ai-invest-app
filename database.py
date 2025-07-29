@@ -11,6 +11,12 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ────────────────────────────────
 # USER MANAGEMENT
 # ────────────────────────────────
+def approve_withdrawal_request(withdraw_id):
+    supabase.table("withdrawals").update({"status": "approved"}).eq("id", withdraw_id).execute()
+
+def reject_withdrawal_request(withdraw_id):
+    supabase.table("withdrawals").update({"status": "rejected"}).eq("id", withdraw_id).execute()
+
 def get_all_deposits():
     result = supabase.table("deposits").select("*").order("timestamp", desc=True).execute()
     return result.data
