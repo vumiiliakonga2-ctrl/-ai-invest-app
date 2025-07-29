@@ -89,33 +89,7 @@ def wallet_page():
     transactions = get_user_transactions(session['email'])
 
     return render_template('wallet.html', email=session['email'], wallet=wallet_balance, transactions=transactions)
-@app.route('/wallet/deposit', methods=['POST'])
-def deposit():
-    if 'email' not in session:
-        return redirect(url_for('login'))
 
-    amount = float(request.form['amount'])
-    email = session['email']
-
-    add_transaction(email, 'deposit', amount)
-    update_wallet_balance(email, amount, 'deposit')
-
-    return redirect(url_for('wallet_page'))
-
-@app.route('/wallet/withdraw', methods=['POST'])
-def withdraw():
-    if 'email' not in session:
-        return redirect(url_for('login'))
-
-    amount = float(request.form['amount'])
-    email = session['email']
-
-    user = get_user_by_email(email)
-    if user and float(user[3]) >= amount:
-        add_transaction(email, 'withdraw', amount)
-        update_wallet_balance(email, amount, 'withdraw')
-
-    return redirect(url_for('wallet_page'))
 
 @app.route('/confirm-deposit', methods=['POST'])
 def confirm_deposit():
