@@ -11,6 +11,12 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ────────────────────────────────
 # USER MANAGEMENT
 # ────────────────────────────────
+def get_withdraw_by_id(withdraw_id):
+    response = supabase.table("withdrawals").select("*").eq("id", withdraw_id).single().execute()
+    if response.data:
+        return response.data
+    else:
+        return None
 def approve_withdrawal_request(withdraw_id):
     supabase.table("withdrawals").update({"status": "approved"}).eq("id", withdraw_id).execute()
 
