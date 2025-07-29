@@ -62,12 +62,16 @@ def login():
 
         if user and check_password_hash(user['password'], password):
             session['email'] = email
-            return redirect(url_for('dashboard'))
+            if email == 'vumiiliakonga2@gmail.com':
+                return redirect(url_for('admin'))
+            else:
+                return redirect(url_for('dashboard'))
         else:
             flash("Invalid email or password", "error")
             return redirect(url_for('login'))
 
     return render_template('login.html')
+
 
 @app.route('/dashboard')
 def dashboard():
