@@ -8,7 +8,7 @@ def get_db_connection():
         host=os.environ.get("SUPABASE_DB_HOST"),
         database=os.environ.get("SUPABASE_DB_NAME", "postgres"),
         user=os.environ.get("SUPABASE_DB_USER"),
-        password=os.environ.get("SUPABASE_DB_PASSWORD")
+        password=os.environ.get("SUPABASE_DB_PASSWORD"),
         port=5432
     )
 
