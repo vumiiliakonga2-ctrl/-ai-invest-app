@@ -107,24 +107,36 @@ def confirm_deposit():
     return redirect(url_for('wallet_page'))
 
 
-@app.route('/withdraw', methods=['POST'])
-def withdraw():
+@app.route('/withdraw-request', methods=['GET'])
+def withdraw_request():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    return render_template('withdraw_request.html', email=session['email'])
+@app.route('/submit-withdraw-request', methods=['POST'])
+def submit_withdraw_request():
     if 'email' not in session:
         return redirect(url_for('login'))
 
+    from database import get_user_wallet
     email = session['email']
     amount = float(request.form['amount'])
+    password = request.form['password']
 
-    # Subtract if enough balance
-    from database import get_user_wallet
+    user = get_user_by_email(email)
+    if not user or not check_password_hash(user[2], password):
+        flash("Invalid password", "danger")
+        return redirect(url_for('withdraw_request'))
+
     current_balance = float(get_user_wallet(email))
     if amount > current_balance:
-        flash("Insufficient balance for withdrawal", "danger")
-    else:
-        update_wallet_balance(email, -amount, 'withdraw')
-        add_transaction(email, 'Withdraw', amount)
-        flash("Withdrawal request submitted!", "success")
+        flash("Insufficient balance", "danger")
+        return redirect(url_for('withdraw_request'))
 
+    # Save pending request
+    from database import add_withdraw_request
+    add_withdraw_request(email, amount)
+
+    flash("Withdrawal request sent for admin approval", "success")
     return redirect(url_for('wallet_page'))
 
 @app.route('/kyc', methods=['GET', 'POST'])
