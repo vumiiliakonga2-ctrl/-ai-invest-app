@@ -208,7 +208,7 @@ def reject_deposit_route(deposit_id):
     return redirect(url_for('admin'))
 
 @app.route('/admin/approve-withdraw/<withdraw_id>')
-def approve_withdrawal(withdraw_id):
+def approve_withdrawal_route(withdraw_id):
     withdraw = get_withdraw_by_id(withdraw_id)
     if not withdraw:
         return
