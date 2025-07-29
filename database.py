@@ -17,6 +17,13 @@ def get_withdraw_by_id(withdraw_id):
         return response.data
     else:
         return None
+def get_withdraw_by_id(withdraw_id):
+    response = supabase.table("withdraw_requests").select("*").eq("id", withdraw_id).single().execute()
+    return response.data if response.data else None
+
+def update_withdraw_status(withdraw_id, new_status):
+    return supabase.table("withdraw_requests").update({"status": new_status}).eq("id", withdraw_id).execute()
+
 def approve_withdrawal_request(withdraw_id):
     supabase.table("withdrawals").update({"status": "approved"}).eq("id", withdraw_id).execute()
 
