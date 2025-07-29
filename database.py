@@ -103,9 +103,12 @@ def update_wallet_balance(email, amount, tx_type):
     user = get_user_by_email(email)
     if not user:
         return None
+
     current_balance = user['wallet'] or 0
     new_balance = current_balance + amount if tx_type == 'deposit' else current_balance - amount
+
     return supabase.table("users").update({"wallet": new_balance}).eq("email", email).execute()
+
 
 def add_transaction(email, tx_type, amount):
     now = datetime.now().isoformat()
