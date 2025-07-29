@@ -11,6 +11,13 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ────────────────────────────────
 # USER MANAGEMENT
 # ────────────────────────────────
+def get_all_deposits():
+    result = supabase.table("deposits").select("*").order("timestamp", desc=True).execute()
+    return result.data
+def get_all_withdrawals():
+    result = supabase.table("withdrawals").select("*").order("timestamp", desc=True).execute()
+    return result.data
+
 def get_all_users():
     result = supabase.table("users").select("id, email, wallet, kyc_file").execute()
     return result.data
