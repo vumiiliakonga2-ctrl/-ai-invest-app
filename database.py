@@ -37,6 +37,17 @@ def init_db():
             date TEXT NOT NULL
         )
     ''')
+    # Deposit requests table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS deposit_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            amount REAL NOT NULL,
+            method TEXT NOT NULL,
+            status TEXT DEFAULT 'pending',
+            date TEXT NOT NULL
+        )
+    ''')
 
     conn.commit()
     conn.close()
