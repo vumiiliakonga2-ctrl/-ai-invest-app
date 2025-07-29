@@ -51,8 +51,8 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-
         user = get_user_by_email(email)
+
         print("LOGIN DEBUG: email =", email)
         print("User from DB:", user)
 
