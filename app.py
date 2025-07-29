@@ -207,14 +207,14 @@ def reject_deposit_route(deposit_id):
     flash("Deposit rejected", "warning")
     return redirect(url_for('admin'))
 
-@app.route('/admin/approve-withdraw/<int:withdraw_id>')
+@app.route('/admin/approve-withdraw/<withdraw_id>')
 def approve_withdrawal_route(withdraw_id):
     from database import approve_withdrawal
     approve_withdrawal(withdraw_id)
     flash("Withdrawal approved", "success")
     return redirect(url_for('admin'))
 
-@app.route('/admin/reject-withdraw/<int:withdraw_id>')
+@app.route('/admin/reject-withdraw/<withdraw_id>')
 def reject_withdrawal_route(withdraw_id):
     from database import reject_withdrawal
     reject_withdrawal(withdraw_id)
