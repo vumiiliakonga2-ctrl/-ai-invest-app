@@ -11,6 +11,10 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ────────────────────────────────
 # USER MANAGEMENT
 # ────────────────────────────────
+def get_total_deposit(email):
+    deposits = get_all_deposits(email)
+    return sum(float(d["amount"]) for d in deposits) if deposits else 0.0
+
 def get_vip_level_from_deposit(total):
     if total < 89:
         return 1
