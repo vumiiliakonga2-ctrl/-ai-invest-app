@@ -177,7 +177,42 @@ def quantify():
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html')
+    if 'email' not in session or session['email'] != 'admin@admin.com':
+        flash("Access denied", "danger")
+        return redirect(url_for('login'))
+
+    from database import get_pending_deposits, get_pending_withdrawals
+    deposits = get_pending_deposits()
+    withdrawals = get_pending_withdrawals()
+
+    return render_template('admin.html', deposits=deposits, withdrawals=withdrawals)
+@app.route('/admin/approve-deposit/<int:deposit_id>')
+def approve_deposit_route(deposit_id):
+    from database import approve_deposit
+    approve_deposit(deposit_id)
+    flash("Deposit approved", "success")
+    return redirect(url_for('admin'))
+
+@app.route('/admin/reject-deposit/<int:deposit_id>')
+def reject_deposit_route(deposit_id):
+    from database import reject_deposit
+    reject_deposit(deposit_id)
+    flash("Deposit rejected", "warning")
+    return redirect(url_for('admin'))
+
+@app.route('/admin/approve-withdraw/<int:withdraw_id>')
+def approve_withdrawal_route(withdraw_id):
+    from database import approve_withdrawal
+    approve_withdrawal(withdraw_id)
+    flash("Withdrawal approved", "success")
+    return redirect(url_for('admin'))
+
+@app.route('/admin/reject-withdraw/<int:withdraw_id>')
+def reject_withdrawal_route(withdraw_id):
+    from database import reject_withdrawal
+    reject_withdrawal(withdraw_id)
+    flash("Withdrawal rejected", "warning")
+    return redirect(url_for('admin'))
 
 @app.route('/logout')
 def logout():
