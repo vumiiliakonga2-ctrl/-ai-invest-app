@@ -28,21 +28,34 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        email = request.form['email']
-       
-        password = request.form['password']
+        # Safely grab form values (returns None if missing)
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # Basic validation
+        if not email or not password:
+            flash("Please provide both email and password.", "error")
+            return redirect(url_for('register'))
+
+        # Check if user already exists
+        if get_user_by_email(email):
+            flash("An account with that email already exists.", "error")
+            return redirect(url_for('register'))
+
+        # Hash the password and insert
         hashed_password = generate_password_hash(password)
         try:
             add_user(email, hashed_password)
-            flash("Registered successfully. Please login.", "success")
+            flash("Registered successfully. Please log in.", "success")
             return redirect(url_for('login'))
         except Exception as e:
-            print("Registration error:", e)
-            flash("User already exists or database error.", "error")
+            # Log real error server-side for troubleshooting
+            app.logger.error(f"Registration error for {email}: {e}")
+            flash("Unexpected error. Please try again later.", "error")
             return redirect(url_for('register'))
 
+    # GET → show the form
     return render_template('register.html')
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
