@@ -12,7 +12,8 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # USER MANAGEMENT
 # ────────────────────────────────
 def get_all_deposits(email):
-    return supabase.table("deposits").select("*").eq("user_email", email).execute().data
+    return supabase.table("deposit_requests").select("*").eq("email", email).eq("status", "approved").execute().data
+
 
 def get_vip_level_from_deposit(total):
     if total < 89:
