@@ -4,7 +4,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import random
 from database import get_user_transactions, add_transaction, update_wallet_balance
-
+from database import (
+    get_all_users, get_all_deposits, get_all_withdrawals,
+    approve_withdrawal_request, reject_withdrawal_request
+)
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
@@ -177,7 +180,7 @@ def quantify():
 
 @app.route('/admin')
 def admin():
-    if 'email' not in session or session['email'] != 'admin@admin.com':
+    if 'email' not in session or session['email'] != 'vumiiliakonga2@gmail.com':
         flash("Access denied", "danger")
         return redirect(url_for('login'))
 
