@@ -2,6 +2,7 @@
 import psycopg2
 from datetime import datetime
 import os
+print("SUPABASE_DB_HOST:", os.environ.get("SUPABASE_DB_HOST"))
 
 def get_db_connection():
     return psycopg2.connect(
