@@ -5,7 +5,8 @@ import os
 import random
 from database import get_user_transactions, get_user_by_email
 from database import add_transaction, update_wallet_balance
-
+app = Flask(__name__)
+app.secret_key = 'supersecretkey'
 fake_withdrawals = [
     {"user": "j***@gmail.com", "amount": "50 USDT", "time": "just now"},
     {"user": "a***@yahoo.com", "amount": "120 USDT", "time": "2 mins ago"},
@@ -14,8 +15,6 @@ fake_withdrawals = [
     {"user": "r***@gmail.com", "amount": "340 USDT", "time": "10 mins ago"},
 ]
 
-app = Flask(__name__)
-app.secret_key = 'supersecretkey'
 
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
