@@ -1,7 +1,7 @@
 from supabase import create_client, Client
 from datetime import datetime
 import os
-
+from datetime import datetime, timedelta
 # Load Supabase URL and Key from environment
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
@@ -11,6 +11,66 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ────────────────────────────────
 # USER MANAGEMENT
 # ────────────────────────────────
+def get_vip_from_deposit(amount):
+    vip = 1
+    percent = 15
+    start = 12
+    stop = 88
+    increment = 0
+
+    while stop <= 100000:
+        if start <= amount <= stop:
+            return {"vip": vip, "percent": percent, "min": start, "max": stop}
+
+        if vip == 1:
+            increment = 201
+        elif vip in [2, 3, 4]:
+            increment = 300
+        elif vip in [5, 6]:
+            increment = 800
+        else:
+            increment = 1200
+
+        start = stop + 1
+        stop += increment
+        percent += 1
+        vip += 1
+
+    return None
+    def generate_all_plans(unlocked_vip):
+    plans = []
+    vip = 1
+    percent = 15
+    start = 12
+    stop = 88
+    increment = 0
+
+    while stop <= 100000:
+        unlocked = vip == unlocked_vip
+        plans.append({
+            "vip": vip,
+            "percent": percent,
+            "min": start,
+            "max": stop,
+            "unlocked": unlocked
+        })
+
+        if vip == 1:
+            increment = 201
+        elif vip in [2, 3, 4]:
+            increment = 300
+        elif vip in [5, 6]:
+            increment = 800
+        else:
+            increment = 1200
+
+        start = stop + 1
+        stop += increment
+        percent += 1
+        vip += 1
+
+    return plans
+
 def get_withdraw_by_id(withdraw_id):
     response = supabase.table("withdrawals").select("*").eq("id", withdraw_id).single().execute()
     if response.data:
