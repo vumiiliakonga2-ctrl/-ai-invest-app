@@ -282,20 +282,61 @@ def invest():
     plans = generate_all_plans(unlocked_vip)
     user = get_user_by_email(email)
 
-    # ✅ Assign unique colors per VIP
+    # VIP level-based color styling
     vip_colors = {
-        1: "bg-yellow-100 border-yellow-400",
-        2: "bg-blue-100 border-blue-400",
-        3: "bg-purple-100 border-purple-400",
-        4: "bg-pink-100 border-pink-400",
-        5: "bg-orange-100 border-orange-400",
-        6: "bg-green-100 border-green-400",
-        7: "bg-red-100 border-red-400"
+        1: {
+            "bg": "bg-yellow-100",
+            "border": "border-yellow-400",
+            "text": "text-yellow-600",
+            "button": "bg-yellow-500 hover:bg-yellow-600"
+        },
+        2: {
+            "bg": "bg-blue-100",
+            "border": "border-blue-400",
+            "text": "text-blue-600",
+            "button": "bg-blue-500 hover:bg-blue-600"
+        },
+        3: {
+            "bg": "bg-purple-100",
+            "border": "border-purple-400",
+            "text": "text-purple-600",
+            "button": "bg-purple-500 hover:bg-purple-600"
+        },
+        4: {
+            "bg": "bg-pink-100",
+            "border": "border-pink-400",
+            "text": "text-pink-600",
+            "button": "bg-pink-500 hover:bg-pink-600"
+        },
+        5: {
+            "bg": "bg-orange-100",
+            "border": "border-orange-400",
+            "text": "text-orange-600",
+            "button": "bg-orange-500 hover:bg-orange-600"
+        },
+        6: {
+            "bg": "bg-green-100",
+            "border": "border-green-400",
+            "text": "text-green-600",
+            "button": "bg-green-500 hover:bg-green-600"
+        },
+        7: {
+            "bg": "bg-red-100",
+            "border": "border-red-400",
+            "text": "text-red-600",
+            "button": "bg-red-500 hover:bg-red-600"
+        }
     }
 
-    # ✅ Attach color to each plan
+    # Attach color styling to each plan
     for plan in plans:
-        plan["color"] = vip_colors.get(plan["vip"], "bg-gray-100 border-gray-400")
+        color = vip_colors.get(plan["vip"], {
+            "bg": "bg-gray-100",
+            "border": "border-gray-400",
+            "text": "text-gray-600",
+            "button": "bg-gray-500 hover:bg-gray-600"
+        })
+        plan.update(color)
 
     return render_template("investment.html", plans=plans, email=email, wallet=user['wallet'])
 
