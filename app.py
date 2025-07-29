@@ -3,10 +3,11 @@ from database import add_user, get_user_by_email, save_kyc
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import random
-from database import get_user_transactions, get_user_by_email
-from database import add_transaction, update_wallet_balance
+from database import get_user_transactions, add_transaction, update_wallet_balance
+
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
+
 fake_withdrawals = [
     {"user": "j***@gmail.com", "amount": "50 USDT", "time": "just now"},
     {"user": "a***@yahoo.com", "amount": "120 USDT", "time": "2 mins ago"},
@@ -14,7 +15,6 @@ fake_withdrawals = [
     {"user": "s***@hotmail.com", "amount": "75 USDT", "time": "8 mins ago"},
     {"user": "r***@gmail.com", "amount": "340 USDT", "time": "10 mins ago"},
 ]
-
 
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -24,38 +24,32 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def index():
     return redirect(url_for('login'))
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        # Safely grab form values (returns None if missing)
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # Basic validation
         if not email or not password:
             flash("Please provide both email and password.", "error")
             return redirect(url_for('register'))
 
-        # Check if user already exists
         if get_user_by_email(email):
             flash("An account with that email already exists.", "error")
             return redirect(url_for('register'))
 
-        # Hash the password and insert
         hashed_password = generate_password_hash(password)
         try:
             add_user(email, hashed_password)
             flash("Registered successfully. Please log in.", "success")
             return redirect(url_for('login'))
         except Exception as e:
-            # Log real error server-side for troubleshooting
             app.logger.error(f"Registration error for {email}: {e}")
             flash("Unexpected error. Please try again later.", "error")
             return redirect(url_for('register'))
 
-    # GET → show the form
     return render_template('register.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -63,15 +57,7 @@ def login():
         password = request.form['password']
         user = get_user_by_email(email)
 
-        print("LOGIN DEBUG: email =", email)
-        print("User from DB:", user)
-
-        if user:
-            print("Stored hashed password:", user[2])
-            print("Password entered:", password)
-            print("Password match:", check_password_hash(user[2], password))
-
-        if user and check_password_hash(user[2], password):
+        if user and check_password_hash(user['password'], password):
             session['email'] = email
             return redirect(url_for('dashboard'))
         else:
@@ -80,17 +66,16 @@ def login():
 
     return render_template('login.html')
 
-
 @app.route('/dashboard')
 def dashboard():
     if 'email' not in session:
         return redirect(url_for('login'))
     
-    user = get_user_by_email(session['email'])  # (id, email, password, wallet)
+    user = get_user_by_email(session['email'])
 
     if user:
-        email = user[1]
-        wallet = user[3] if user[3] else "0 USDT"
+        email = user['email']
+        wallet = user['wallet'] if user['wallet'] else "0 USDT"
     else:
         email = session['email']
         wallet = "0 USDT"
@@ -98,14 +83,14 @@ def dashboard():
     random.shuffle(fake_withdrawals)
     
     return render_template('dashboard.html', email=email, wallet=wallet, withdrawals=fake_withdrawals)
+
 @app.route('/wallet', methods=['GET'])
 def wallet_page():
     if 'email' not in session:
         return redirect(url_for('login'))
 
     user = get_user_by_email(session['email'])
-    wallet_balance = user[3] if user and user[3] else "0 USDT"
-
+    wallet_balance = user['wallet'] if user and user['wallet'] else "0 USDT"
     transactions = get_user_transactions(session['email'])
 
     return render_template('wallet.html', email=session['email'], wallet=wallet_balance, transactions=transactions)
@@ -115,6 +100,7 @@ def deposit_page():
     if 'email' not in session:
         return redirect(url_for('login'))
     return render_template('deposit.html', email=session['email'])
+
 @app.route('/submit-deposit', methods=['POST'])
 def submit_deposit():
     if 'email' not in session:
@@ -130,25 +116,27 @@ def submit_deposit():
     flash("Deposit request submitted for admin review", "success")
     return redirect(url_for('wallet_page'))
 
-
 @app.route('/withdraw-request', methods=['GET'])
 def withdraw_request():
     if 'email' not in session:
         return redirect(url_for('login'))
     return render_template('withdraw_request.html', email=session['email'])
+
 @app.route('/submit-withdraw-request', methods=['POST'])
 def submit_withdraw_request():
     if 'email' not in session:
         return redirect(url_for('login'))
 
     from database import get_user_wallet
+    from database import add_withdraw_request
+
     email = session['email']
     amount = float(request.form['amount'])
     address = request.form['address']
     password = request.form['password']
 
     user = get_user_by_email(email)
-    if not user or not check_password_hash(user[2], password):
+    if not user or not check_password_hash(user['password'], password):
         flash("Invalid password", "danger")
         return redirect(url_for('withdraw_request'))
 
@@ -157,10 +145,7 @@ def submit_withdraw_request():
         flash("Insufficient balance", "danger")
         return redirect(url_for('withdraw_request'))
 
-    # Save pending request
-    from database import add_withdraw_request
-    add_withdraw_request(email, amount,address)
-
+    add_withdraw_request(email, amount, address)
     flash("Withdrawal request sent for admin approval", "success")
     return redirect(url_for('wallet_page'))
 
