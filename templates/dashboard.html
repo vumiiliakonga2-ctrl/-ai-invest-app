@@ -1,68 +1,55 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 {% block title %}Dashboard - AI Crypto{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-  <!-- Welcome Header -->
-  <div class="mb-4 text-center">
-    <h1 class="text-warning fw-bold">Welcome Back</h1>
-    <p class="text-muted">Your investment snapshot and quick controls</p>
-  </div>
+  <h1 class="mb-4 text-center text-warning fw-bold">Welcome to Your Dashboard</h1>
 
-  <!-- Summary Cards -->
-  <div class="row g-4 mb-4">
-    <div class="col-md-4">
-      <div class="card bg-dark text-white shadow">
+  <!-- Page 1: Overview -->
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card text-white bg-dark shadow-lg">
         <div class="card-body">
-          <h6 class="text-warning">Your Email</h6>
-          <p class="fs-6">{{ email }}</p>
+          <h5 class="card-title text-warning">Your Email</h5>
+          <p class="card-text fs-5">{{ email }}</p>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card bg-success text-white shadow">
+
+    <div class="col-md-6">
+      <div class="card text-white bg-success shadow-lg">
         <div class="card-body">
-          <h6>Available Balance</h6>
-          <p class="fs-4 fw-bold">${{ wallet.available }}</p>
+          <h5 class="card-title text-light">Wallet Balance</h5>
+          <p class="card-text fs-4 fw-bold">${{ wallet.available }} <small class="text-warning">Available</small></p>
+          <p class="card-text fs-6">${{ wallet.locked }} <small class="text-light">Locked</small></p>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card bg-warning text-dark shadow">
+
+    <div class="col-12">
+      <div class="card bg-primary text-white shadow-lg">
         <div class="card-body">
-          <h6>Locked for Investments</h6>
-          <p class="fs-4 fw-bold">${{ wallet.locked }}</p>
+          <h5 class="card-title">Total Active Investments</h5>
+          <p class="card-text fs-3 fw-bold">$2,500.00</p>
+          <p class="card-text">Earnings are calculated daily and compound automatically.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card bg-dark text-white shadow-lg">
+        <div class="card-body">
+          <h5 class="card-title text-warning">Projected Monthly Return</h5>
+          <p class="fs-3 text-success fw-bold">+15%</p>
+          <p class="small">Based on your current plans and locked capital.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Active Investments -->
-  <div class="mb-5">
-    <h4 class="text-white mb-3">📈 Active Investments</h4>
-    {% if investments %}
-      <div class="row g-3">
-        {% for i in investments %}
-        <div class="col-md-6">
-          <div class="bg-blue-800 text-white p-3 rounded shadow-sm">
-            <div class="d-flex justify-content-between">
-              <strong>{{ i.plan_name }}</strong>
-              <span class="badge bg-info text-dark">{{ i.daily_return_percent }}%/day</span>
-            </div>
-            <p class="mb-1">Amount: ${{ i.amount }}</p>
-            <small class="text-muted">Ends: {{ i.end_date }}</small>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p class="text-muted">No active investments yet.</p>
-    {% endif %}
-  </div>
-
-  <!-- Live Withdrawals Scroll -->
+  <!-- Page 2: Activities -->
   <div class="mt-5">
-    <h4 class="text-warning text-center mb-3">💸 Live Withdrawals</h4>
+    <h3 class="text-center text-warning mb-3">💸 Live Withdrawals</h3>
     <div class="position-relative overflow-hidden rounded bg-light shadow" style="height: 160px;">
       <div class="position-absolute start-0 top-0 w-100 animate-scroll px-3 py-2">
         {% for w in withdrawals %}
@@ -83,22 +70,61 @@
     </div>
   </div>
 
-  <!-- Recent Transactions -->
-  <div class="mt-5">
-    <h4 class="text-white mb-3">🔄 Recent Activity</h4>
-    <ul class="list-group">
-      {% for tx in transactions %}
-        <li class="list-group-item d-flex justify-content-between">
-          <div>
-            <strong>{{ tx.tx_type|capitalize }}</strong> - ${{ tx.amount }}
-            <br><small class="text-muted">{{ tx.timestamp }}</small>
-          </div>
-          <span class="badge {% if tx.tx_type == 'deposit' %}bg-success{% elif tx.tx_type == 'withdraw' %}bg-danger{% else %}bg-secondary{% endif %} text-white">{{ tx.status }}</span>
-        </li>
-      {% else %}
-        <li class="list-group-item">No recent activity.</li>
-      {% endfor %}
-    </ul>
+  <div class="card mt-5 shadow">
+    <div class="card-body">
+      <h5 class="card-title text-primary">Recent Transactions</h5>
+      <table class="table table-striped">
+        <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>2025-07-29</td><td>Deposit</td><td>$500</td><td><span class="badge bg-success">Completed</span></td></tr>
+          <tr><td>2025-07-28</td><td>Withdraw</td><td>$150</td><td><span class="badge bg-warning">Pending</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card bg-success text-white shadow-lg mt-4">
+    <div class="card-body">
+      <h5 class="card-title">Your Referrals</h5>
+      <p class="fs-4 fw-bold">12 Joined</p>
+      <p>You’ve earned <strong>$120</strong> in referral rewards.</p>
+    </div>
+  </div>
+
+  <div class="card bg-info text-white shadow-lg mt-4">
+    <div class="card-body">
+      <h5 class="card-title">AI Trading Bot</h5>
+      <p>Status: <span class="badge bg-light text-dark">Active</span></p>
+      <p>Last signal: <strong>BUY - BTC/USDT</strong></p>
+    </div>
+  </div>
+
+  <!-- Page 3: Market & Support -->
+  <div class="card mt-5 shadow">
+    <div class="card-body">
+      <h5 class="card-title text-primary">Market Snapshot</h5>
+      <ul>
+        <li><strong>BTC:</strong> +3.2%</li>
+        <li><strong>ETH:</strong> +2.1%</li>
+        <li><strong>BNB:</strong> -1.5%</li>
+      </ul>
+      <p class="text-muted small">Data updated hourly</p>
+    </div>
+  </div>
+
+  <div class="card bg-warning text-dark shadow-lg mt-4">
+    <div class="card-body">
+      <h5 class="card-title">KYC Status</h5>
+      <p>Status: <span class="badge bg-light">Verified</span></p>
+      <p>Your account is fully compliant. Thank you!</p>
+    </div>
+  </div>
+
+  <div class="card mt-4 shadow">
+    <div class="card-body">
+      <h5 class="card-title text-danger">Need Help?</h5>
+      <p>Contact our support via <a href="https://t.me/yourbot" target="_blank">Telegram</a> or visit the <a href="/support">Support Center</a>.</p>
+    </div>
   </div>
 
   <!-- Quick Links -->
@@ -117,6 +143,7 @@
     </div>
   </div>
 
+  <!-- Logout -->
   <div class="text-center mt-5">
     <a href="/logout" class="btn btn-danger px-4 py-2 fw-bold">Logout</a>
   </div>
