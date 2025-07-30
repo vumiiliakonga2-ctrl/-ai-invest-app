@@ -18,7 +18,21 @@
 
           {% if plan.unlocked %}
             <p class="fw-semibold" style="color: {{ plan.text }};">Unlocked</p>
-            <button class="btn fw-bold text-white" style="background: {{ plan.button_bg }};">{{ plan.button_text }}</button>
+
+            <!-- ✅ Form to confirm investment -->
+            <form method="POST" action="{{ url_for('confirm_investment') }}">
+              <input type="hidden" name="vip" value="{{ plan.vip }}">
+              <input type="hidden" name="percent" value="{{ plan.percent }}">
+              
+              <div class="mb-2">
+                <input type="number" name="amount" min="{{ plan.min }}" max="{{ plan.max }}"
+                       placeholder="Enter amount" class="form-control" required>
+              </div>
+              <button type="submit" class="btn fw-bold text-white w-100"
+                      style="background: {{ plan.button_bg }};">
+                {{ plan.button_text }}
+              </button>
+            </form>
           {% else %}
             <p class="text-muted">Locked</p>
           {% endif %}
