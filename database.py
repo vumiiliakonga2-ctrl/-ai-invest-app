@@ -16,7 +16,9 @@ def get_all_deposits(email):
 
 
 def get_vip_level_from_deposit(total):
-    if total < 89:
+    if total_deposit < 12:
+        return {"vip": 0}
+    if total <= 89:
         return 1
     elif 89 <= total <= 289:
         return 2
