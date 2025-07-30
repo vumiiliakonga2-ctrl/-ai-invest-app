@@ -233,10 +233,10 @@ def login():
         user = get_user_by_email(email)
 
         if not user:
-            flash("User not found", "danger")
+            flash("Invalid email or password", "danger")
             return redirect(url_for('login'))
 
-        if not user.get('is_verified', False):
+        if not user.get('is_verified'):
             flash("Please verify your email before logging in.", "warning")
             return redirect(url_for('login'))
 
@@ -247,7 +247,7 @@ def login():
             else:
                 return redirect(url_for('dashboard'))
         else:
-            flash("Incorrect password", "danger")
+            flash("Invalid email or password", "danger")
             return redirect(url_for('login'))
 
     return render_template('login.html')
