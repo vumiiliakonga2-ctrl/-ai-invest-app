@@ -349,7 +349,7 @@ def invest():
     total_deposit = sum(float(d["amount"]) for d in deposits) if deposits else 0.0
 
     vip_info = get_vip_from_deposit(total_deposit)
-    unlocked_vip = vip_info['vip'] if vip_info else 1
+    unlocked_vip = vip_info['vip'] if total_deposit > 0 else 0
 
     plans = generate_all_plans(unlocked_vip)
     user = get_user_by_email(email)
