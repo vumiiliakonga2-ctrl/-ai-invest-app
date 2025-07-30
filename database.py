@@ -230,27 +230,31 @@ def update_wallet_balance(email, amount, tx_type):
     if not user:
         return
 
-    wallet = user['wallet']
-    available = wallet.get('available', 0.0)
+    wallet = user.get("wallet", 0.0)
 
-    # Apply amount change (it will be negative for deduction)
+    # Backward compatibility if wallet is just a float
+    if isinstance(wallet, float) or isinstance(wallet, int):
+        available = wallet
+        locked = 0.0
+    else:
+        available = wallet.get("available", 0.0)
+        locked = wallet.get("locked", 0.0)
+
     new_available = available + amount
 
-    # Prevent negative wallet balance
     if new_available < 0:
         raise ValueError("Insufficient wallet balance")
 
-    # Update in Supabase
+    # Update wallet in Supabase
     supabase.table("users").update({
         "wallet": {
             "available": new_available,
-            "locked": wallet.get('locked', 0.0)
+            "locked": locked
         }
     }).eq("email", email).execute()
 
-    # Add transaction
+    # Save transaction
     add_transaction(email, abs(amount), tx_type)
-
 
 def add_transaction(email, tx_type, amount):
     now = datetime.now().isoformat()
