@@ -46,12 +46,21 @@ def get_all_withdrawals(email):
     result = supabase.table("withdraw_requests").select("*").eq("email", email).eq("status", "approved").execute()
     return result.data if result.data else []
 
-def add_user(email, password_hash):
-    return supabase.table('users').insert({
-        "email": email,
-        "password": password_hash,
-        "wallet": {"available": 0, "locked": 0}
-    }).execute()
+def add_user(email, password, referred_by=None):
+    from werkzeug.security import generate_password_hash
+    hashed_password = generate_password_hash(password)
+
+    referral_code = str(uuid.uuid4())[:8]
+
+    user_data = {
+        'email': email,
+        'password': hashed_password,
+        'wallet': {'available': 0.0, 'locked': 0.0},
+        'referral_code': referral_code,
+        'referred_by': referred_by
+    }
+
+    supabase.table("users").insert(user_data).execute()
 
 def get_user_by_email(email):
     try:
