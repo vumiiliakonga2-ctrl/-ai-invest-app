@@ -144,7 +144,11 @@ def register():
             flash("Email already registered", "danger")
             return redirect(url_for('register'))
 
-        add_user(email, password)
+        # Get referral code from URL query parameter
+        referred_by = request.args.get('ref')  # <-- ✅ referral code
+
+        # Pass referral code to add_user
+        add_user(email, password, referred_by=referred_by)
 
         # Generate code and save
         code = f"{random.randint(100000, 999999)}"
