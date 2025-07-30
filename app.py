@@ -6,6 +6,7 @@ from database import get_vip_from_deposit, generate_all_plans
 from datetime import datetime, timedelta
 from database import update_wallet
 from datetime import datetime, timezone  # make sure this is at the top of your app.py
+from database import get_referrals_for_user
 
 import random
 from database import get_user_transactions, add_transaction, update_wallet_balance
