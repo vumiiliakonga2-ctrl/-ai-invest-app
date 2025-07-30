@@ -14,6 +14,15 @@ from database import (
 )
 from database import get_withdraw_by_id, get_user_by_email, update_withdraw_status, update_wallet_balance, add_transaction
 from database import get_user_by_email, process_user_earnings
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import secrets
+from datetime import datetime, timedelta
+
+EMAIL_SENDER = "vumiiliakonga2@gmail.com"
+EMAIL_PASSWORD = "uswi tjdv kzdg gjwz"  # Use Gmail App Password, not your real password
+
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
@@ -120,31 +129,82 @@ def confirm_investment():
 
     flash("Investment confirmed. Capital and earnings locked for 90 days.", "success")
     return redirect(url_for('dashboard'))
+@app.route('/verify-email/<token>')
+def verify_email(token):
+    response = supabase.table("email_verifications").select("*").eq("token", token).execute()
+    record = response.data[0] if response.data else None
+
+    if not record:
+        flash("Invalid or expired token", "danger")
+        return redirect(url_for('login'))
+
+    if datetime.utcnow() > datetime.fromisoformat(record['expires_at'].replace('Z', '+00:00')):
+        flash("Token has expired", "danger")
+        return redirect(url_for('login'))
+
+    # ✅ Mark user as verified
+    supabase.table("users").update({"is_verified": True}).eq("email", record["email"]).execute()
+    supabase.table("email_verifications").delete().eq("email", record["email"]).execute()
+
+    flash("Email verified. You can now log in.", "success")
+    return redirect(url_for('login'))
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+        email = request.form['email'].lower()
+        password = request.form['password']
+        user = get_user_by_email(email)
 
-        if not email or not password:
-            flash("Please provide both email and password.", "error")
+        if user:
+            flash("Email already registered", "danger")
             return redirect(url_for('register'))
 
-        if get_user_by_email(email):
-            flash("An account with that email already exists.", "error")
-            return redirect(url_for('register'))
+        add_user(email, password)
 
-        hashed_password = generate_password_hash(password)
-        try:
-            add_user(email, hashed_password)
-            flash("Registered successfully. Please log in.", "success")
-            return redirect(url_for('login'))
-        except Exception as e:
-            app.logger.error(f"Registration error for {email}: {e}")
-            flash("Unexpected error. Please try again later.", "error")
-            return redirect(url_for('register'))
+        # generate token and expiration
+        token = secrets.token_urlsafe(32)
+        expires = datetime.utcnow() + timedelta(minutes=10)
+        supabase.table('email_verifications').upsert({
+            "email": email,
+            "token": token,
+            "expires_at": expires.isoformat()
+        }).execute()
+
+        send_verification_email(email, token)
+        flash("Registration successful. Check your email to verify your account.", "info")
+        return redirect(url_for('login'))
 
     return render_template('register.html')
+def send_verification_email(email, token):
+    verify_link = f"https://ai-invest-app-ycr6.onrender.com/verify-email/{token}"
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = "Verify Your Email - AI Invest"
+    msg["From"] = EMAIL_SENDER
+    msg["To"] = email
+
+    html = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif;">
+      <h2>Welcome to AI Invest!</h2>
+      <p>Thank you for registering. Please click the button below to verify your email address:</p>
+      <a href="{verify_link}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a>
+      <p style="margin-top: 20px;">Or open this link in your browser:</p>
+      <p><a href="{verify_link}">{verify_link}</a></p>
+      <p>This link will expire in 10 minutes.</p>
+    </body>
+    </html>
+    """
+
+    msg.attach(MIMEText(html, "html"))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+            server.sendmail(EMAIL_SENDER, email, msg.as_string())
+    except Exception as e:
+        print("Error sending email:", e)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -152,6 +212,10 @@ def login():
         email = request.form['email']
         password = request.form['password']
         user = get_user_by_email(email)
+
+        if not user['is_verified']:
+            flash("Please verify your email before logging in.", "warning")
+            return redirect(url_for('login'))
 
         if user and check_password_hash(user['password'], password):
             session['email'] = email
