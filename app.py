@@ -28,7 +28,76 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route('/')
 def index():
     return redirect(url_for('login'))
+etenv("SUPABASE_URL")
+key = os.getenv("SUPABASE_KEY")
+supabase = create_client(url, key)
 
+@app.route('/confirm_investment', methods=['POST'])
+def confirm_investment():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    email = session['email']
+    user = get_user_by_email(email)
+
+    if not user:
+        flash("User not found", "danger")
+        return redirect(url_for('invest'))
+
+    try:
+        amount = float(request.form['amount'])
+        vip = int(request.form['vip'])
+        percent = float(request.form['percent'])
+    except:
+        flash("Invalid input", "danger")
+        return redirect(url_for('invest'))
+
+    # ✅ Recompute unlocked VIP level
+    deposits = get_all_deposits(email)
+    total_deposit = sum(float(d["amount"]) for d in deposits) if deposits else 0.0
+    unlocked_vip = get_vip_from_deposit(total_deposit)['vip']
+
+    if vip > unlocked_vip:
+        flash(f"VIP {vip} is locked. Your current VIP level is {unlocked_vip}.", "warning")
+        return redirect(url_for('invest'))
+
+    # ✅ Get plan info and check range
+    all_plans = generate_all_plans(unlocked_vip)
+    selected_plan = next((p for p in all_plans if p['vip'] == vip), None)
+
+    if not selected_plan:
+        flash("Invalid plan selected", "danger")
+        return redirect(url_for('invest'))
+
+    if not (selected_plan['min'] <= amount <= selected_plan['max']):
+        flash(f"Amount must be between ${selected_plan['min']} and ${selected_plan['max']} for VIP {vip}", "warning")
+        return redirect(url_for('invest'))
+
+    # ✅ Check wallet balance
+    current_balance = float(user.get("wallet", 0))
+    if amount > current_balance:
+        flash("Insufficient balance", "danger")
+        return redirect(url_for('wallet_page'))
+
+    # ✅ Lock capital and insert investment
+    start_date = datetime.utcnow()
+    unlock_date = start_date + timedelta(days=90)
+
+    update_wallet_balance(email, -amount)
+
+    supabase.table('user_investments').insert({
+        "user_email": email,
+        "amount": amount,
+        "vip_level": vip,
+        "daily_return": percent,
+        "start_date": start_date.isoformat(),
+        "unlock_date": unlock_date.isoformat(),
+        "last_paid": start_date.isoformat(),
+        "status": "active"
+    }).execute()
+
+    flash("Investment confirmed. Capital and earnings locked for 90 days.", "success")
+    return redirect(url_for('dashboard'))
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
