@@ -2,6 +2,35 @@ from supabase import create_client
 import os
 from datetime import datetime, timedelta
 import uuid
+import smtplib
+from email.message import EmailMessage
+from email_utils import send_verification_email
+send_verification_email(user_email, verification_code)
+
+def send_verification_email(to_email, code):
+    msg = EmailMessage()
+    msg['Subject'] = 'Your Verification Code - AI Crypto App'
+    msg['From'] = 'vumiiliakonga2@gmail.com'
+    msg['To'] = to_email
+
+    msg.set_content(f'''
+    Hello,
+
+    Your verification code is: {code}
+
+    Enter this code in the app to verify your email address.
+
+    Regards,
+    AI Crypto App Team
+    ''')
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login('vumiiliakonga2@gmail.com', 'uswi tjdv kzdg gjwz')  # use App Password here
+            server.send_message(msg)
+            print("Verification email sent successfully.")
+    except Exception as e:
+        print(f"Email sending failed: {e}")
 
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
