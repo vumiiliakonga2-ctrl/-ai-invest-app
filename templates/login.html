@@ -2,17 +2,17 @@
 {% block title %}Login - AI Crypto Investment{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-center min-h-screen bg-gray-900 text-green">
-  <div class="bg-gray-800 p-10 rounded-2xl shadow-lg w-full max-w-md">
+<div class="flex items-center justify-center min-h-screen bg-blue-900 text-white">
+  <div class="bg-blue-800 p-10 rounded-2xl shadow-lg w-full max-w-md">
     <h2 class="text-3xl font-bold text-center mb-6 text-yellow-400">Welcome Back</h2>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
           <div class="mb-4 p-3 rounded text-sm font-semibold
-                      {% if category == 'success' %}bg-green-600 text-green
+                      {% if category == 'success' %}bg-green-600 text-white
                       {% elif category == 'warning' %}bg-yellow-500 text-black
-                      {% elif category == 'danger' or category == 'error' %}bg-red-600 text-red
+                      {% elif category == 'danger' or category == 'error' %}bg-red-600 text-white
                       {% else %}bg-gray-700 text-white{% endif %}">
             {{ message }}
           </div>
@@ -22,10 +22,10 @@
 
     <form method="POST" action="/login" class="space-y-5">
       <input type="email" name="email" placeholder="Email" required autofocus
-             class="w-full px-4 py-3 bg-gray-700 rounded-xl text-white placeholder-gray-400" />
+             class="w-full px-4 py-3 bg-blue-700 border border-blue-500 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
       
       <input type="password" name="password" placeholder="Password" required
-             class="w-full px-4 py-3 bg-gray-700 rounded-xl text-white placeholder-gray-400" />
+             class="w-full px-4 py-3 bg-blue-700 border border-blue-500 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
       
       <button type="submit"
               class="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl transition duration-300">
@@ -33,7 +33,7 @@
       </button>
     </form>
 
-    <p class="text-center text-gray-400 mt-6">
+    <p class="text-center text-gray-300 mt-6">
       Don’t have an account?
       <a href="/register" class="text-yellow-400 hover:underline">Register</a>
     </p>
