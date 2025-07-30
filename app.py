@@ -172,8 +172,6 @@ def verify_code_page():
 
     if request.method == 'POST':
         code = request.form['code']
-
-        # ✅ Check code match
         response = supabase.table("email_verifications").select("*").eq("email", email).eq("code", code).execute()
         record = response.data[0] if response.data else None
 
@@ -181,24 +179,46 @@ def verify_code_page():
             flash("Invalid verification code", "danger")
             return redirect(url_for('verify_code_page'))
 
-        # ✅ Convert to timezone-aware datetime
+        from datetime import timezone
         expires_at = datetime.fromisoformat(record['expires_at'].replace('Z', '+00:00'))
-
         if datetime.now(timezone.utc) > expires_at:
-            flash("Code expired", "danger")
+            flash("Code expired. Click below to resend.", "danger")
             return redirect(url_for('verify_code_page'))
 
-        # ✅ Success: mark user as verified
+        # ✅ Mark verified
         supabase.table("users").update({"is_verified": True}).eq("email", email).execute()
         supabase.table("email_verifications").delete().eq("email", email).execute()
         session.pop("pending_email")
+        session['email'] = email  # ⬅️ Auto-login
 
-        flash("Email verified successfully! You can now log in.", "success")
-        return redirect(url_for('login'))
+        # ✅ Admin redirect if email matches
+        if email == 'vumiiliakonga2@gmail.com':
+            return redirect(url_for('admin'))
+
+        flash("Email verified successfully! You're now logged in.", "success")
+        return redirect(url_for('dashboard'))
 
     return render_template("verify_code.html", email=email)
+@app.route('/resend-code', methods=['POST'])
+def resend_code():
+    if 'pending_email' not in session:
+        return redirect(url_for('login'))
 
-        
+    email = session['pending_email']
+    code = f"{random.randint(100000, 999999)}"
+    expires = datetime.utcnow() + timedelta(minutes=10)
+
+    # Update or insert the code
+    supabase.table('email_verifications').upsert({
+        "email": email,
+        "code": code,
+        "expires_at": expires.isoformat()
+    }).execute()
+
+    send_verification_code(email, code)
+
+    flash("A new verification code has been sent to your email.", "info")
+    return redirect(url_for('verify_code_page'))
 
 def send_verification_code(email, code):
     msg = MIMEMultipart("alternative")
@@ -237,15 +257,16 @@ def login():
             return redirect(url_for('login'))
 
         if not user.get('is_verified'):
+            # ⬇️ Store email so we can use it on /verify-code
+            session['pending_email'] = email
             flash("Please verify your email before logging in.", "warning")
-            return redirect(url_for('login'))
+            return redirect(url_for('verify_code_page'))
 
         if check_password_hash(user['password'], password):
             session['email'] = email
             if email == 'vumiiliakonga2@gmail.com':
                 return redirect(url_for('admin'))
-            else:
-                return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard'))
         else:
             flash("Invalid email or password", "danger")
             return redirect(url_for('login'))
