@@ -80,7 +80,7 @@ def confirm_investment():
         return redirect(url_for('invest'))
 
     # ✅ Check wallet balance
-    current_balance = float(user.get("wallet", 0))
+    current_balance = float(user["wallet"].get("available", 0))
     if amount > current_balance:
         flash("Insufficient balance", "danger")
         return redirect(url_for('wallet_page'))
