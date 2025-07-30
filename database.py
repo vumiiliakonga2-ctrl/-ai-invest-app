@@ -10,6 +10,8 @@ supabase = create_client(url, key)
 ### === USER & WALLET ===
 def reject_withdrawal_request(withdraw_id):
     update_withdraw_status(withdraw_id, "rejected")
+def update_wallet(email, new_wallet):
+    supabase.table("users").update({"wallet": new_wallet}).eq("email", email).execute()
 
 def get_all_withdrawals(email):
     result = supabase.table("withdraw_requests").select("*").eq("email", email).eq("status", "approved").execute()
