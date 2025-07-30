@@ -150,47 +150,39 @@ def verify_email(token):
 
     flash("Email verified. You can now log in.", "success")
     return redirect(url_for('login'))
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        try:
-            email = request.form['email'].lower()
-            password = request.form['password']
-            print("Registering email:", email)
+        email = request.form['email'].lower()
+        password = request.form['password']
+        user = get_user_by_email(email)
 
-            user = get_user_by_email(email)
-            if user:
-                flash("Email already registered", "danger")
-                return redirect(url_for('register'))
-
-            add_user(email, password)
-            print("User added")
-
-            # generate token and expiration
-            token = secrets.token_urlsafe(32)
-            expires = datetime.utcnow() + timedelta(minutes=10)
-
-            supabase.table('email_verifications').upsert({
-                "email": email,
-                "token": token,
-                "expires_at": expires.isoformat()
-            }).execute()
-
-            print("Token saved to DB")
-
-            send_verification_email(email, token)
-            print("Email sent")
-
-            flash("Registration successful. Check your email to verify your account.", "info")
-            return redirect(url_for('login'))
-
-        except Exception as e:
-            print("ERROR during registration:", e)
-            flash("An error occurred during registration: " + str(e), "danger")
+        if user:
+            flash("Email already registered", "danger")
             return redirect(url_for('register'))
 
-    return render_template('register.html')
+        add_user(email, password)
 
+        # ✅ Generate 6-digit code instead of token
+        code = f"{random.randint(100000, 999999)}"
+        expires = datetime.utcnow() + timedelta(minutes=10)
+
+        supabase.table('email_verifications').upsert({
+            "email": email,
+            "code": code,
+            "expires_at": expires.isoformat()
+        }).execute()
+
+        # ✅ Send email with just the code
+        send_verification_code(email, code)
+
+        # ✅ Store email in session temporarily
+        session['pending_email'] = email
+
+        return redirect(url_for('verify_code_page'))
+
+    return render_template('register.html')
 
 def send_verification_email(email, token):
     verify_link = f"https://ai-invest-app-ycr6.onrender.com/verify-email/{token}"
