@@ -1,33 +1,36 @@
 {% extends "base.html" %}
 {% block title %}Verify Email{% endblock %}
+{% block body_class %}bg-blue-900 text-white{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-  <div class="bg-gray-800 p-10 rounded-2xl shadow-lg w-full max-w-md">
-    <h2 class="text-3xl font-bold text-center mb-6 text-yellow-400">Verify Your Email</h2>
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+  <div class="bg-blue-800 p-4 rounded-2xl shadow-lg w-100" style="max-width: 420px;">
+    <h2 class="text-2xl font-bold text-center mb-4 text-yellow-400">Enter Verification Code</h2>
 
-    <form method="POST" class="space-y-5">
-      <input
-        type="text"
-        name="code"
-        placeholder="Enter 6-digit code"
-        maxlength="6"
-        pattern="\d{6}"
-        required
-        class="w-full px-4 py-3 bg-gray-700 rounded-xl text-white placeholder-gray-400 text-center text-lg tracking-widest"
-      />
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-3 p-3 rounded text-sm font-semibold
+                      {% if category == 'success' %}bg-success text-white
+                      {% elif category == 'warning' %}bg-warning text-dark
+                      {% elif category == 'danger' or category == 'error' %}bg-danger text-white
+                      {% else %}bg-secondary text-white{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-      <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded-xl transition duration-300">
-        Verify Code
+    <form method="POST" class="space-y-4">
+      <input type="text" name="code" placeholder="6-digit code" required
+             class="form-control bg-blue-700 text-white border border-blue-500 placeholder-gray-300" />
+      <button type="submit" class="btn btn-warning w-100 mt-3 fw-bold">
+        Verify
       </button>
     </form>
 
-    <form method="POST" action="/resend-code" class="mt-4 text-center">
-      <button type="submit" class="text-sm text-yellow-400 hover:underline">Resend Code</button>
-    </form>
-
-    <p class="text-center text-gray-400 mt-6 text-sm">
-      Code sent to: <span class="text-white font-medium">{{ email }}</span>
+    <p class="text-center text-gray-300 mt-3 text-sm">
+      Sent to: <strong>{{ email }}</strong>
     </p>
   </div>
 </div>
