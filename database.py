@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import uuid
 import smtplib
 from email.message import EmailMessage
-from email_utils import send_verification_email
+from email_utils import send_verification_code
 
 
 def send_verification_email(email, code):
