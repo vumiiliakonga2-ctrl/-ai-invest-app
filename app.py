@@ -420,30 +420,6 @@ def invest():
 
     return render_template("investment.html", plans=plans, email=email, wallet=user['wallet'])
 
-@app.route('/confirm_investment', methods=['POST'])
-def confirm_investment():
-    email = session['email']
-    amount = float(request.form['amount'])
-    vip = int(request.form['vip'])
-    percent = float(request.form['percent'])
-
-    start_date = datetime.utcnow()
-    unlock_date = start_date + timedelta(days=90)
-
-    update_wallet_balance(email, -amount)
-    supabase.table('user_investments').insert({
-        "user_email": email,
-        "amount": amount,
-        "vip_level": vip,
-        "daily_return": percent,
-        "start_date": start_date.isoformat(),
-        "unlock_date": unlock_date.isoformat(),
-        "last_paid": start_date.isoformat(),
-        "status": "active"
-    }).execute()
-
-    flash("Investment confirmed. Capital and earnings locked for 90 days.", "success")
-    return redirect(url_for('dashboard'))
 
 @app.route('/logout')
 def logout():
