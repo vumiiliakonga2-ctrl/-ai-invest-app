@@ -195,21 +195,29 @@ def unlock_investments(email):
             add_transaction(email, "unlock", float(inv["amount"]))
 
 ### === VIP LOGIC ===
-
 def get_vip_from_deposit(total_deposit):
     vip = 0
     percent = 0
     max_vip = 7
+
     for level in range(1, max_vip + 1):
         min_amount = 12 + (level - 1) * 77
         max_amount = 88 + (level - 1) * 300
-        if total_deposit >= min_amount:
+
+        if min_amount <= total_deposit <= max_amount:
             vip = level
-            percent = 15 + min(level - 1, 5)
+            percent = 15 + (level - 1)
+            if vip >= 6:
+                percent = 16  # cap at 16% for VIP 6 and 7
+            break
+        elif total_deposit > max_amount:
+            vip = level
+            percent = 15 + (level - 1)
+            if vip >= 6:
+                percent = 16
         else:
             break
-    if total_deposit >= 89:
-        percent = 16
+
     return {"vip": vip, "percent": percent}
 
 def generate_all_plans(unlocked_vip):
