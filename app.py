@@ -299,29 +299,27 @@ def dashboard():
     random.shuffle(fake_withdrawals)
     
     return render_template('dashboard.html', email=email, wallet=wallet, withdrawals=fake_withdrawals)
-
-
-@app.route('/wallet', methods=['GET'])
+@app.route('/wallet')
 def wallet_page():
     if 'email' not in session:
         return redirect(url_for('login'))
 
     email = session['email']
     user = get_user_by_email(email)
-    wallet_balance = user['wallet'] if user and user['wallet'] else "0 USDT"
-    transactions = get_user_transactions(email)
+    wallet = user['wallet']  # contains {'available': ..., 'locked': ...}
+    
+    transactions = get_user_transactions(email)  # must include: timestamp, tx_type, amount, status
 
-    from database import get_locked_assets, get_locked_investments
-    locked_balance = get_locked_assets(email)
-    locked_details = get_locked_investments(email)
+    total_deposit = sum(t['amount'] for t in transactions if t['tx_type'] == 'deposit')
+    total_withdrawn = sum(t['amount'] for t in transactions if t['tx_type'] == 'withdrawal' and t['status'] == 'approved')
+    pending_withdrawals = [t for t in transactions if t['tx_type'] == 'withdrawal' and t['status'] == 'pending']
 
-    return render_template(
-        'wallet.html',
-        email=email,
-        wallet=wallet_balance,
+    return render_template('wallet.html',
+        wallet=wallet,
         transactions=transactions,
-        locked_balance=locked_balance,
-        locked_details=locked_details
+        total_deposit=total_deposit,
+        total_withdrawn=total_withdrawn,
+        pending_withdrawals=pending_withdrawals
     )
 
 @app.route('/deposit', methods=['GET'])
