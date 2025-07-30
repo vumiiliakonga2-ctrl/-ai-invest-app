@@ -131,25 +131,37 @@ def confirm_investment():
 
     flash("Investment confirmed. Capital and earnings locked for 90 days.", "success")
     return redirect(url_for('dashboard'))
-@app.route('/verify-email/<token>')
-def verify_email(token):
-    response = supabase.table("email_verifications").select("*").eq("token", token).execute()
-    record = response.data[0] if response.data else None
-
-    if not record:
-        flash("Invalid or expired token", "danger")
+@app.route('/verify-code', methods=['GET', 'POST'])
+def verify_code_page():
+    if 'pending_email' not in session:
         return redirect(url_for('login'))
 
-    if datetime.utcnow() > datetime.fromisoformat(record['expires_at'].replace('Z', '+00:00')):
-        flash("Token has expired", "danger")
+    email = session['pending_email']
+
+    if request.method == 'POST':
+        code = request.form['code']
+
+        # ✅ Check code match
+        response = supabase.table("email_verifications").select("*").eq("email", email).eq("code", code).execute()
+        record = response.data[0] if response.data else None
+
+        if not record:
+            flash("Invalid verification code", "danger")
+            return redirect(url_for('verify_code_page'))
+
+        if datetime.utcnow() > datetime.fromisoformat(record['expires_at'].replace('Z', '+00:00')):
+            flash("Code expired", "danger")
+            return redirect(url_for('verify_code_page'))
+
+        # ✅ Success: mark verified
+        supabase.table("users").update({"is_verified": True}).eq("email", email).execute()
+        supabase.table("email_verifications").delete().eq("email", email).execute()
+        session.pop("pending_email")
+
+        flash("Email verified successfully! You can now log in.", "success")
         return redirect(url_for('login'))
 
-    # ✅ Mark user as verified
-    supabase.table("users").update({"is_verified": True}).eq("email", record["email"]).execute()
-    supabase.table("email_verifications").delete().eq("email", record["email"]).execute()
-
-    flash("Email verified. You can now log in.", "success")
-    return redirect(url_for('login'))
+    return render_template("verify_code.html", email=email)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
