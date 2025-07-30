@@ -54,8 +54,8 @@ def add_user(email, password_hash):
     }).execute()
 
 def get_user_by_email(email):
-    result = supabase.table('users').select("*").eq("email", email).single().execute()
-    return result.data if result.data else None
+    response = supabase.table('users').select("*").eq("email", email).execute()
+    return response.data[0] if response.data else None
 
 def get_all_users():
     result = supabase.table("users").select("*").execute()
