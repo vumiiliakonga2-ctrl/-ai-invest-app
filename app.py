@@ -19,7 +19,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import secrets
 from datetime import datetime, timedelta
-from utils.email_utils import send_verification_email
+from email_utils import send_verification_email
+
 
 EMAIL_SENDER = "vumiiliakonga2@gmail.com"
 EMAIL_PASSWORD = "uswi tjdv kzdg gjwz"  # Use Gmail App Password, not your real password
