@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Verify Your Email{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h3 class="text-center text-primary mb-4">Verify Your Email</h3>
+  
+  <form method="POST" action="{{ url_for('verify_email') }}" class="mx-auto" style="max-width: 400px;">
+    <div class="mb-3">
+      <label for="code" class="form-label">Enter the 6-digit code sent to your email:</label>
+      <input type="text" name="code" class="form-control" maxlength="6" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Verify</button>
+  </form>
+</div>
+{% endblock %}
