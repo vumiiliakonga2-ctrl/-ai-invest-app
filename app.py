@@ -138,7 +138,30 @@ def register():
     if request.method == 'POST':
         email = request.form['email'].lower()
         password = request.form['password']
+
         user = get_user_by_email(email)
+        if user:
+            flash("Email already registered", "danger")
+            return redirect(url_for('register'))
+
+        add_user(email, password)
+
+        # Generate code and save
+        code = f"{random.randint(100000, 999999)}"
+        expires = datetime.utcnow() + timedelta(minutes=10)
+
+        supabase.table('email_verifications').upsert({
+            "email": email,
+            "code": code,
+            "expires_at": expires.isoformat()
+        }).execute()
+
+        send_verification_code(email, code)
+
+        session['pending_email'] = email
+        return redirect(url_for('verify_code_page'))
+
+    return render_template('register.html')
 
 @app.route('/verify-code', methods=['GET', 'POST'])
 def verify_code_page():
@@ -175,31 +198,7 @@ def verify_code_page():
 
     return render_template("verify_code.html", email=email)
 
-        if user:
-            flash("Email already registered", "danger")
-            return redirect(url_for('register'))
-
-        add_user(email, password)
-
-        # ✅ Generate 6-digit code instead of token
-        code = f"{random.randint(100000, 999999)}"
-        expires = datetime.utcnow() + timedelta(minutes=10)
-
-        supabase.table('email_verifications').upsert({
-            "email": email,
-            "code": code,
-            "expires_at": expires.isoformat()
-        }).execute()
-
-        # ✅ Send email with just the code
-        send_verification_code(email, code)
-
-        # ✅ Store email in session temporarily
-        session['pending_email'] = email
-
-        return redirect(url_for('verify_code_page'))
-
-    return render_template('register.html')
+        
 
 def send_verification_code(email, code):
     msg = MIMEMultipart("alternative")
