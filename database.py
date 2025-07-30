@@ -228,12 +228,28 @@ def save_kyc(email, filepath):
 def update_wallet_balance(email, amount, tx_type):
     user = get_user_by_email(email)
     if not user:
-        return None
+        return
 
-    current_balance = user['wallet'] or 0
-    new_balance = current_balance + amount if tx_type == 'deposit' else current_balance - amount
+    wallet = user['wallet']
+    available = wallet.get('available', 0.0)
 
-    return supabase.table("users").update({"wallet": new_balance}).eq("email", email).execute()
+    # Apply amount change (it will be negative for deduction)
+    new_available = available + amount
+
+    # Prevent negative wallet balance
+    if new_available < 0:
+        raise ValueError("Insufficient wallet balance")
+
+    # Update in Supabase
+    supabase.table("users").update({
+        "wallet": {
+            "available": new_available,
+            "locked": wallet.get('locked', 0.0)
+        }
+    }).eq("email", email).execute()
+
+    # Add transaction
+    add_transaction(email, abs(amount), tx_type)
 
 
 def add_transaction(email, tx_type, amount):
