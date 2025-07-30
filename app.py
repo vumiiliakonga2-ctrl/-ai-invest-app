@@ -28,9 +28,12 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route('/')
 def index():
     return redirect(url_for('login'))
-etenv("SUPABASE_URL")
+from supabase import create_client
+
+url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 supabase = create_client(url, key)
+
 
 @app.route('/confirm_investment', methods=['POST'])
 def confirm_investment():
