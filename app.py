@@ -237,21 +237,24 @@ def dashboard():
     # Get user details
     user = get_user_by_email(session['email'])
 
-    if user:
-        email = user['email']
-        wallet = user['wallet'] if user['wallet'] else "0 USDT"
+    if not user:
+        flash("User not found", "danger")
+        return redirect(url_for('login'))
 
-        # ✅ Process their daily earnings here
-        process_user_earnings(email)
+    # ✅ Require email verification
+    if not user.get("is_verified", False):
+        flash("Please verify your email before accessing your dashboard.", "warning")
+        return redirect(url_for('login'))
 
-    else:
-        email = session['email']
-        wallet = "0 USDT"
+    email = user['email']
+    wallet = user['wallet'] if user['wallet'] else "0 USDT"
+
+    # ✅ Process their daily earnings here
+    process_user_earnings(email)
 
     random.shuffle(fake_withdrawals)
     
     return render_template('dashboard.html', email=email, wallet=wallet, withdrawals=fake_withdrawals)
-
 
 
 @app.route('/wallet', methods=['GET'])
