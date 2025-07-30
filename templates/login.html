@@ -2,7 +2,7 @@
 {% block title %}Login - AI Crypto Investment{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+<div class="flex items-center justify-center min-h-screen bg-gray-900 text-green">
   <div class="bg-gray-800 p-10 rounded-2xl shadow-lg w-full max-w-md">
     <h2 class="text-3xl font-bold text-center mb-6 text-yellow-400">Welcome Back</h2>
 
@@ -10,9 +10,9 @@
       {% if messages %}
         {% for category, message in messages %}
           <div class="mb-4 p-3 rounded text-sm font-semibold
-                      {% if category == 'success' %}bg-green-600 text-white
+                      {% if category == 'success' %}bg-green-600 text-green
                       {% elif category == 'warning' %}bg-yellow-500 text-black
-                      {% elif category == 'danger' or category == 'error' %}bg-red-600 text-white
+                      {% elif category == 'danger' or category == 'error' %}bg-red-600 text-red
                       {% else %}bg-gray-700 text-white{% endif %}">
             {{ message }}
           </div>
