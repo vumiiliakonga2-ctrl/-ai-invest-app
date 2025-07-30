@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Referral{% endblock %}
+
 {% block content %}
 <h3>Referral Program</h3>
 <p>Invite your friends and earn 5% of their first investment!</p>
-<p>Your referral link: <code>https://yourapp.com/register?ref={{ email }}</code></p>
+
+<p>Your referral link:</p>
+<input type="text" class="form-control" readonly value="https://yourapp.com/register?ref={{ user.referral_code }}">
 {% endblock %}
