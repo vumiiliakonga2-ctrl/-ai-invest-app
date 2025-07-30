@@ -150,34 +150,48 @@ def verify_email(token):
 
     flash("Email verified. You can now log in.", "success")
     return redirect(url_for('login'))
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        email = request.form['email'].lower()
-        password = request.form['password']
-        user = get_user_by_email(email)
+        try:
+            email = request.form['email'].lower()
+            password = request.form['password']
+            print("Registering email:", email)
 
-        if user:
-            flash("Email already registered", "danger")
+            user = get_user_by_email(email)
+            if user:
+                flash("Email already registered", "danger")
+                return redirect(url_for('register'))
+
+            add_user(email, password)
+            print("User added")
+
+            # generate token and expiration
+            token = secrets.token_urlsafe(32)
+            expires = datetime.utcnow() + timedelta(minutes=10)
+
+            supabase.table('email_verifications').upsert({
+                "email": email,
+                "token": token,
+                "expires_at": expires.isoformat()
+            }).execute()
+
+            print("Token saved to DB")
+
+            send_verification_email(email, token)
+            print("Email sent")
+
+            flash("Registration successful. Check your email to verify your account.", "info")
+            return redirect(url_for('login'))
+
+        except Exception as e:
+            print("ERROR during registration:", e)
+            flash("An error occurred during registration: " + str(e), "danger")
             return redirect(url_for('register'))
 
-        add_user(email, password)
-
-        # generate token and expiration
-        token = secrets.token_urlsafe(32)
-        expires = datetime.utcnow() + timedelta(minutes=10)
-        supabase.table('email_verifications').upsert({
-            "email": email,
-            "token": token,
-            "expires_at": expires.isoformat()
-        }).execute()
-
-        send_verification_email(email, token)
-        flash("Registration successful. Check your email to verify your account.", "info")
-        return redirect(url_for('login'))
-
     return render_template('register.html')
+
+
 def send_verification_email(email, token):
     verify_link = f"https://ai-invest-app-ycr6.onrender.com/verify-email/{token}"
 
