@@ -19,7 +19,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import secrets
 from datetime import datetime, timedelta
-from email_utils import send_verification_email
+from email_utils import send_verification_code
 
 
 EMAIL_SENDER = "vumiiliakonga2@gmail.com"
