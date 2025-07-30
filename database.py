@@ -5,7 +5,7 @@ import uuid
 import smtplib
 from email.message import EmailMessage
 from email_utils import send_verification_email
-send_verification_email(user_email, verification_code)
+
 
 def send_verification_email(email, code):
     msg = EmailMessage()
