@@ -373,69 +373,24 @@ def invest():
     plans = generate_all_plans(unlocked_vip)
     user = get_user_by_email(email)
 
-    # ✅ Bootstrap-safe inline color styles
     vip_colors = {
-        1: {
-            "bg": "#fff8dc",       # light yellow
-            "border": "#ffd700",   # gold
-            "text": "#b8860b",     # dark goldenrod
-            "button_bg": "#ffcc00",
-            "button_text": "Invest Now"
-        },
-        2: {
-            "bg": "#e6f0ff",       # light blue
-            "border": "#3399ff",
-            "text": "#003366",
-            "button_bg": "#3399ff",
-            "button_text": "Invest Now"
-        },
-        3: {
-            "bg": "#f3e6ff",
-            "border": "#9933ff",
-            "text": "#6600cc",
-            "button_bg": "#9933ff",
-            "button_text": "Invest Now"
-        },
-        4: {
-            "bg": "#ffe6f0",
-            "border": "#ff66b2",
-            "text": "#cc0066",
-            "button_bg": "#ff66b2",
-            "button_text": "Invest Now"
-        },
-        5: {
-            "bg": "#fff0e6",
-            "border": "#ff9933",
-            "text": "#cc6600",
-            "button_bg": "#ff9933",
-            "button_text": "Invest Now"
-        },
-        6: {
-            "bg": "#e6ffe6",
-            "border": "#33cc33",
-            "text": "#006600",
-            "button_bg": "#33cc33",
-            "button_text": "Invest Now"
-        },
-        7: {
-            "bg": "#ffe6e6",
-            "border": "#ff3333",
-            "text": "#990000",
-            "button_bg": "#ff3333",
-            "button_text": "Invest Now"
-        }
+        1: {"bg": "#fff8dc", "border": "#ffd700", "text": "#b8860b", "button_bg": "#ffcc00", "button_text": "Invest Now"},
+        2: {"bg": "#e6f0ff", "border": "#3399ff", "text": "#003366", "button_bg": "#3399ff", "button_text": "Invest Now"},
+        3: {"bg": "#f3e6ff", "border": "#9933ff", "text": "#6600cc", "button_bg": "#9933ff", "button_text": "Invest Now"},
+        4: {"bg": "#ffe6f0", "border": "#ff66b2", "text": "#cc0066", "button_bg": "#ff66b2", "button_text": "Invest Now"},
+        5: {"bg": "#fff0e6", "border": "#ff9933", "text": "#cc6600", "button_bg": "#ff9933", "button_text": "Invest Now"},
+        6: {"bg": "#e6ffe6", "border": "#33cc33", "text": "#006600", "button_bg": "#33cc33", "button_text": "Invest Now"},
+        7: {"bg": "#ffe6e6", "border": "#ff3333", "text": "#990000", "button_bg": "#ff3333", "button_text": "Invest Now"},
     }
 
-    # ✅ Apply the color styles to each plan
+    # ✅ Mark each plan with whether it's currently investable
     for plan in plans:
         colors = vip_colors.get(plan["vip"], {
-            "bg": "#f1f1f1",
-            "border": "#ccc",
-            "text": "#666",
-            "button_bg": "#999",
-            "button_text": "Invest"
+            "bg": "#f1f1f1", "border": "#ccc", "text": "#666", "button_bg": "#999", "button_text": "Invest"
         })
         plan.update(colors)
+
+        plan["is_current_vip"] = (plan["vip"] == unlocked_vip)
 
     return render_template("investment.html", plans=plans, email=email, wallet=user['wallet'])
 
