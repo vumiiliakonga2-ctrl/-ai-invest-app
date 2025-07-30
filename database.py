@@ -6,6 +6,9 @@ import smtplib
 from email.message import EmailMessage
 from email_utils import send_verification_code
 
+def get_referrals_for_user(referral_code):
+    response = supabase.table("users").select("*").eq("referred_by", referral_code).execute()
+    return response.data
 
 def send_verification_email(email, code):
     msg = EmailMessage()
