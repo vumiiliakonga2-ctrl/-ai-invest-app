@@ -6,24 +6,24 @@ from email.mime.text import MIMEText
 EMAIL_SENDER = "vumiiliakonga2@gmail.com"
 EMAIL_PASSWORD = "uswi tjdv kzdg gjwz"
 
-def send_verification_email(email, token):
-    verify_link = f"https://ai-invest-app-ycr6.onrender.com/verify-email/{token}"
 
+def send_verification_code(email, code):
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = "Verify Your Email - AI Invest"
+    msg["Subject"] = "Your AI Invest Verification Code"
     msg["From"] = EMAIL_SENDER
     msg["To"] = email
 
     html = f"""
     <html>
     <body>
-      <h2>Welcome to AI Invest!</h2>
-      <p>Please click below to verify:</p>
-      <a href="{verify_link}">Verify Email</a>
-      <p>This link expires in 10 minutes.</p>
+      <h2>Your Verification Code</h2>
+      <p>Use the code below to verify your email:</p>
+      <div style="font-size: 24px; font-weight: bold;">{code}</div>
+      <p>This code will expire in 10 minutes.</p>
     </body>
     </html>
     """
+
     msg.attach(MIMEText(html, "html"))
 
     try:
