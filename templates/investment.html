@@ -8,7 +8,7 @@
   <div class="d-flex flex-row overflow-auto gap-4 px-2 pb-4">
     {% for plan in plans %}
       <div class="card shadow-lg"
-           style="min-width: 250px; {% if plan.unlocked %}background-color: {{ plan.bg }}; border-left: 5px solid {{ plan.border }};{% else %}background-color: #f1f1f1; opacity: 0.6;{% endif %}">
+           style="min-width: 250px; {% if not plan.locked %}background-color: {{ plan.bg }}; border-left: 5px solid {{ plan.border }};{% else %}background-color: #f1f1f1; opacity: 0.6;{% endif %}">
         <div class="card-body">
           <h5 class="card-title fw-bold">VIP {{ plan.vip }}</h5>
           <p class="card-text">
@@ -16,7 +16,7 @@
           </p>
           <p class="card-text">Range: ${{ plan.min }} - ${{ plan.max }}</p>
 
-          {% if plan.unlocked %}
+          {% if not plan.locked %}
             <p class="fw-semibold" style="color: {{ plan.text }};">Unlocked</p>
 
             <!-- ✅ Form to confirm investment -->
