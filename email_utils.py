@@ -2,7 +2,9 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from config import EMAIL_SENDER, EMAIL_PASSWORD  # Or however you store them
+ 
+EMAIL_SENDER = "vumiiliakonga2@gmail.com"
+EMAIL_PASSWORD = "uswi tjdv kzdg gjwz"
 
 def send_verification_email(email, token):
     verify_link = f"https://ai-invest-app-ycr6.onrender.com/verify-email/{token}"
