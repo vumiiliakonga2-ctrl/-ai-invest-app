@@ -1,53 +1,49 @@
+
 from supabase import create_client
 import os
-from uuid import uuid4
 from datetime import datetime
+import uuid
 
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 supabase = create_client(url, key)
 
-# ---------------- USER AUTH ---------------- #
-def add_user(email, hashed_password):
-    supabase.table("users").insert({
+def add_user(email, password_hash):
+    return supabase.table('users').insert({
         "email": email,
-        "password": hashed_password,
-        "wallet": {"available": 0.0, "locked": 0.0}
+        "password": password_hash,
+        "wallet": {"available": 0, "locked": 0}
     }).execute()
 
 def get_user_by_email(email):
-    result = supabase.table("users").select("*").eq("email", email).single().execute()
+    result = supabase.table('users').select("*").eq("email", email).single().execute()
     return result.data if result.data else None
 
-# ---------------- WALLET ---------------- #
 def get_user_wallet(email):
     user = get_user_by_email(email)
-    return float(user["wallet"]["available"]) if user and user.get("wallet") else 0.0
+    if not user or "wallet" not in user:
+        return 0
+    return float(user["wallet"].get("available", 0))
 
 def update_wallet_balance(email, amount, tx_type):
     user = get_user_by_email(email)
-    if not user: return
-
-    wallet = user.get("wallet", {"available": 0.0, "locked": 0.0})
-
-    if tx_type == "invest":
-        wallet["available"] -= amount
-        wallet["locked"] += amount
-    elif tx_type == "unlock":
-        wallet["locked"] -= amount
+    if not user or "wallet" not in user:
+        return
+    wallet = user["wallet"]
+    if tx_type == "deposit":
         wallet["available"] += amount
     elif tx_type == "withdraw":
         wallet["available"] -= amount
-    elif tx_type == "deposit":
+    elif tx_type == "invest":
+        wallet["available"] -= amount
+        wallet["locked"] += amount
+    elif tx_type == "earn":
         wallet["available"] += amount
-
+    elif tx_type == "unlock":
+        wallet["locked"] -= amount
+        wallet["available"] += amount
     supabase.table("users").update({"wallet": wallet}).eq("email", email).execute()
 
-# ---------------- KYC ---------------- #
-def save_kyc(email, filepath):
-    supabase.table("kyc").insert({"email": email, "filepath": filepath}).execute()
-
-# ---------------- TRANSACTIONS ---------------- #
 def add_transaction(email, tx_type, amount):
     supabase.table("transactions").insert({
         "email": email,
@@ -57,117 +53,124 @@ def add_transaction(email, tx_type, amount):
     }).execute()
 
 def get_user_transactions(email):
-    res = supabase.table("transactions").select("*").eq("email", email).order("timestamp", desc=True).execute()
-    return res.data if res.data else []
+    result = supabase.table("transactions").select("*").eq("email", email).order("timestamp", desc=True).execute()
+    return result.data if result.data else []
 
-# ---------------- DEPOSITS ---------------- #
+def save_kyc(email, file_path):
+    supabase.table("kyc").insert({"email": email, "file_path": file_path}).execute()
+
 def add_deposit_request(email, amount, method):
     supabase.table("deposit_requests").insert({
-        "id": str(uuid4()),
+        "id": str(uuid.uuid4()),
         "email": email,
         "amount": amount,
         "method": method,
-        "status": "pending"
+        "status": "pending",
+        "timestamp": datetime.utcnow().isoformat()
     }).execute()
 
 def get_pending_deposits():
-    return supabase.table("deposit_requests").select("*").eq("status", "pending").execute().data
+    result = supabase.table("deposit_requests").select("*").eq("status", "pending").execute()
+    return result.data if result.data else []
+
+def get_all_deposits(email):
+    result = supabase.table("deposit_requests").select("*").eq("email", email).eq("status", "approved").execute()
+    return result.data if result.data else []
 
 def approve_deposit(deposit_id):
-    req = supabase.table("deposit_requests").select("*").eq("id", deposit_id).single().execute().data
-    if req and req["status"] == "pending":
-        update_wallet_balance(req["email"], float(req["amount"]), "deposit")
-        add_transaction(req["email"], "deposit", float(req["amount"]))
-        supabase.table("deposit_requests").update({"status": "approved"}).eq("id", deposit_id).execute()
+    result = supabase.table("deposit_requests").select("*").eq("id", deposit_id).single().execute()
+    deposit = result.data
+    if not deposit:
+        return
+    update_wallet_balance(deposit["email"], float(deposit["amount"]), "deposit")
+    add_transaction(deposit["email"], "deposit", float(deposit["amount"]))
+    supabase.table("deposit_requests").update({"status": "approved"}).eq("id", deposit_id).execute()
 
 def reject_deposit(deposit_id):
     supabase.table("deposit_requests").update({"status": "rejected"}).eq("id", deposit_id).execute()
 
-def get_all_deposits(email):
-    return supabase.table("deposit_requests").select("*").eq("email", email).eq("status", "approved").execute().data
-
-# ---------------- WITHDRAWALS ---------------- #
 def add_withdraw_request(email, amount, address):
     supabase.table("withdraw_requests").insert({
-        "id": str(uuid4()),
+        "id": str(uuid.uuid4()),
         "email": email,
         "amount": amount,
         "address": address,
-        "status": "pending"
+        "status": "pending",
+        "timestamp": datetime.utcnow().isoformat()
     }).execute()
 
 def get_pending_withdrawals():
-    return supabase.table("withdraw_requests").select("*").eq("status", "pending").execute().data
+    result = supabase.table("withdraw_requests").select("*").eq("status", "pending").execute()
+    return result.data if result.data else []
 
 def get_withdraw_by_id(withdraw_id):
     result = supabase.table("withdraw_requests").select("*").eq("id", withdraw_id).single().execute()
     return result.data if result.data else None
 
-def update_withdraw_status(withdraw_id, new_status):
-    supabase.table("withdraw_requests").update({"status": new_status}).eq("id", withdraw_id).execute()
-
-def approve_withdrawal(withdraw_id):
-    withdraw = get_withdraw_by_id(withdraw_id)
-    if withdraw and withdraw["status"] == "pending":
-        update_withdraw_status(withdraw_id, "approved")
-        update_wallet_balance(withdraw["email"], float(withdraw["amount"]), "withdraw")
-        add_transaction(withdraw["email"], "withdraw", float(withdraw["amount"]))
+def update_withdraw_status(withdraw_id, status):
+    supabase.table("withdraw_requests").update({"status": status}).eq("id", withdraw_id).execute()
 
 def reject_withdrawal(withdraw_id):
-    update_withdraw_status(withdraw_id, "rejected")
+    supabase.table("withdraw_requests").update({"status": "rejected"}).eq("id", withdraw_id).execute()
 
-# ---------------- VIP & PLANS ---------------- #
+def get_locked_assets(email):
+    user = get_user_by_email(email)
+    if not user or "wallet" not in user:
+        return 0.0
+    return float(user["wallet"].get("locked", 0))
+
+def get_locked_investments(email):
+    result = supabase.table("user_investments").select("*").eq("user_email", email).eq("status", "active").execute()
+    return result.data if result.data else []
+
 def get_vip_from_deposit(total_deposit):
     vip = 0
-    if total_deposit >= 12:
-        vip = 1
-        if total_deposit > 89:
-            vip = 2
-        if total_deposit >= 300:
-            vip += int((total_deposit - 300) // 300) + 1
-        vip = min(vip, 7)
-    return {"vip": vip}
+    percent = 0
+    max_vip = 7
+    for level in range(1, max_vip + 1):
+        min_amount = 12 + (level - 1) * 77
+        max_amount = 88 + (level - 1) * 300
+        if total_deposit >= min_amount:
+            vip = level
+            percent = 15 + min(level - 1, 5)  # 15% + 1% per tier up to +5%
+        else:
+            break
+    if total_deposit >= 89:
+        percent = 16
+    return {"vip": vip, "percent": percent}
 
 def generate_all_plans(unlocked_vip):
     plans = []
-    for vip in range(1, unlocked_vip + 1):
-        base = 15.0
-        extra = (vip - 1) if vip <= 5 else 5
-        percent = base + extra
-        plan = {
+    for vip in range(1, 8):
+        min_amount = 12 + (vip - 1) * 77
+        max_amount = 88 + (vip - 1) * 300
+        percent = 15 + (vip - 1)
+        if vip >= 6:
+            percent = 16  # final tiers get capped
+        plans.append({
             "vip": vip,
-            "min": 12 + (vip - 1) * 10,
-            "max": 89 if vip == 1 else 299 + (vip - 2) * 300,
-            "percent": 16.0 if vip >= 2 and plan["max"] > 89 else percent
-        }
-        plans.append(plan)
+            "min": min_amount,
+            "max": max_amount,
+            "percent": percent,
+            "locked": vip > unlocked_vip
+        })
     return plans
 
-# ---------------- LOCKED FUNDS ---------------- #
-def get_locked_assets(email):
-    investments = supabase.table("user_investments").select("*").eq("user_email", email).eq("status", "active").execute().data
-    if not investments:
-        return 0.0
-    return round(sum(float(i["amount"]) for i in investments), 2)
-
-def get_locked_investments(email):
-    return supabase.table("user_investments").select("*").eq("user_email", email).eq("status", "active").execute().data
-
-# ---------------- EARNINGS ---------------- #
 def process_user_earnings(email):
-    now = datetime.utcnow()
-    res = supabase.table("user_investments").select("*").eq("user_email", email).eq("status", "active").execute()
-    if not res.data:
-        return
+    result = supabase.table("user_investments").select("*").eq("user_email", email).eq("status", "active").execute()
+    investments = result.data if result.data else []
 
-    updates = []
-    for inv in res.data:
+    for inv in investments:
         last_paid = datetime.fromisoformat(inv["last_paid"])
-        if (now - last_paid).days >= 1:
-            daily_earning = (float(inv["amount"]) * float(inv["daily_return"])) / 100
-            update_wallet_balance(email, daily_earning, "deposit")
-            add_transaction(email, "earning", daily_earning)
-            updates.append(inv["id"])
+        now = datetime.utcnow()
+        days_passed = (now - last_paid).days
 
-    for inv_id in updates:
-        supabase.table("user_investments").update({"last_paid": now.isoformat()}).eq("id", inv_id).execute()
+        if days_passed > 0:
+            daily_return = float(inv["daily_return"])
+            amount = float(inv["amount"])
+            earnings = amount * (daily_return / 100) * days_passed
+            update_wallet_balance(email, earnings, "earn")
+            add_transaction(email, "earn", earnings)
+            supabase.table("user_investments").update({
+                "last_paid": now.isoformat()
+            }).eq("id", inv["id"]).execute()
