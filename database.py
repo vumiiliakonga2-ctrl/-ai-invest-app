@@ -8,6 +8,9 @@ key = os.getenv("SUPABASE_KEY")
 supabase = create_client(url, key)
 
 ### === USER & WALLET ===
+def get_all_withdrawals(email):
+    result = supabase.table("withdraw_requests").select("*").eq("email", email).eq("status", "approved").execute()
+    return result.data if result.data else []
 
 def add_user(email, password_hash):
     return supabase.table('users').insert({
