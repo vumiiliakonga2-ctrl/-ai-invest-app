@@ -5,6 +5,7 @@ import os
 from database import get_vip_from_deposit, generate_all_plans
 from datetime import datetime, timedelta
 from database import update_wallet
+from datetime import datetime, timezone  # make sure this is at the top of your app.py
 
 import random
 from database import get_user_transactions, add_transaction, update_wallet_balance
@@ -131,6 +132,14 @@ def confirm_investment():
 
     flash("Investment confirmed. Capital and earnings locked for 90 days.", "success")
     return redirect(url_for('dashboard'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form['email'].lower()
+        password = request.form['password']
+        user = get_user_by_email(email)
+
 @app.route('/verify-code', methods=['GET', 'POST'])
 def verify_code_page():
     if 'pending_email' not in session:
@@ -149,11 +158,14 @@ def verify_code_page():
             flash("Invalid verification code", "danger")
             return redirect(url_for('verify_code_page'))
 
-        if datetime.utcnow() > datetime.fromisoformat(record['expires_at'].replace('Z', '+00:00')):
+        # ✅ Convert to timezone-aware datetime
+        expires_at = datetime.fromisoformat(record['expires_at'].replace('Z', '+00:00'))
+
+        if datetime.now(timezone.utc) > expires_at:
             flash("Code expired", "danger")
             return redirect(url_for('verify_code_page'))
 
-        # ✅ Success: mark verified
+        # ✅ Success: mark user as verified
         supabase.table("users").update({"is_verified": True}).eq("email", email).execute()
         supabase.table("email_verifications").delete().eq("email", email).execute()
         session.pop("pending_email")
@@ -162,13 +174,6 @@ def verify_code_page():
         return redirect(url_for('login'))
 
     return render_template("verify_code.html", email=email)
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        email = request.form['email'].lower()
-        password = request.form['password']
-        user = get_user_by_email(email)
 
         if user:
             flash("Email already registered", "danger")
