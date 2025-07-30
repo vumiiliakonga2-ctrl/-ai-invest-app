@@ -79,15 +79,22 @@ def get_pending_deposits():
 def get_all_deposits(email):
     result = supabase.table("deposit_requests").select("*").eq("email", email).eq("status", "approved").execute()
     return result.data if result.data else []
-
 def approve_deposit(deposit_id):
     result = supabase.table("deposit_requests").select("*").eq("id", deposit_id).single().execute()
     deposit = result.data
-    if not deposit:
-        return
+
+    if not deposit or deposit["status"] != "pending":
+        return  # Exit if already approved/rejected or doesn't exist
+
+    # ✅ Credit wallet
     update_wallet_balance(deposit["email"], float(deposit["amount"]), "deposit")
+
+    # ✅ Record transaction
     add_transaction(deposit["email"], "deposit", float(deposit["amount"]))
+
+    # ✅ Update status to approved
     supabase.table("deposit_requests").update({"status": "approved"}).eq("id", deposit_id).execute()
+
 
 def reject_deposit(deposit_id):
     supabase.table("deposit_requests").update({"status": "rejected"}).eq("id", deposit_id).execute()
