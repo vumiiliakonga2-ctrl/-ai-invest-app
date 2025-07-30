@@ -1,53 +1,106 @@
-{% extends "base.html" %}
+{% extends "base.html" %} 
 {% block title %}Dashboard - AI Crypto{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-  <h1 class="mb-4 text-center text-warning fw-bold">Welcome to Your Dashboard</h1>
+  <!-- Welcome Header -->
+  <div class="mb-4 text-center">
+    <h1 class="text-warning fw-bold">Welcome Back</h1>
+    <p class="text-muted">Your investment snapshot and quick controls</p>
+  </div>
 
-  <!-- User Info Cards -->
-  <div class="row g-4">
-    <div class="col-md-6">
-      <div class="card text-white bg-dark shadow-lg">
+  <!-- Summary Cards -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card bg-dark text-white shadow">
         <div class="card-body">
-          <h5 class="card-title text-warning">Your Email</h5>
-          <p class="card-text fs-5">{{ email }}</p>
+          <h6 class="text-warning">Your Email</h6>
+          <p class="fs-6">{{ email }}</p>
         </div>
       </div>
     </div>
-
-    <div class="col-md-6">
-      <div class="card text-white bg-success shadow-lg">
+    <div class="col-md-4">
+      <div class="card bg-success text-white shadow">
         <div class="card-body">
-          <h5 class="card-title text-light">Wallet Balance</h5>
-          <p class="card-text fs-4 fw-bold">{{ wallet }}</p>
+          <h6>Available Balance</h6>
+          <p class="fs-4 fw-bold">${{ wallet.available }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-warning text-dark shadow">
+        <div class="card-body">
+          <h6>Locked for Investments</h6>
+          <p class="fs-4 fw-bold">${{ wallet.locked }}</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Scrollable Fake Withdrawals -->
-<div class="mt-5">
-  <h3 class="text-center text-warning mb-3">💸 Live Withdrawals</h3>
-  <div class="position-relative overflow-hidden rounded bg-light shadow" style="height: 160px;">
-    <div class="position-absolute start-0 top-0 w-100 animate-scroll px-3 py-2">
-      {% for w in withdrawals %}
-      <div class="d-flex justify-content-between border-bottom py-2">
-        <span class="fw-semibold text-dark">{{ w.user }}</span>
-        <span class="text-success fw-bold">{{ w.amount }}</span>
-        <span class="text-muted small">{{ w.time }}</span>
+  <!-- Active Investments -->
+  <div class="mb-5">
+    <h4 class="text-white mb-3">📈 Active Investments</h4>
+    {% if investments %}
+      <div class="row g-3">
+        {% for i in investments %}
+        <div class="col-md-6">
+          <div class="bg-blue-800 text-white p-3 rounded shadow-sm">
+            <div class="d-flex justify-content-between">
+              <strong>{{ i.plan_name }}</strong>
+              <span class="badge bg-info text-dark">{{ i.daily_return_percent }}%/day</span>
+            </div>
+            <p class="mb-1">Amount: ${{ i.amount }}</p>
+            <small class="text-muted">Ends: {{ i.end_date }}</small>
+          </div>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-      {% for w in withdrawals %}
-      <div class="d-flex justify-content-between border-bottom py-2">
-        <span class="fw-semibold text-dark">{{ w.user }}</span>
-        <span class="text-success fw-bold">{{ w.amount }}</span>
-        <span class="text-muted small">{{ w.time }}</span>
+    {% else %}
+      <p class="text-muted">No active investments yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Live Withdrawals Scroll -->
+  <div class="mt-5">
+    <h4 class="text-warning text-center mb-3">💸 Live Withdrawals</h4>
+    <div class="position-relative overflow-hidden rounded bg-light shadow" style="height: 160px;">
+      <div class="position-absolute start-0 top-0 w-100 animate-scroll px-3 py-2">
+        {% for w in withdrawals %}
+        <div class="d-flex justify-content-between border-bottom py-2">
+          <span class="fw-semibold text-dark">{{ w.user }}</span>
+          <span class="text-success fw-bold">{{ w.amount }}</span>
+          <span class="text-muted small">{{ w.time }}</span>
+        </div>
+        {% endfor %}
+        {% for w in withdrawals %}
+        <div class="d-flex justify-content-between border-bottom py-2">
+          <span class="fw-semibold text-dark">{{ w.user }}</span>
+          <span class="text-success fw-bold">{{ w.amount }}</span>
+          <span class="text-muted small">{{ w.time }}</span>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
   </div>
-</div>
+
+  <!-- Recent Transactions -->
+  <div class="mt-5">
+    <h4 class="text-white mb-3">🔄 Recent Activity</h4>
+    <ul class="list-group">
+      {% for tx in transactions %}
+        <li class="list-group-item d-flex justify-content-between">
+          <div>
+            <strong>{{ tx.tx_type|capitalize }}</strong> - ${{ tx.amount }}
+            <br><small class="text-muted">{{ tx.timestamp }}</small>
+          </div>
+          <span class="badge {% if tx.tx_type == 'deposit' %}bg-success{% elif tx.tx_type == 'withdraw' %}bg-danger{% else %}bg-secondary{% endif %} text-white">{{ tx.status }}</span>
+        </li>
+      {% else %}
+        <li class="list-group-item">No recent activity.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
   <!-- Quick Links -->
   <div class="row mt-5 g-4">
     <div class="col-md-3 col-6">
