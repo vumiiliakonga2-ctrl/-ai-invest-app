@@ -89,7 +89,7 @@ def confirm_investment():
     start_date = datetime.utcnow()
     unlock_date = start_date + timedelta(days=90)
 
-    update_wallet_balance(email, -amount)
+    update_wallet_balance(email, "invest")
 
     supabase.table('user_investments').insert({
         "user_email": email,
