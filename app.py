@@ -58,7 +58,7 @@ def confirm_investment():
         flash("Invalid input", "danger")
         return redirect(url_for('invest'))
 
-    # ✅ Recompute unlocked VIP level
+    # ✅ Recalculate total deposit and unlocked VIP
     deposits = get_all_deposits(email)
     total_deposit = sum(float(d["amount"]) for d in deposits) if deposits else 0.0
     unlocked_vip = get_vip_from_deposit(total_deposit)['vip']
@@ -67,7 +67,7 @@ def confirm_investment():
         flash(f"VIP {vip} is locked. Your current VIP level is {unlocked_vip}.", "warning")
         return redirect(url_for('invest'))
 
-    # ✅ Get plan info and check range
+    # ✅ Validate plan and range
     all_plans = generate_all_plans(unlocked_vip)
     selected_plan = next((p for p in all_plans if p['vip'] == vip), None)
 
@@ -79,17 +79,32 @@ def confirm_investment():
         flash(f"Amount must be between ${selected_plan['min']} and ${selected_plan['max']} for VIP {vip}", "warning")
         return redirect(url_for('invest'))
 
-    # ✅ Check wallet balance
-    current_balance = float(user["wallet"].get("available", 0))
-    if amount > current_balance:
-        flash("Insufficient balance", "danger")
+    # ✅ Always use FRESH wallet
+    user = get_user_by_email(email)  # Refetch fresh data
+    wallet = user.get("wallet", {"available": 0, "locked": 0})
+    available = float(wallet.get("available", 0))
+    locked = float(wallet.get("locked", 0))
+
+    if amount > available:
+        flash("Insufficient available balance", "danger")
         return redirect(url_for('wallet_page'))
 
-    # ✅ Lock capital and insert investment
+    # ✅ Move amount from available to locked
+    new_wallet = {
+        "available": round(available - amount, 2),
+        "locked": round(locked + amount, 2)
+    }
+
+    # Optional: safety check (can be removed in prod)
+    if round(available + locked, 2) != round(new_wallet["available"] + new_wallet["locked"], 2):
+        flash("Wallet error. Please try again.", "danger")
+        return redirect(url_for('wallet_page'))
+
+    update_wallet(email, new_wallet)
+
+    # ✅ Insert investment record
     start_date = datetime.utcnow()
     unlock_date = start_date + timedelta(days=90)
-
-    update_wallet_balance(email,-amount, "invest")
 
     supabase.table('user_investments').insert({
         "user_email": email,
