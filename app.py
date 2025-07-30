@@ -196,11 +196,9 @@ def register():
 
     return render_template('register.html')
 
-def send_verification_email(email, token):
-    verify_link = f"https://ai-invest-app-ycr6.onrender.com/verify-email/{token}"
-
+def send_verification_code(email, code):
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = "Verify Your Email - AI Invest"
+    msg["Subject"] = "Your AI Invest Verification Code"
     msg["From"] = EMAIL_SENDER
     msg["To"] = email
 
@@ -208,11 +206,9 @@ def send_verification_email(email, token):
     <html>
     <body style="font-family: Arial, sans-serif;">
       <h2>Welcome to AI Invest!</h2>
-      <p>Thank you for registering. Please click the button below to verify your email address:</p>
-      <a href="{verify_link}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a>
-      <p style="margin-top: 20px;">Or open this link in your browser:</p>
-      <p><a href="{verify_link}">{verify_link}</a></p>
-      <p>This link will expire in 10 minutes.</p>
+      <p>Use the following code to verify your email address:</p>
+      <h1 style="color: #007bff;">{code}</h1>
+      <p>This code will expire in 10 minutes.</p>
     </body>
     </html>
     """
