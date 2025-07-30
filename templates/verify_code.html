@@ -33,12 +33,12 @@
 
     <form method="POST" action="{{ url_for('resend_code') }}" class="mt-4">
       <button type="submit"
-              class="w-full bg-transparent border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-semibold py-2 rounded-xl transition duration-300">
+              class="w-full border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black font-semibold py-2 rounded-xl transition duration-300">
         Resend Code
       </button>
     </form>
 
-    <p class="text-gray-300 mt-4 text-sm text-center">
+    <p class="text-center text-gray-300 mt-4 text-sm">
       Sent to: <strong>{{ email }}</strong>
     </p>
   </div>
