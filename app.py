@@ -225,26 +225,29 @@ def send_verification_code(email, code):
             server.sendmail(EMAIL_SENDER, email, msg.as_string())
     except Exception as e:
         print("Error sending email:", e)
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['email'].lower()
         password = request.form['password']
         user = get_user_by_email(email)
 
-        if not user['is_verified']:
+        if not user:
+            flash("User not found", "danger")
+            return redirect(url_for('login'))
+
+        if not user.get('is_verified', False):
             flash("Please verify your email before logging in.", "warning")
             return redirect(url_for('login'))
 
-        if user and check_password_hash(user['password'], password):
+        if check_password_hash(user['password'], password):
             session['email'] = email
             if email == 'vumiiliakonga2@gmail.com':
                 return redirect(url_for('admin'))
             else:
                 return redirect(url_for('dashboard'))
         else:
-            flash("Invalid email or password", "error")
+            flash("Incorrect password", "danger")
             return redirect(url_for('login'))
 
     return render_template('login.html')
