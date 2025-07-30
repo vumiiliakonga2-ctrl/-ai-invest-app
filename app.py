@@ -405,7 +405,12 @@ def referrals():
         return redirect(url_for('login'))
 
     user = get_user_by_email(session['email'])
-    referrals = get_referrals_for_user(user['referral_code'])
+    ref_code = user.get('referral_code')
+    if not ref_code:
+        flash("Referral code not found for your account.", "warning")
+        return redirect(url_for('dashboard'))
+
+    referrals = get_referrals_for_user(ref_code)
 
     return render_template('referrals.html', referrals=referrals)
 
