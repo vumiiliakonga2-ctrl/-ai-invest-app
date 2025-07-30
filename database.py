@@ -228,7 +228,7 @@ def add_withdraw_request(email, amount, address):
         "date": now
     }).execute()
 
-def approve_withdrawal(withdraw_id):
+def approve_withdrawal_request(withdraw_id):
     withdraw = supabase.table("withdraw_requests").select("*").eq("id", withdraw_id).execute().data[0]
     supabase.table("withdraw_requests").update({"status": "approved"}).eq("id", withdraw_id).execute()
     update_wallet_balance(withdraw["email"], -withdraw["amount"], "withdraw")
