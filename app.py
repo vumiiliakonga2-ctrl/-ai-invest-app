@@ -398,9 +398,15 @@ def kyc():
             return redirect(url_for('dashboard'))
     return render_template('kyc.html')
 
-@app.route('/referral')
-def referral():
-    return render_template('referral.html')
+@app.route('/referrals')
+def referrals():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    user = get_user_by_email(session['email'])
+    referrals = get_referrals_for_user(user['referral_code'])
+
+    return render_template('referrals.html', referrals=referrals)
 
 @app.route('/markets')
 def markets():
