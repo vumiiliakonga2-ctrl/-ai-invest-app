@@ -441,21 +441,20 @@ def referrals():
         referral_badge=badge
     )
 
-@app.route("/markets")
+
+@app.route('/markets')
 def markets():
     try:
-        url = "https://api.coincap.io"
-        response = requests.get(url, timeout=10)
-
-        if response.status_code == 200:
-            data = response.json().get("data", [])[:20]  # limit to top 20 coins
-            return render_template("markets.html", coins=data)
-        else:
-            print(f"❌ CoinCap responded with status {response.status_code}")
-            return render_template("markets.html", coins=[], error="Failed to fetch data")
+        response = requests.get("https://api.coinpaprika.com/v1/tickers")
+        if response.status_code != 200:
+            print(f"❌ CoinPaprika error: {response.status_code}")
+            return render_template("markets.html", coins=[])
+        coins = response.json()
+        top_coins = coins[:10]  # Show top 10 coins
+        return render_template("markets.html", coins=top_coins)
     except Exception as e:
-        print(f"❌ Exception: {e}")
-        return render_template("markets.html", coins=[], error=str(e))
+        print(f"❌ Error fetching market data: {e}")
+        return render_template("markets.html", coins=[])
 
 @app.route('/quantify')
 def quantify():
