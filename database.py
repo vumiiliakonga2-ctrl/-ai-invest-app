@@ -12,6 +12,10 @@ def get_nowpayments_logs(email):
     res = supabase.table("nowpayments_logs").select("*").eq("email", email).order("created_at", desc=True).execute()
     return res.data if res.data else []
 
+def get_user_nowpayment_logs(email):
+    result = supabase.table("nowpayments_logs").select("*").eq("user_email", email).order("created_at", desc=True).execute()
+    return result.data if result.data else []
+
 def get_nowpayments_logs():
     res = supabase.table("nowpayments_logs").select("*").order("created_at", desc=True).execute()
     return res.data if res.data else []
