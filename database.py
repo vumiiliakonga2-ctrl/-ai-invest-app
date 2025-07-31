@@ -8,6 +8,10 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+def get_user_nowpayments_logs(email):
+    response = supabase.table('nowpayments_logs').select('*').eq('user_email', email).order('created_at', desc=True).execute()
+    return response.data
+
 def log_nowpayments_transaction(user_email, order_id, amount, currency, status, raw_data):
     supabase.table('nowpayments_logs').insert({
         "id": str(uuid.uuid4()),
