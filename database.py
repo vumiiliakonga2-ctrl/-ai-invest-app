@@ -8,9 +8,13 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
-def get_user_nowpayments_logs(email):
-    response = supabase.table('nowpayments_logs').select('*').eq('user_email', email).order('created_at', desc=True).execute()
-    return response.data
+def get_user_nowpayment_logs(email):
+    res = supabase.table("nowpayments_logs").select("*").eq("email", email).order("created_at", desc=True).execute()
+    return res.data if res.data else []
+
+def get_all_nowpayment_logs():
+    res = supabase.table("nowpayments_logs").select("*").order("created_at", desc=True).execute()
+    return res.data if res.data else []
 
 def log_nowpayments_transaction(user_email, order_id, amount, currency, status, raw_data):
     supabase.table('nowpayments_logs').insert({
@@ -22,9 +26,6 @@ def log_nowpayments_transaction(user_email, order_id, amount, currency, status, 
         "status": status,
         "raw_data": raw_data
     }).execute()
-def get_all_nowpayments_logs():
-    response = supabase.table('nowpayments_logs').select('*').order('created_at', desc=True).execute()
-    return response.data
 
 
 def create_nowpayments_invoice(amount, currency, order_id):
