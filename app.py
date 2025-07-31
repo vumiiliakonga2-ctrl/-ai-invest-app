@@ -63,6 +63,65 @@ def ipn_handler():
         # Your logic here
     return '', 200
 
+import requests
+import os
+
+NOWPAYMENTS_API_KEY = ("ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN")  # Store securely in environment
+
+@app.route('/create_invoice', methods=['POST'])
+def create_invoice():
+    amount = request.form.get('amount')  # USD amount user wants to deposit
+    user_email = session.get('user_email')
+
+    if not amount or not user_email:
+        return "Invalid request", 400
+
+    headers = {
+        'x-api-key': NOWPAYMENTS_API_KEY,
+        'Content-Type': 'application/json'
+    }
+
+    payload = {
+        "price_amount": float(amount),
+        "price_currency": "usdt",            # You can change to your preferred fiat
+        "pay_currency": "usdtbep20",        # USDT (TRC20) — change to btc, eth, etc.
+        "ipn_callback_url": "https://ai-invest-app1.onrender.com/nowpayments_callback",
+        "order_id": f"{user_email}-{uuid.uuid4()}",
+        "order_description": "Deposit to Investment App",
+        "success_url": "https://ai-invest-app1.onrender.com/deposit_success",
+        "cancel_url": "https://ai-invest-app1.onrender.com/deposit_cancel"
+    }
+
+    response = requests.post(
+        "https://api.nowpayments.io/v1/invoice",
+        headers=headers,
+        json=payload
+    )
+
+    data = response.json()
+
+    if "invoice_url" in data:
+        return redirect(data["invoice_url"])  # Send user to payment page
+    else:
+        return f"Error creating invoice: {data}", 500
+
+@app.route('/nowpayments_callback', methods=['POST'])
+def nowpayments_callback():
+    data = request.json
+    print("Callback received:", data)
+
+    if data.get('payment_status') == 'finished':
+        order_id = data.get('order_id')  # It contains email-uuid
+        amount_received = data.get('pay_amount')
+        pay_currency = data.get('pay_currency')
+
+        # Extract email from order_id
+        user_email = order_id.split("-")[0]
+
+        # Add to wallet & log transaction
+        update_wallet_balance(user_email, float(amount_received), tx_type="deposit", method="NowPayments")
+
+    return '', 200
 
 @app.route('/confirm_investment', methods=['POST'])
 def confirm_investment():
