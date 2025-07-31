@@ -437,17 +437,32 @@ def referrals():
         referral_badge=badge
     )
 
-from binance.client import Client
-
-# You don't need API keys for public market data
-binance_client = Client()
-
 @app.route('/markets')
 def markets():
-    tickers = binance_client.get_ticker_24hr()
-    top_100 = sorted(tickers, key=lambda x: float(x['quoteVolume']), reverse=True)[:100]  # Top 100 by volume
+    url = "https://api.coingecko.com/api/v3/coins/markets"
+    all_coins = []
+    page = 1
 
-    return render_template('markets.html', markets=top_100)
+    while True:
+        params = {
+            "vs_currency": "usd",
+            "order": "market_cap_desc",
+            "per_page": 250,
+            "page": page,
+            "sparkline": False
+        }
+
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        if not data:
+            break
+
+        all_coins.extend(data)
+        page += 1
+
+    return render_template("markets.html", coins=all_coins)
+
 
 @app.route('/quantify')
 def quantify():
