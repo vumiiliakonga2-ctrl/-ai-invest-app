@@ -444,7 +444,7 @@ def referrals():
 @app.route("/markets")
 def markets():
     try:
-        url = "https://api.coincap.io/v2/assets"
+        url = "https://api.coincap.io"
         response = requests.get(url, timeout=10)
 
         if response.status_code == 200:
