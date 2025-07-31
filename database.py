@@ -5,6 +5,25 @@ import uuid
 import smtplib
 from email.message import EmailMessage
 from email_utils import send_verification_code
+import requests
+
+API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+
+def create_nowpayments_invoice(amount, currency, order_id):
+    url = "https://api.nowpayments.io/v1/invoice"
+    headers = {
+        "x-api-key": API_KEY,
+        "Content-Type": "application/json"
+    }
+    data = {
+        "price_amount": amount,
+        "price_currency": "usd",
+        "pay_currency": currency.lower(),
+        "order_id": order_id,
+        "ipn_callback_url": "https://your-domain.com/ipn-handler"
+    }
+    response = requests.post(url, json=data, headers=headers)
+    return response.json()
 
 def get_referral_badge(ref_count):
     if ref_count >= 50:
