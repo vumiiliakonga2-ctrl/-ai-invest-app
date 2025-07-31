@@ -440,7 +440,7 @@ def referrals():
         referral_earnings=round(referral_earnings, 2),
         referral_badge=badge
     )
-   response = requests.get(url, headers=headers, params=params)
+ 
 @app.route('/markets')
 def markets():
     url = "https://api.coingecko.com/api/v3/coins/markets"
