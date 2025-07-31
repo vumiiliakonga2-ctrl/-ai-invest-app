@@ -4,5 +4,6 @@ gunicorn==23.0.0
 Flask-SQLAlchemy
 psycopg2-binary
 supabase
+python-binance
 
 email-validator
