@@ -27,6 +27,13 @@ from email.mime.multipart import MIMEMultipart
 import secrets
 from datetime import datetime, timedelta
 from email_utils import send_verification_code
+from binance.client import Client
+import os
+
+BINANCE_API_KEY = os.getenv("BINANCE_API_KEY")
+BINANCE_API_SECRET = os.getenv("BINANCE_API_SECRET")
+
+binance_client = Client(BINANCE_API_KEY, BINANCE_API_SECRET)
 
 
 EMAIL_SENDER = "vumiiliakonga2@gmail.com"
@@ -595,34 +602,34 @@ def reject_deposit_route(deposit_id):
     reject_deposit(deposit_id)
     flash("Deposit rejected", "warning")
     return redirect(url_for('admin'))
-
 @app.route('/admin/approve-withdraw/<withdraw_id>')
 def approve_withdrawal_route(withdraw_id):
-    withdraw = get_withdraw_by_id(withdraw_id)
+    from database import approve_withdrawal, get_withdrawal_by_id
+    withdraw = get_withdrawal_by_id(withdraw_id)
+    
     if not withdraw:
         flash("Withdrawal not found", "danger")
         return redirect(url_for('admin'))
 
-    if withdraw["status"] != "pending":
-        flash("Already processed", "info")
-        return redirect(url_for('admin'))
+    # Approve in DB
+    approve_withdrawal(withdraw_id)
+    
+    # Auto-withdraw via Binance
+    try:
+        result = binance_client.withdraw(
+            coin="USDT",
+            address=withdraw['wallet_address'],
+            amount=withdraw['amount'],
+            network="BEP20"  # BEP20 = BSC, TRC20 = TRX
+        )
+        print("Auto-withdraw result:", result)
+        flash("Withdrawal approved and sent via Binance", "success")
+    except Exception as e:
+        print("Auto-withdraw failed:", e)
+        flash("Approval done, but auto-withdraw failed.", "warning")
+    
+    return redirect(url_for('admin'))
 
-    amount = withdraw["amount"]
-    if amount <= 0:
-        flash("Invalid amount", "danger")
-        return redirect(url_for('admin'))
-
-    user = get_user_by_email(withdraw["email"])
-    if user["wallet"] < amount:
-        flash("Insufficient user balance", "danger")
-        return redirect(url_for('admin'))
-
-    update_withdraw_status(withdraw_id, "approved")
-    update_wallet_balance(user["email"], amount, "withdraw")
-    add_transaction(user["email"], "withdraw", amount)
-
-    flash("Withdrawal approved", "success")
-    return redirect(url_for('admin'))  # ✅ THIS LINE IS MANDATORY
 
 @app.route('/admin/reject-withdraw/<withdraw_id>')
 def reject_withdrawal_route(withdraw_id):
