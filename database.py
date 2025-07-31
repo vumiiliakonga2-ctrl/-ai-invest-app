@@ -6,6 +6,14 @@ import smtplib
 from email.message import EmailMessage
 from email_utils import send_verification_code
 
+def get_total_invested_by_user(email):
+    response = supabase.table("investments").select("amount").eq("email", email).execute()
+    amounts = [row['amount'] for row in response.data]
+    return sum(amounts)
+def get_user_by_referral_code(code):
+    response = supabase.table("users").select("*").eq("referral_code", code).single().execute()
+    return response.data
+
 def get_referrals_for_user(referral_code):
     response = supabase.table("users").select("*").eq("referred_by", referral_code).execute()
     return response.data
