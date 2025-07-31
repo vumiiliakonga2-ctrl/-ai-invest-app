@@ -86,7 +86,7 @@ def create_invoice():
 
     if not amount or not user_email:
         flash("Invalid request. Please log in and enter an amount.", "danger")
-        return redirect(url_for('deposit'))
+        return redirect(url_for('deposit_page'))
 
     headers = {
         'x-api-key': NOWPAYMENTS_API_KEY,
@@ -96,7 +96,7 @@ def create_invoice():
     payload = {
         "price_amount": float(amount),
         "price_currency": "usd",
-        "pay_currency": "usdtbep20",  # ✅ TRC20 USDT
+        "pay_currency": "usdttrc20",  # ✅ TRC20 USDT
         "ipn_callback_url": "https://ai-invest-app-l8ug.onrender.com/nowpayments_callback",
         "order_id": f"{user_email}-{uuid.uuid4()}",
         "order_description": "Deposit to Investment App",
