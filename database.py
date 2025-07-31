@@ -268,7 +268,7 @@ def unlock_investments(email):
 def get_vip_from_deposit(total_deposit):
     vip = 0
     percent = 0
-    max_vip = 7
+    max_vip = 15
 
     for level in range(1, max_vip + 1):
         min_amount = 12 + (level - 1) * 77
