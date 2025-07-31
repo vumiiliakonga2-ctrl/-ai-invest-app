@@ -55,6 +55,16 @@ url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 supabase = create_client(url, key)
 
+@app.route("/deposit_success")
+def deposit_success():
+    flash("Deposit completed successfully!", "success")
+    return redirect(url_for("wallet"))
+
+@app.route("/deposit_cancel")
+def deposit_cancel():
+    flash("Deposit was cancelled.", "warning")
+    return redirect(url_for("deposit"))
+
 @app.route('/ipn-handler', methods=['POST'])
 def ipn_handler():
     data = request.get_json()
