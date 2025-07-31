@@ -444,6 +444,9 @@ def referrals():
 @app.route('/markets')
 def markets():
     url = "https://api.coingecko.com/api/v3/coins/markets"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
     params = {
         "vs_currency": "usd",
         "order": "market_cap_desc",
@@ -453,14 +456,13 @@ def markets():
     }
 
     try:
-        response = requests.get(url, params=params, timeout=10)
+        response = requests.get(url, headers=headers, params=params, timeout=10)
 
         if response.status_code != 200:
             print(f"❌ CoinGecko responded with status {response.status_code}")
             print("🔴 Raw response:", response.text[:300])
             return render_template("markets.html", coins=[], error="Failed to fetch market data.")
 
-        # Debug: Print first 300 chars of response
         print("✅ CoinGecko raw data snippet:", response.text[:300])
 
         try:
