@@ -450,11 +450,11 @@ def markets():
             print(f"❌ CoinPaprika error: {response.status_code}")
             return render_template("markets.html", coins=[])
         coins = response.json()
-        top_coins = coins[:10]  # Show top 10 coins
+        top_coins = coins[:coins]  # Show top 10 coins
         return render_template("markets.html", coins=top_coins)
     except Exception as e:
         print(f"❌ Error fetching market data: {e}")
-        return render_template("markets.html", coins=[])
+        return render_template("markets.html", coins=coins)
 
 @app.route('/quantify')
 def quantify():
