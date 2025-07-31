@@ -125,21 +125,27 @@ def nowpayments_callback():
     data = request.json
     print("Callback received:", data)
 
-    if data.get('payment_status') == 'finished':
-        order_id = data.get('order_id')
-        amount_received = float(data.get('pay_amount', 0))
-        user_email = order_id.rsplit("-", 1)[0]  # extract email safely
+    order_id = data.get('order_id')
+    user_email = order_id.rsplit("-", 1)[0] if order_id else "unknown"
+    amount_received = float(data.get('pay_amount', 0))
+    pay_currency = data.get('pay_currency', 'unknown')
+    status = data.get('payment_status', 'unknown')
 
-        # ✅ Update wallet balance
+    # ✅ Store log regardless of status
+    from database import log_nowpayments_transaction
+    log_nowpayments_transaction(
+        user_email=user_email,
+        order_id=order_id,
+        amount=amount_received,
+        currency=pay_currency,
+        status=status,
+        raw_data=data
+    )
+
+    # ✅ Only credit wallet if status is finished
+    if status == 'finished':
+        from database import update_wallet_balance
         update_wallet_balance(
-            user_email,
-            amount_received,
-            tx_type="deposit",
-            method="NowPayments"
-        )
-
-        # ✅ Bonus: Add transaction log
-        add_transaction(
             user_email,
             amount_received,
             tx_type="deposit",
