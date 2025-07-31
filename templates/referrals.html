@@ -5,23 +5,21 @@
 <div class="container mt-4">
   <h3>Referral Program</h3>
   <p>Invite friends and earn <strong>10%</strong> of their first investment!</p>
-  <p>Your Referral Badge: <strong>{{ referral_badge }}</strong></p>
 
-  <label>Your referral link:</label>
-  <div class="input-group mb-3">
-    <input id="refLink" type="text" class="form-control" readonly value="https://ai-invest-app-ycr6.onrender.com/register?ref={{ user.referral_code }}">
-    <button class="btn btn-primary" onclick="copyRefLink()">Copy</button>
+  <p>Your Referral Badge:
+    <span class="badge {{ referral_badge.class }}" style="font-size: 1rem;">
+      {{ referral_badge.label }}
+    </span>
+  </p>
+
+  <div class="p-3 mb-4" style="background-color: #f8f9fa; border-radius: 8px;">
+    <label class="form-label fw-bold">Your Referral Link:</label>
+    <div class="input-group">
+      <input id="refLink" type="text" class="form-control" readonly value="https://ai-invest-app-ycr6.onrender.com/register?ref={{ user.referral_code }}">
+      <button class="btn btn-outline-primary" onclick="copyRefLink()">Copy</button>
+    </div>
+    <small class="text-muted">Earn <strong>10%</strong> of their first investment.</small>
   </div>
-
-  <script>
-    function copyRefLink() {
-      const refInput = document.getElementById("refLink");
-      refInput.select();
-      refInput.setSelectionRange(0, 99999);
-      document.execCommand("copy");
-      alert("Referral link copied!");
-    }
-  </script>
 
   <h4>Your Stats</h4>
   <ul class="list-group mb-4">
@@ -45,4 +43,15 @@
     {% endfor %}
   </ul>
 </div>
+
+<script>
+  function copyRefLink() {
+    const refInput = document.getElementById("refLink");
+    navigator.clipboard.writeText(refInput.value).then(function() {
+      alert("Referral link copied!");
+    }, function(err) {
+      alert("Failed to copy: " + err);
+    });
+  }
+</script>
 {% endblock %}
