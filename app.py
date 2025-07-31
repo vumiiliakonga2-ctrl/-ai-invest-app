@@ -439,11 +439,10 @@ def referrals():
         referral_earnings=round(referral_earnings, 2),
         referral_badge=badge
     )
-
 @app.route('/markets')
 def markets():
     import time
-    url = "https://api.coingecko.com/api/v3/coins/markets"
+    url = "https://api.coingecko.xyz/api/v3/coins/markets"  # ✅ Proxy endpoint
     all_coins = []
     page = 1
 
@@ -465,8 +464,8 @@ def markets():
 
         try:
             data = response.json()
-        except Exception:
-            print("❌ Error decoding JSON from CoinGecko!")
+        except Exception as e:
+            print(f"❌ JSON Decode Error: {e}")
             break
 
         if not data:
@@ -474,7 +473,7 @@ def markets():
 
         all_coins.extend(data)
         page += 1
-        time.sleep(1)  # optional: avoid rate-limiting
+        time.sleep(1)
 
     return render_template("markets.html", coins=all_coins)
 
