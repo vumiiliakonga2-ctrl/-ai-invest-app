@@ -1,10 +1,21 @@
 {% extends 'base.html' %}
-{% block title %}Referral{% endblock %}
+{% block title %}Referrals{% endblock %}
 
 {% block content %}
-<h3>Referral Program</h3>
-<p>Invite your friends and earn 5% of their first investment!</p>
+<div class="container mt-4">
+  <h3>Referral Program</h3>
+  <p>Invite friends and earn 5% of their first investment.</p>
 
-<p>Your referral link:</p>
-<input type="text" class="form-control" readonly value="https://yourapp.com/register?ref={{ user.referral_code }}">
+  <label>Your referral link:</label>
+  <input type="text" class="form-control mb-3" readonly value="https://ai-invest-app-ycr6.onrender.com/register?ref={{ user.referral_code }}">
+
+  <h4>Your Referrals</h4>
+  <ul class="list-group">
+    {% for r in referrals %}
+      <li class="list-group-item">{{ r.email }}</li>
+    {% else %}
+      <li class="list-group-item text-muted">No referrals yet.</li>
+    {% endfor %}
+  </ul>
+</div>
 {% endblock %}
