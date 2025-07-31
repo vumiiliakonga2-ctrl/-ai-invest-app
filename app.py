@@ -54,6 +54,16 @@ from supabase import create_client
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 supabase = create_client(url, key)
+@app.route('/nowpayments_callback', methods=['POST'])
+def nowpayments_callback():
+    data = request.json
+    received_sig = request.headers.get("x-nowpayments-sig")
+    expected_sig = hmac.new(NOWPAYMENTS_API_KEY.encode(), msg=json.dumps(data).encode(), digestmod=hashlib.sha512).hexdigest()
+
+    if received_sig != expected_sig:
+        return 'Unauthorized', 403
+    # proceed if matched
+
 @app.route('/ipn-handler', methods=['POST'])
 def ipn_handler():
     data = request.get_json()
