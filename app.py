@@ -118,6 +118,8 @@ def create_invoice():
         print("NOWPayments error:", data)
         return redirect(url_for("deposit"))
 
+from database import update_wallet_balance, add_transaction  # Ensure this is imported
+
 @app.route('/nowpayments_callback', methods=['POST'])
 def nowpayments_callback():
     data = request.json
@@ -126,9 +128,9 @@ def nowpayments_callback():
     if data.get('payment_status') == 'finished':
         order_id = data.get('order_id')
         amount_received = float(data.get('pay_amount', 0))
-        user_email = order_id.rsplit("-", 1)[0]  # ✅ safer split
+        user_email = order_id.rsplit("-", 1)[0]  # extract email safely
 
-        # Add to wallet & log transaction
+        # ✅ Update wallet balance
         update_wallet_balance(
             user_email,
             amount_received,
@@ -136,7 +138,16 @@ def nowpayments_callback():
             method="NowPayments"
         )
 
+        # ✅ Bonus: Add transaction log
+        add_transaction(
+            user_email,
+            amount_received,
+            tx_type="deposit",
+            method="NowPayments"
+        )
+
     return '', 200
+
 
 @app.route('/confirm_investment', methods=['POST'])
 def confirm_investment():
