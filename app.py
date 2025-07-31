@@ -54,6 +54,14 @@ from supabase import create_client
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 supabase = create_client(url, key)
+@app.route('/ipn-handler', methods=['POST'])
+def ipn_handler():
+    data = request.get_json()
+    if data.get('payment_status') == 'finished':
+        # Confirm payment and update user balance
+        order_id = data['order_id']
+        # Your logic here
+    return '', 200
 
 
 @app.route('/confirm_investment', methods=['POST'])
