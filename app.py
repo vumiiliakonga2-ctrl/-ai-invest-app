@@ -140,6 +140,14 @@ def register():
         email = request.form['email'].lower()
         password = request.form['password']
 
+          # Prevent self-referral
+        if referred_by:
+            referrer = get_user_by_referral_code(referred_by)
+            if referrer and referrer['email'] == email:
+                flash("You cannot refer yourself.", "danger")
+                return redirect(url_for('register'))
+
+
         user = get_user_by_email(email)
         if user:
             flash("Email already registered", "danger")
