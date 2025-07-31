@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}NowPayments Logs{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h3 class="mb-4">NowPayments Transaction Logs</h3>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Order ID</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Currency</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td>{{ log.user_email }}</td>
+        <td>{{ log.order_id }}</td>
+        <td>{{ log.amount }}</td>
+        <td>{{ log.status }}</td>
+        <td>{{ log.currency }}</td>
+        <td>{{ log.created_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
