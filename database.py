@@ -8,11 +8,11 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
-def get_user_nowpayment_logs(email):
+def get_user_nowpayments_logs(email):
     res = supabase.table("nowpayments_logs").select("*").eq("email", email).order("created_at", desc=True).execute()
     return res.data if res.data else []
 
-def get_nowpayment_logs():
+def get_nowpayments_logs():
     res = supabase.table("nowpayments_logs").select("*").order("created_at", desc=True).execute()
     return res.data if res.data else []
 
