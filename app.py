@@ -440,44 +440,22 @@ def referrals():
         referral_earnings=round(referral_earnings, 2),
         referral_badge=badge
     )
- 
-@app.route('/markets')
+
+@app.route("/markets")
 def markets():
-    url = "https://api.coingecko.com/api/v3/coins/markets"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
-    params = {
-        "vs_currency": "usd",
-        "order": "market_cap_desc",
-        "per_page": 50,
-        "page": 1,
-        "sparkline": False
-    }
-
     try:
-        response = requests.get(url, headers=headers, params=params, timeout=10)
+        url = "https://api.coincap.io/v2/assets"
+        response = requests.get(url, timeout=10)
 
-        if response.status_code != 200:
-            print(f"❌ CoinGecko responded with status {response.status_code}")
-            print("🔴 Raw response:", response.text[:300])
-            return render_template("markets.html", coins=[], error="Failed to fetch market data.")
-
-        print("✅ CoinGecko raw data snippet:", response.text[:300])
-
-        try:
-            coins = response.json()
-        except Exception as decode_err:
-            print("❌ JSON Decode Failed:", decode_err)
-            print("🔴 Full Response Text:", response.text[:300])
-            return render_template("markets.html", coins=[], error="Coin data corrupted or invalid.")
-
-        return render_template("markets.html", coins=coins)
-
+        if response.status_code == 200:
+            data = response.json().get("data", [])[:20]  # limit to top 20 coins
+            return render_template("markets.html", coins=data)
+        else:
+            print(f"❌ CoinCap responded with status {response.status_code}")
+            return render_template("markets.html", coins=[], error="Failed to fetch data")
     except Exception as e:
-        print("❌ Market request exception:", e)
-        return render_template("markets.html", coins=[], error="Error fetching market data.")
-
+        print(f"❌ Exception: {e}")
+        return render_template("markets.html", coins=[], error=str(e))
 
 @app.route('/quantify')
 def quantify():
