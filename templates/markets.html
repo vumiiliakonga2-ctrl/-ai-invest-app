@@ -3,16 +3,14 @@
 
 {% block content %}
 <div class="container py-4">
-  <h2 class="text-center text-primary mb-4">Live Binance Markets</h2>
+  <h2 class="text-center text-primary mb-4">Live Crypto Markets</h2>
 
   <!-- Symbol selection -->
   <div class="mb-3">
     <label for="symbolSelect" class="form-label">Choose Coin:</label>
     <select id="symbolSelect" class="form-select" onchange="loadChart()">
-      {% for coin in markets %}
-        {% if coin.symbol.endswith('USDT') %}
-          <option value="{{ coin.symbol }}">{{ coin.symbol }}</option>
-        {% endif %}
+      {% for coin in coins %}
+        <option value="{{ coin.symbol.upper() }}USDT">{{ coin.name }} ({{ coin.symbol.upper() }})</option>
       {% endfor %}
     </select>
   </div>
@@ -21,34 +19,39 @@
   <div id="tradingview_chart" class="mb-5" style="height: 500px;"></div>
 
   <!-- Table -->
-  <table class="table table-striped table-hover">
+  <table class="table table-dark table-striped table-hover">
     <thead>
       <tr>
+        <th>Logo</th>
+        <th>Name</th>
         <th>Symbol</th>
         <th>Price</th>
         <th>Change 24h</th>
-        <th>High</th>
-        <th>Low</th>
+        <th>High 24h</th>
+        <th>Low 24h</th>
         <th>Volume</th>
       </tr>
     </thead>
     <tbody>
-      {% for coin in markets %}
+      {% for coin in coins %}
       <tr>
-        <td><strong>{{ coin.symbol }}</strong></td>
-        <td>${{ coin.lastPrice }}</td>
-        <td class="{{ 'text-success' if coin.priceChangePercent|float >= 0 else 'text-danger' }}">
-          {{ coin.priceChangePercent }}%
+        <td><img src="{{ coin.image }}" width="24"></td>
+        <td>{{ coin.name }}</td>
+        <td>{{ coin.symbol.upper() }}</td>
+        <td>${{ '%.2f'|format(coin.current_price) }}</td>
+        <td class="{{ 'text-success' if coin.price_change_percentage_24h >= 0 else 'text-danger' }}">
+          {{ '%.2f'|format(coin.price_change_percentage_24h) }}%
         </td>
-        <td>${{ coin.highPrice }}</td>
-        <td>${{ coin.lowPrice }}</td>
-        <td>{{ coin.quoteVolume|round(2) }}</td>
+        <td>${{ '%.2f'|format(coin.high_24h) }}</td>
+        <td>${{ '%.2f'|format(coin.low_24h) }}</td>
+        <td>${{ "{:,.0f}".format(coin.total_volume) }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
 
+<!-- TradingView Widget -->
 <script>
 function loadChart() {
   let symbol = document.getElementById("symbolSelect").value;
