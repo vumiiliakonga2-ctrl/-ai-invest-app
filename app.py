@@ -437,9 +437,17 @@ def referrals():
         referral_badge=badge
     )
 
+from binance.client import Client
+
+# You don't need API keys for public market data
+binance_client = Client()
+
 @app.route('/markets')
 def markets():
-    return render_template('markets.html')
+    tickers = binance_client.get_ticker_24hr()
+    top_100 = sorted(tickers, key=lambda x: float(x['quoteVolume']), reverse=True)[:100]  # Top 100 by volume
+
+    return render_template('markets.html', markets=top_100)
 
 @app.route('/quantify')
 def quantify():
