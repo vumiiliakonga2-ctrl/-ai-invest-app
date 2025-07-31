@@ -46,6 +46,12 @@ UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+@app.route('/admin/nowpayments_logs')
+def nowpayments_logs():
+    from database import get_all_nowpayments_logs
+    logs = get_all_nowpayments_logs()
+    return render_template('admin_nowpayments_logs.html', logs=logs)
+
 @app.route('/')
 def index():
     return redirect(url_for('login'))
