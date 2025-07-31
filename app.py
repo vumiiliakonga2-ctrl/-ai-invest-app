@@ -544,6 +544,9 @@ def invest():
         5: {"bg": "#fff0e6", "border": "#ff9933", "text": "#cc6600", "button_bg": "#ff9933", "button_text": "Invest Now"},
         6: {"bg": "#e6ffe6", "border": "#33cc33", "text": "#006600", "button_bg": "#33cc33", "button_text": "Invest Now"},
         7: {"bg": "#ffe6e6", "border": "#ff3333", "text": "#990000", "button_bg": "#ff3333", "button_text": "Invest Now"},
+        8: {"bg": "#e6ffff", "border": "#00cccc", "text": "#006666", "button_bg": "#00cccc", "button_text": "Invest Now"},
+        9: {"bg": "#f9e6ff", "border": "#cc33ff", "text": "#800080", "button_bg": "#cc33ff", "button_text": "Invest Now"},
+        10: {"bg": "#e6e6ff", "border": "#6666ff", "text": "#0000cc", "button_bg": "#6666ff", "button_text": "Invest Now"},
     }
 
     # ✅ Mark each plan with whether it's currently investable
