@@ -4,15 +4,41 @@
 {% block content %}
 <div class="container mt-4">
   <h3>Referral Program</h3>
-  <p>Invite friends and earn 5% of their first investment.</p>
+  <p>Invite friends and earn <strong>5%</strong> of their first investment!</p>
 
   <label>Your referral link:</label>
-  <input type="text" class="form-control mb-3" readonly value="https://ai-invest-app-ycr6.onrender.com/register?ref={{ user.referral_code }}">
+  <div class="input-group mb-3">
+    <input id="refLink" type="text" class="form-control" readonly value="https://ai-invest-app-ycr6.onrender.com/register?ref={{ user.referral_code }}">
+    <button class="btn btn-primary" onclick="copyRefLink()">Copy</button>
+  </div>
 
-  <h4>Your Referrals</h4>
+  <script>
+    function copyRefLink() {
+      const refInput = document.getElementById("refLink");
+      refInput.select();
+      refInput.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      alert("Referral link copied!");
+    }
+  </script>
+
+  <h4>Your Stats</h4>
+  <ul class="list-group mb-4">
+    <li class="list-group-item">Total referrals: <strong>{{ referrals|length }}</strong></li>
+    <li class="list-group-item">Referral earnings: <strong>${{ referral_earnings|default(0.00) }}</strong></li>
+  </ul>
+
+  <h4>Referred Users</h4>
   <ul class="list-group">
     {% for r in referrals %}
-      <li class="list-group-item">{{ r.email }}</li>
+      <li class="list-group-item">
+        {{ r.email }}
+        {% if r.total_invested %}
+          - Invested: ${{ r.total_invested }}
+        {% else %}
+          - <em>No investment yet</em>
+        {% endif %}
+      </li>
     {% else %}
       <li class="list-group-item text-muted">No referrals yet.</li>
     {% endfor %}
