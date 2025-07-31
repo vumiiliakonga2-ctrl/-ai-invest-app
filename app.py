@@ -418,11 +418,14 @@ def referrals():
         ref['total_invested'] = total
         referral_earnings += total * 0.05 if total else 0
 
+    badge = get_referral_badge(len(referrals))
+
     return render_template(
         'referrals.html',
         user=user,
         referrals=referrals,
-        referral_earnings=round(referral_earnings, 2)
+        referral_earnings=round(referral_earnings, 2),
+        referral_badge=badge
     )
 
 @app.route('/markets')
