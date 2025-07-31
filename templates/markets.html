@@ -4,6 +4,23 @@
 {% block content %}
 <div class="container py-4">
   <h2 class="text-center text-primary mb-4">Live Binance Markets</h2>
+
+  <!-- Symbol selection -->
+  <div class="mb-3">
+    <label for="symbolSelect" class="form-label">Choose Coin:</label>
+    <select id="symbolSelect" class="form-select" onchange="loadChart()">
+      {% for coin in markets %}
+        {% if coin.symbol.endswith('USDT') %}
+          <option value="{{ coin.symbol }}">{{ coin.symbol }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Chart container -->
+  <div id="tradingview_chart" class="mb-5" style="height: 500px;"></div>
+
+  <!-- Table -->
   <table class="table table-striped table-hover">
     <thead>
       <tr>
@@ -31,4 +48,31 @@
     </tbody>
   </table>
 </div>
+
+<script>
+function loadChart() {
+  let symbol = document.getElementById("symbolSelect").value;
+  document.getElementById("tradingview_chart").innerHTML = "";
+
+  new TradingView.widget({
+    "container_id": "tradingview_chart",
+    "width": "100%",
+    "height": 500,
+    "symbol": "BINANCE:" + symbol,
+    "interval": "60",
+    "timezone": "Etc/UTC",
+    "theme": "dark",
+    "style": "1",
+    "locale": "en",
+    "toolbar_bg": "#f1f3f6",
+    "enable_publishing": false,
+    "allow_symbol_change": false,
+    "hide_top_toolbar": false,
+    "save_image": false,
+    "studies": ["MACD@tv-basicstudies"],
+  });
+}
+
+window.onload = loadChart;
+</script>
 {% endblock %}
