@@ -451,9 +451,10 @@ from database import get_nowpayments_logs
 def deposit_page():
     if 'email' not in session:
         return redirect(url_for('login'))
-    
-    logs = get_nowpayments_logs(session['email'])
-    return render_template('deposit.html', email=session['email'], logs=logs)
+
+    email = session['email']
+    logs = get_user_nowpayment_logs(email)  # 🧠 must be implemented in database.py
+    return render_template('deposit.html', email=email, logs=logs)
 
 @app.route('/submit-deposit', methods=['POST'])
 def submit_deposit():
