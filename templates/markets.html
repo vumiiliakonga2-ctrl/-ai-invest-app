@@ -11,12 +11,12 @@
       <div class="col-md-4 mb-4">
         <div class="card shadow-sm border border-light" style="border-radius: 1rem;">
           <div class="card-body">
-            <h5 class="card-title">{{ coin['name'] }} ({{ coin['symbol']|upper }})</h5>
-            <p class="card-text">💰 Price: <strong>${{ coin['priceUsd']|float|round(2) }}</strong></p>
-            <p class="card-text {% if coin['changePercent24Hr']|float >= 0 %}text-success{% else %}text-danger{% endif %}">
-              📈 24h Change: {{ coin['changePercent24Hr']|float|round(2) }}%
+            <h5 class="card-title">{{ coin.name }} ({{ coin.symbol|upper }})</h5>
+            <p class="card-text">💰 Price: <strong>${{ coin.quotes.USD.price|float|round(2) }}</strong></p>
+            <p class="card-text {% if coin.quotes.USD.percent_change_24h >= 0 %}text-success{% else %}text-danger{% endif %}">
+              📈 24h Change: {{ coin.quotes.USD.percent_change_24h|float|round(2) }}%
             </p>
-            <p class="card-text">🏦 Market Cap: ${{ coin['marketCapUsd']|float|round(0) }}</p>
+            <p class="card-text">🏦 Market Cap: ${{ coin.quotes.USD.market_cap|float|round(0) }}</p>
           </div>
         </div>
       </div>
