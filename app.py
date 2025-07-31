@@ -442,9 +442,15 @@ def referrals():
 
 @app.route('/markets')
 def markets():
+    import time
     url = "https://api.coingecko.com/api/v3/coins/markets"
     all_coins = []
     page = 1
+
+    headers = {
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0"
+    }
 
     while True:
         params = {
@@ -455,14 +461,20 @@ def markets():
             "sparkline": False
         }
 
-        response = requests.get(url, params=params)
-        data = response.json()
+        response = requests.get(url, headers=headers, params=params)
+
+        try:
+            data = response.json()
+        except Exception:
+            print("❌ Error decoding JSON from CoinGecko!")
+            break
 
         if not data:
             break
 
         all_coins.extend(data)
         page += 1
+        time.sleep(1)  # optional: avoid rate-limiting
 
     return render_template("markets.html", coins=all_coins)
 
