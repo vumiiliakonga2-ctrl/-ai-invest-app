@@ -406,13 +406,24 @@ def referrals():
     user = get_user_by_email(session['email'])
     ref_code = user.get('referral_code')
     if not ref_code:
-        flash("Referral code not found for your account.", "warning")
+        flash("Referral code not found.", "warning")
         return redirect(url_for('dashboard'))
 
     referrals = get_referrals_for_user(ref_code)
 
-    return render_template('referrals.html', user=user, referrals=referrals)
+    # Calculate earnings (5% of each referral's total investment)
+    referral_earnings = 0
+    for ref in referrals:
+        total = get_total_invested_by_user(ref['email'])
+        ref['total_invested'] = total
+        referral_earnings += total * 0.05 if total else 0
 
+    return render_template(
+        'referrals.html',
+        user=user,
+        referrals=referrals,
+        referral_earnings=round(referral_earnings, 2)
+    )
 
 @app.route('/markets')
 def markets():
