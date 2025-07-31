@@ -144,26 +144,26 @@ def register():
         email = request.form['email'].lower()
         password = request.form['password']
 
-          # Prevent self-referral
+        # ✅ Get referral code early
+        referred_by = request.args.get('ref', '').strip()
+
+        # ✅ Prevent self-referral
         if referred_by:
             referrer = get_user_by_referral_code(referred_by)
             if referrer and referrer['email'] == email:
                 flash("You cannot refer yourself.", "danger")
                 return redirect(url_for('register'))
 
-
+        # ✅ Check if user already exists
         user = get_user_by_email(email)
         if user:
             flash("Email already registered", "danger")
             return redirect(url_for('register'))
 
-        # Get referral code from URL query parameter
-        referred_by = request.args.get('ref')  # <-- ✅ referral code
-
-        # Pass referral code to add_user
+        # ✅ Add user with referral info
         add_user(email, password, referred_by=referred_by)
 
-        # Generate code and save
+        # ✅ Send verification
         code = f"{random.randint(100000, 999999)}"
         expires = datetime.utcnow() + timedelta(minutes=10)
 
@@ -174,11 +174,12 @@ def register():
         }).execute()
 
         send_verification_code(email, code)
-
         session['pending_email'] = email
+
         return redirect(url_for('verify_code_page'))
 
     return render_template('register.html')
+
 
 @app.route('/verify-code', methods=['GET', 'POST'])
 def verify_code_page():
