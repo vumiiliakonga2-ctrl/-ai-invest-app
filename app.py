@@ -11,6 +11,7 @@ from database import get_referral_badge
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
 import requests  # ✅ ADD THIS LINE
+from database import get_user_nowpayment_logs
 
 import random
 from database import get_user_transactions, add_transaction, update_wallet_balance
