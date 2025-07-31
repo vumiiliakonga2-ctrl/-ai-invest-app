@@ -445,11 +445,15 @@ def wallet_page():
         pending_withdrawals=pending_withdrawals
     )
 
+from database import get_nowpayments_logs
+
 @app.route('/deposit', methods=['GET'])
 def deposit_page():
     if 'email' not in session:
         return redirect(url_for('login'))
-    return render_template('deposit.html', email=session['email'])
+    
+    logs = get_nowpayments_logs(session['email'])
+    return render_template('deposit.html', email=session['email'], logs=logs)
 
 @app.route('/submit-deposit', methods=['POST'])
 def submit_deposit():
