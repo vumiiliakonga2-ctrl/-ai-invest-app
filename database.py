@@ -8,6 +8,20 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+def log_nowpayments_transaction(user_email, order_id, amount, currency, status, raw_data):
+    supabase.table('nowpayments_logs').insert({
+        "id": str(uuid.uuid4()),
+        "user_email": user_email,
+        "order_id": order_id,
+        "amount": amount,
+        "currency": currency,
+        "status": status,
+        "raw_data": raw_data
+    }).execute()
+def get_all_nowpayments_logs():
+    response = supabase.table('nowpayments_logs').select('*').order('created_at', desc=True).execute()
+    return response.data
+
 
 def create_nowpayments_invoice(amount, currency, order_id):
     url = "https://api.nowpayments.io/v1/invoice"
