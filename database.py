@@ -6,17 +6,20 @@ import smtplib
 from email.message import EmailMessage
 from email_utils import send_verification_code
 
-def get_referral_badge(count):
-    if count >= 20:
-        return "Platinum Referrer 🟠"
-    elif count >= 10:
-        return "Gold Referrer 🟣"
-    elif count >= 5:
-        return "Silver Referrer 🔵"
-    elif count >= 1:
-        return "Bronze Referrer 🟢"
+def get_referral_badge(ref_count):
+    if ref_count >= 50:
+        return {"label": "🏆 Legend", "class": "bg-warning text-dark"}
+    elif ref_count >= 20:
+        return {"label": "🔥 Pro", "class": "bg-danger"}
+    elif ref_count >= 10:
+        return {"label": "💼 Ambassador", "class": "bg-info"}
+    elif ref_count >= 5:
+        return {"label": "🌟 Influencer", "class": "bg-primary"}
+    elif ref_count >= 1:
+        return {"label": "🎉 Starter", "class": "bg-success"}
     else:
-        return "No Badge"
+        return {"label": "🔒 No Badge Yet", "class": "bg-secondary"}
+
 
 def get_total_invested_by_user(email):
     response = supabase.table("investments").select("amount").eq("email", email).execute()
