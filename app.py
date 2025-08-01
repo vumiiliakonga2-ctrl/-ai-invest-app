@@ -502,14 +502,19 @@ def submit_withdraw_request():
         flash("Invalid password", "danger")
         return redirect(url_for('withdraw_request'))
 
-    # ✅ Block negative or zero amounts
     if amount <= 0:
         flash("Amount must be greater than zero", "danger")
         return redirect(url_for('withdraw_request'))
 
-    current_balance = float(get_user_wallet(email))
-    if amount > current_balance:
-        flash("Insufficient balance", "danger")
+    if amount < 1:
+        flash("Minimum withdrawal is 1 USDT", "danger")
+        return redirect(url_for('withdraw_request'))
+
+    wallet = get_user_wallet(email)
+    available_balance = float(wallet.get("available", 0))
+
+    if amount > available_balance:
+        flash("Insufficient available balance", "danger")
         return redirect(url_for('withdraw_request'))
 
     add_withdraw_request(email, amount, address)
