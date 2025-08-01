@@ -49,13 +49,13 @@ UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/adm    in/nowpayments_logs')
+@app.route('/admin/nowpayments_logs')
 def nowpayments_logs    ():
     from database import     get_all_nowpayments_logs
     logs = get_all_nowpaymen    ts_logs()
     return render_template('admi    n_nowpayments_logs.html', logs=logs)
     
-@app        .route('/')
+@app.route('/index')
 def index():    
     return redirect(url_for('login'))
 from supabase import create_client
@@ -65,17 +65,17 @@ key = os.getenv("SUPABASE_KEY")
 supabase = create_client(url, key)
 
 @app.route("/deposit_success")
-def deposit_succ    ess():
-    flash("Deposit c    ompleted successfully!", "success")
-    return redirect(url_    for("wallet"))
+def deposit_success():
+    flash("Deposit completed successfully!", "success")
+    return redirect(url_for("wallet"))
     
-@app    .route("/deposit_cancel")
-def depo    sit_cancel():
-    flash("D        eposit was cancelled.", "warning")
-    return redirect(    url_for("deposit"))
+@app.route("/deposit_cancel")
+def deposit_cancel():
+    flash("Deposit was cancelled.", "warning")
+    return redirect(url_for("deposit"))
     
-@app    .route('/ipn-handler', methods=['POST'])
-def ipn_    handler():
+@app.route('/ipn-handler', methods=['POST'])
+def ipn_handler():
     data = request.get_json()
     if data.get('payment_status') == 'finished':
         # Confirm payment and update user balance
@@ -144,16 +144,16 @@ def nowpayments_callback():
     from database import log_nowpayments_transaction
     log_nowpayments_transaction(
         user_email=user_email,
-        orde    r_id=order_id,
+        order_id=order_id,
         amount=amount_received,
         currency=pay_currency,
-        status=s    tatus,
+        status=status,
         raw_data=dat    a
     )
 
-    # ✅ Only credit wa    llet if status is finished
-    if status == 'finished'    :
-        from database import up    date_wallet_balance
+    # ✅ Only credit wallet if status is finished
+    if status == 'finished':
+        from database import update_wallet_balance
         update_wallet_balance(
             user_email,
             amount_received,
@@ -173,19 +173,19 @@ def confirm_investment():
     user = get_user_by_email(email)
 
     if not user:
-        flash("User not found", "da    nger")
-        return redirect(url_for('invest    '))
+        flash("User not found", "danger")
+        return redirect(url_for('invest'))
     
         try:
             amount = float(request.form['amount'])
-        vip     = int(request.form['vip'])
-        percent     = float(request.form['percent'])
+        vip= int(request.form['vip'])
+        percent= float(request.form['percent'])
     except:
-        flash("Inval    id input", "danger")
+        flash("Invalid input", "danger")
         return redirect(url_for('invest'))
 
-    # ✅ Recalculate to    tal deposit and unlocked VIP
-    deposits = get_all_depo    sits(email)
+    # ✅ Recalculate total deposit and unlocked VIP
+    deposits = get_all_deposits(email)
     total_deposit = sum(float(d["amount"]) for d in deposits) if deposits else 0.0
     unlocked_vip = get_vip_from_deposit(total_deposit)['vip']
 
