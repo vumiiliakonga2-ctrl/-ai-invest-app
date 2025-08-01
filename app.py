@@ -22,8 +22,8 @@ from database import (
     approve_withdrawal_request, reject_withdrawal_request
 )
 from database import get_withdrawal_by_id, get_user_by_email, update_withdrawal_status, update_wallet_balance, add_transaction
-    from database import get_user_by_email, process_user_earnings
-impo        rt smtplib
+from database import get_user_by_email, process_user_earnings
+import smtplib
 from email.m    ime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import secrets
