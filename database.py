@@ -36,6 +36,7 @@ def migrate_wallet_to_json():
         else:
             print(f"User {user_id} already migrated.")
 
+migrate_wallet_to_json()
 def get_nowpayments_logs(email):
     res = supabase.table("nowpayments_logs").select("*").eq("email", email).order("created_at", desc=True).execute()
     return res.data if res.data else []
