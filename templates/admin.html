@@ -24,7 +24,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for deposit in pending_deposits %}
+            {% for deposit in deposits %}
             <tr>
                 <td>{{ deposit.email }}</td>
                 <td>{{ deposit.amount }}</td>
@@ -53,7 +53,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for withdraw in pending_withdrawals %}
+            {% for withdraw in withdrawals %}
             <tr>
                 <td>{{ withdraw.email }}</td>
                 <td>{{ withdraw.amount }}</td>
