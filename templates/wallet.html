@@ -1,110 +1,72 @@
 {% extends "base.html" %}
-{% block title %}Wallet - AI Crypto{% endblock %}
-{% block body_class %}bg-dark text-white{% endblock %}
+{% block title %}Wallet - AI Investment{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <h1 class="mb-4 text-center text-warning fw-bold">💼 Your Wallet</h1>
+<div class="container mt-5">
+  <h3 class="text-center mb-4">Your Wallet</h3>
 
-  <!-- Wallet Balances -->
-  <div class="row g-4 mb-4">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, msg in messages %}
+      <div class="alert alert-{{ category }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="row mb-4">
     <div class="col-md-6">
-      <div class="card bg-success text-white shadow-lg">
-        <div class="card-body">
-          <h5 class="card-title">Available Balance</h5>
-          <p class="fs-4 fw-bold">${{ wallet.available }}</p>
-        </div>
+      <div class="card p-3 border-success">
+        <h5 class="text-success">Available Balance</h5>
+        <p class="fs-4 fw-bold text-success">${{ wallet.available }}</p>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="card bg-secondary text-white shadow-lg">
-        <div class="card-body">
-          <h5 class="card-title">Locked Balance</h5>
-          <p class="fs-4 fw-bold">${{ wallet.locked }}</p>
-        </div>
+      <div class="card p-3 border-warning">
+        <h5 class="text-warning">Locked Balance</h5>
+        <p class="fs-4 fw-bold text-warning">${{ wallet.locked }}</p>
       </div>
     </div>
   </div>
 
-  <!-- Actions -->
-  <div class="d-flex justify-content-center gap-4 mb-5">
-    <a href="{{ url_for('deposit_page') }}" class="btn btn-outline-success fw-bold px-4 py-2">
-      <i class="fa fa-download"></i> Deposit
-    </a>
-    <a href="{{ url_for('withdraw_request') }}" class="btn btn-outline-danger fw-bold px-4 py-2">
-      <i class="fa fa-upload"></i> Withdraw
-    </a>
+  <div class="d-flex justify-content-center gap-4 mb-4">
+    <a href="{{ url_for('deposit') }}" class="btn btn-outline-success px-4 py-2">Deposit</a>
+    <a href="{{ url_for('withdraw') }}" class="btn btn-outline-danger px-4 py-2">Withdraw</a>
   </div>
 
-  <!-- Summary Cards -->
-  <div class="row g-4 mb-5">
-    <div class="col-md-4">
-      <div class="card bg-dark text-light shadow">
-        <div class="card-body">
-          <h6 class="card-title">Total Deposited</h6>
-          <p class="fw-bold fs-5 text-success">${{ total_deposit }}</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card bg-dark text-light shadow">
-        <div class="card-body">
-          <h6 class="card-title">Total Withdrawn</h6>
-          <p class="fw-bold fs-5 text-danger">${{ total_withdrawn }}</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card bg-dark text-light shadow">
-        <div class="card-body">
-          <h6 class="card-title">Pending Withdrawals</h6>
-          <p class="fw-bold fs-5 text-warning">{{ pending_withdrawals|length }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
+  <hr class="my-4">
 
-  <!-- Transaction History -->
-  <h3 class="text-warning text-center mb-3">📜 Transaction History</h3>
-  <div class="table-responsive shadow-sm">
-    <table class="table table-dark table-striped table-hover rounded overflow-hidden">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Type</th>
-          <th>Amount</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for tx in transactions %}
-        <tr>
-          <td>{{ tx.timestamp }}</td>
-          <td class="fw-bold text-capitalize">{{ tx.tx_type }}</td>
-          <td class="{% if tx.tx_type == 'deposit' %}text-success{% else %}text-danger{% endif %}">
-            ${{ tx.amount }}
-          </td>
-          <td>
-            {% if tx.status == 'pending' %}
-              <span class="badge bg-warning text-dark">Pending</span>
-            {% elif tx.status == 'approved' %}
-              <span class="badge bg-success">Approved</span>
-            {% elif tx.status == 'rejected' %}
-              <span class="badge bg-danger">Rejected</span>
-            {% else %}
-              <span class="badge bg-secondary">{{ tx.status }}</span>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Scrollable Placeholder if No Transactions -->
-  {% if not transactions %}
-  <p class="text-center text-muted mt-4">No transactions yet.</p>
+  {% if transactions %}
+  <h5 class="mb-3">Recent Transactions</h5>
+  <table class="table table-sm table-striped">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tx in transactions %}
+      <tr>
+        <td>{{ tx.tx_type|capitalize }}</td>
+        <td>${{ tx.amount }}</td>
+        <td>
+          {% if tx.status == 'finished' %}
+            <span class="badge bg-success">Success</span>
+          {% elif tx.status == 'pending' %}
+            <span class="badge bg-warning text-dark">Pending</span>
+          {% elif tx.status == 'rejected' %}
+            <span class="badge bg-danger">Rejected</span>
+          {% else %}
+            <span class="badge bg-secondary">{{ tx.status }}</span>
+          {% endif %}
+        </td>
+        <td>{{ tx.timestamp.split('T')[0] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="alert alert-info text-center">No transactions yet.</div>
   {% endif %}
-
 </div>
 {% endblock %}
