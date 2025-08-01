@@ -228,13 +228,12 @@ def reject_deposit(deposit_id):
     supabase.table("deposit_requests").update({"status": "rejected"}).eq("id", deposit_id).execute()
 
 ### === WITHDRAWALS ===
-
-def add_withdraw_request(email, amount, address):
+def add_withdraw_request(email, amount, wallet_id):
     supabase.table("withdraw_requests").insert({
         "id": str(uuid.uuid4()),
         "email": email,
         "amount": amount,
-        "address": address,
+        "wallet_id": wallet_id,  # ✅ Renamed field
         "status": "pending",
         "timestamp": datetime.utcnow().isoformat()
     }).execute()
