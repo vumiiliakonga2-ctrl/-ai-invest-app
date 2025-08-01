@@ -8,6 +8,21 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+def save_manual_deposit(email, amount, screenshot_url):
+    import uuid
+    from datetime import datetime
+
+    data = {
+        "id": str(uuid.uuid4()),
+        "email": email,
+        "amount": amount,
+        "screenshot_url": screenshot_url,
+        "status": "pending",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+    supabase.table("manual_deposits").insert(data).execute()
+
 def get_user_transactions(email):
     response = supabase.table("transactions").select("*").eq("email", email).order("timestamp", desc=True).limit(10).execute()
     if response.data:
