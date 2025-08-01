@@ -247,7 +247,7 @@ def get_withdrawal_by_id(withdraw_id):
         return result.data
     return None
 
-def update_withdraw_status(withdraw_id, status):
+def update_withdrawal_status(withdraw_id, status):
     supabase.table("withdraw_requests").update({"status": status}).eq("id", withdraw_id).execute()
 
 def reject_withdrawal(withdraw_id):
