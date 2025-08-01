@@ -94,7 +94,7 @@ def submit_manual_deposit():
 
     save_manual_deposit(email, amount, screenshot_url)
     flash("Deposit submitted successfully. Awaiting admin approval.", "success")
-    return redirect(url_for('wallet'))
+    return redirect(url_for('wallet_page'))
 
 @app.route('/')
 def home():
