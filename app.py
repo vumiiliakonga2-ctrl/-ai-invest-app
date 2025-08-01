@@ -50,6 +50,19 @@ fake_withdrawals = [
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+@app.route('/admin/approve-manual/<deposit_id>')
+def approve_manual_deposit_route(deposit_id):
+    from database import approve_manual_deposit
+    approve_manual_deposit(deposit_id)
+    flash("Deposit approved and user credited.", "success")
+    return redirect(url_for('view_manual_deposits'))
+
+@app.route('/admin/reject-manual/<deposit_id>')
+def reject_manual_deposit_route(deposit_id):
+    from database import reject_manual_deposit
+    reject_manual_deposit(deposit_id)
+    flash("Deposit rejected.", "danger")
+    return redirect(url_for('view_manual_deposits'))
 
 @app.route('/admin/manual-deposits')
 def view_manual_deposits():
