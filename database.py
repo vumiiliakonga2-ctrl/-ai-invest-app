@@ -8,6 +8,32 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+def get_pending_manual_deposits():
+    res = supabase.table("manual_deposits").select("*").eq("status", "pending").execute()
+    return res.data
+def approve_manual_deposit(deposit_id):
+    deposit = supabase.table("manual_deposits").select("*").eq("id", deposit_id).single().execute().data
+    if not deposit:
+        return
+
+    email = deposit['email']
+    amount = deposit['amount']
+
+    # Update user wallet
+    user = get_user_by_email(email)
+    wallet = user.get("wallet", {"available": 0.0, "locked": 0.0})
+    wallet["available"] += amount
+
+    supabase.table("users").update({"wallet": wallet}).eq("email", email).execute()
+
+    # Mark deposit as approved
+    supabase.table("manual_deposits").update({"status": "approved"}).eq("id", deposit_id).execute()
+
+    # Add transaction log
+    add_transaction(email=email, amount=amount, tx_type="deposit", status="finished")
+def reject_manual_deposit(deposit_id):
+    supabase.table("manual_deposits").update({"status": "rejected"}).eq("id", deposit_id).execute()
+
 def save_manual_deposit(email, amount, screenshot_url):
     import uuid
     from datetime import datetime
