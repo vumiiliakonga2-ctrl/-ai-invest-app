@@ -401,28 +401,81 @@ def login():
 def dashboard():
     if 'email' not in session:
         return redirect(url_for('login'))
-    
-    # Get user details
-    user = get_user_by_email(session['email'])
+
+    from database import (
+        get_user_by_email, get_user_wallet,
+        get_user_total_investment, get_user_referrals,
+        get_user_kyc_status, get_user_withdrawals,
+        process_user_earnings
+    )
+
+    email = session['email']
+    user = get_user_by_email(email)
 
     if not user:
         flash("User not found", "danger")
         return redirect(url_for('login'))
 
-    # ✅ Require email verification
+    # ✅ Require verified email
     if not user.get("is_verified", False):
         flash("Please verify your email before accessing your dashboard.", "warning")
         return redirect(url_for('login'))
 
-    email = user['email']
-    wallet = user['wallet'] if user['wallet'] else "0 USDT"
+    # ✅ Wallet
+    wallet = get_user_wallet(email)
+    if isinstance(wallet, float):  # fallback if wallet is just a number
+        wallet = {"available": wallet, "locked": 0.0}
 
-    # ✅ Process their daily earnings here
+    # ✅ Process daily earnings
     process_user_earnings(email)
 
-    random.shuffle(fake_withdrawals)
-    
-    return render_template('dashboard.html', email=email, wallet=wallet, withdrawals=fake_withdrawals)
+    # ✅ Real investment total + 3000
+    real_total_investment = get_user_total_investment(email)
+    displayed_total_investment = real_total_investment + 3000
+
+    # ✅ VIP level logic
+    def get_vip_level(amount):
+        if amount >= 100000:
+            return 10
+        elif amount >= 9700:
+            return 9
+        elif amount >= 8800:
+            return 8
+        elif amount >= 7900:
+            return 7
+        elif amount >= 7000:
+            return 6
+        elif amount >= 6100:
+            return 5
+        elif amount >= 5200:
+            return 4
+        elif amount >= 4300:
+            return 3
+        elif amount >= 3400:
+            return 2
+        elif amount >= 2500:
+            return 1
+        return 0
+
+    vip_level = get_vip_level(real_total_investment)
+    projected_return_percent = 15 + (vip_level - 1) if vip_level > 0 else 0
+
+    # ✅ Real data
+    referrals = get_user_referrals(email)
+    kyc_status = get_user_kyc_status(email)
+    withdrawals = get_user_withdrawals(email)
+
+    return render_template(
+        'dashboard.html',
+        email=email,
+        wallet=wallet,
+        total_investment=displayed_total_investment,
+        projected_percent=projected_return_percent,
+        withdrawals=withdrawals,
+        referral_count=len(referrals),
+        kyc_status=kyc_status
+    )
+
 @app.route('/wallet')
 def wallet_page():
     if 'email' not in session:
