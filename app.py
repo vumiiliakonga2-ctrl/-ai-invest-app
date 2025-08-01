@@ -110,7 +110,7 @@ def create_invoice():
     payload = {
         "price_amount": float(amount),
         "price_currency": "usd",
-        "pay_currency": "usdtbsc",  # ✅ TRC20 USDT
+        "pay_currency": "usdtbsc",  # ✅ BEP-20 USDT (Binance Smart Chain)
         "ipn_callback_url": "https://ai-invest-app-l8ug.onrender.com/nowpayments_callback",
         "order_id": f"{user_email}-{uuid.uuid4()}",
         "order_description": "Deposit to Investment App",
@@ -125,6 +125,9 @@ def create_invoice():
     )
 
     data = response.json()
+    if response.status_code != 200:
+        print("NOWPayments error response:", response.status_code, data)
+
     if "invoice_url" in data:
         return redirect(data["invoice_url"])
     else:
