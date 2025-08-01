@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h3 class="text-center mb-4">Withdraw Funds</h3>
+    <h3 class="text-center mb-4">Submit Withdrawal Request</h3>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, msg in messages %}
@@ -14,20 +14,20 @@
     <form method="POST" action="{{ url_for('submit_withdraw_request') }}">
         <div class="mb-3">
             <label for="amount" class="form-label">Amount (USDT)</label>
-            <input type="number" class="form-control" name="amount" required step="0.01" min="1" placeholder="Enter amount to withdraw">
+            <input type="number" class="form-control" name="amount" required step="0.01" min="1">
         </div>
 
         <div class="mb-3">
-            <label for="address" class="form-label">USDT Wallet Address <span class="text-muted">(TRC20)</span></label>
-            <input type="text" class="form-control" name="address" required placeholder="e.g. Txyz...">
+            <label for="wallet_id" class="form-label">Your Bitget Wallet ID</label>
+            <input type="text" class="form-control" name="wallet_id" required>
         </div>
 
         <div class="mb-3">
             <label for="password" class="form-label">Confirm Password</label>
-            <input type="password" class="form-control" name="password" required placeholder="Your account password">
+            <input type="password" class="form-control" name="password" required>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Submit Withdrawal Request</button>
+        <button type="submit" class="btn btn-primary w-100">Submit Request</button>
     </form>
 </div>
 {% endblock %}
