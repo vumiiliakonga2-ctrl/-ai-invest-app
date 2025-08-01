@@ -54,6 +54,9 @@ def nowpayments_logs():
     from database import get_all_nowpayments_logs
     logs = get_all_nowpayments_logs()
     return render_template('admin_nowpayments_logs.html', logs=logs)
+@app.route('/')
+def home():
+    return redirect(url_for('login'))
     
 @app.route('/index')
 def index():    
