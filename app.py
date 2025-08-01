@@ -11,6 +11,7 @@ from database import get_referral_badge
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database import get_all_withdrawals as get_user_withdrawals
 from database import approve_withdrawal_request, get_withdrawal_by_id
+from database import approve_withdrawal_request, get_withdrawal_by_id
 
 import os
 import requests  # ✅ ADD THIS LINE
@@ -661,12 +662,17 @@ def reject_deposit_route(deposit_id):
     return redirect(url_for('admin'))
 @app.route('/admin/approve-withdraw/<withdraw_id>')
 def approve_withdrawal_route(withdraw_id):
-    from database import approve_withdrawal, get_withdrawal_by_id
+    from database import approve_withdrawal_request, get_withdrawal_by_id
+
     withdraw = get_withdrawal_by_id(withdraw_id)
 
     if not withdraw:
         flash("Withdrawal not found", "danger")
         return redirect(url_for('admin'))
+
+    approve_withdrawal_request(withdraw_id)
+    flash("Withdrawal approved", "success")
+    return redirect(url_for('admin'))
 
     # Only approve if 24hrs passed (optional feature)
     # check timestamp logic here if needed
