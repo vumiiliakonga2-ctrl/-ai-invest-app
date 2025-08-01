@@ -51,11 +51,7 @@ UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/admin/nowpayments_logs')
-def nowpayments_logs():
-    from database import get_all_nowpayments_logs
-    logs = get_all_nowpayments_logs()
-    return render_template('admin_nowpayments_logs.html', logs=logs)
+
 @app.route('/')
 def home():
     return redirect(url_for('login'))
@@ -91,81 +87,7 @@ def ipn_handler():
 import uuid
 import requests
 
-NOWPAYMENTS_API_KEY = "ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN"  # ⚠️ Move to .env in production
 
-@app.route('/create_invoice', methods=['POST'])
-def create_invoice():
-    amount = request.form.get('amount')
-    user_email = session.get('email') or session.get('user_email')
-
-    if not amount or not user_email:
-        flash("Invalid request. Please log in and enter an amount.", "danger")
-        return redirect(url_for('deposit_page'))
-
-    headers = {
-        'x-api-key': NOWPAYMENTS_API_KEY,
-        'Content-Type': 'application/json'
-    }
-
-    payload = {
-        "price_amount": float(amount),
-        "price_currency": "usd",
-        "pay_currency": "usdtbsc",  # ✅ BEP-20 USDT (Binance Smart Chain)
-        "ipn_callback_url": "https://ai-invest-app-l8ug.onrender.com/nowpayments_callback",
-        "order_id": f"{user_email}-{uuid.uuid4()}",
-        "order_description": "Deposit to Investment App",
-        "success_url": "https://ai-invest-app-l8ug.onrender.com/deposit_success",
-        "cancel_url": "https://ai-invest-app-l8ug.onrender.com/deposit_cancel"
-    }
-
-    response = requests.post(
-        "https://api.nowpayments.io/v1/invoice",
-        headers=headers,
-        json=payload
-    )
-
-    data = response.json()
-    if response.status_code != 200:
-        print("NOWPayments error response:", response.status_code, data)
-
-    if "invoice_url" in data:
-        return redirect(data["invoice_url"])
-    else:
-        flash("Failed to create invoice. Please try again.", "danger")
-        print("NOWPayments error:", data)
-        return redirect(url_for("deposit"))
-
-from database import update_wallet_balance, add_transaction  # Ensure this is imported
-
-@app.route('/nowpayments_callback', methods=['POST'])
-def nowpayments_callback():
-    data = request.json
-    print("Callback received:", data)
-
-    order_id = data.get('order_id')
-    user_email = order_id.rsplit("-", 1)[0] if order_id else "unknown"
-    amount_received = float(data.get('actually_paid', 0))  # ✅ FIXED
-    pay_currency = data.get('pay_currency', 'unknown')
-    status = data.get('payment_status', 'unknown')
-
-    # ✅ Store log regardless of status
-    from database import log_nowpayments_transaction
-    log_nowpayments_transaction(
-        user_email=user_email,
-        order_id=order_id,
-        amount=amount_received,
-        currency=pay_currency,
-        status=status,
-        raw_data=data
-    )
-
-    # ✅ Only credit wallet if valid status
-    if status in ['finished', 'confirmed', 'partially_paid']:  # ✅ FIXED
-        from database import update_wallet_balance, add_transaction
-        update_wallet_balance(user_email, amount_received, tx_type="deposit")
-        add_transaction(user_email, "deposit", amount_received)
-
-    return '', 200
 
 @app.route('/confirm_investment', methods=['POST'])
 def confirm_investment():
@@ -504,7 +426,7 @@ def wallet_page():
         pending_withdrawals=pending_withdrawals
     )
 
-from database import get_nowpayments_logs
+
 
 @app.route('/deposit', methods=['GET'])
 def deposit_page():
