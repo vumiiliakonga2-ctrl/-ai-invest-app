@@ -27,13 +27,6 @@ from email.mime.multipart import MIMEMultipart
 import secrets
 from datetime import datetime, timedelta
 from email_utils import send_verification_code
-from binance.client import Client
-import os
-
-BINANCE_API_KEY = os.getenv("BINANCE_API_KEY")
-BINANCE_API_SECRET = os.getenv("BINANCE_API_SECRET")
-
-binance_client = Client(BINANCE_API_KEY, BINANCE_API_SECRET)
 
 
 EMAIL_SENDER = "vumiiliakonga2@gmail.com"
