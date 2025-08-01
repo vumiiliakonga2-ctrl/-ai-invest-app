@@ -8,6 +8,19 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+def get_user_withdrawals(email):
+    response = supabase.table("withdraw_requests").select("*").eq("email", email).order("created_at", desc=True).execute()
+    if response.data:
+        return [
+            {
+                "user": w["email"],
+                "amount": f"${float(w['amount']):.2f}",
+                "time": w["created_at"].split("T")[0]  # shows only the date
+            }
+            for w in response.data if w.get("status") == "approved"
+        ]
+    return []
+
 def get_user_kyc_status(email):
     user = get_user_by_email(email)
     if not user:
