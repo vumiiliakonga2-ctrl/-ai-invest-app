@@ -200,7 +200,7 @@ supabase = create_client(url, key)
 
 ### === USER & WALLET ===
 def reject_withdrawal_request(withdraw_id):
-    update_withdraw_status(withdraw_id, "rejected")
+    update_withdrawal_status(withdraw_id, "rejected")
 def update_wallet(email, new_wallet):
     supabase.table("users").update({"wallet": new_wallet}).eq("email", email).execute()
 
@@ -328,10 +328,10 @@ def update_withdrawal_status(withdraw_id, status):
     supabase.table("withdraw_requests").update({"status": status}).eq("id", withdraw_id).execute()
 
 def reject_withdrawal(withdraw_id):
-    update_withdraw_status(withdraw_id, "rejected")
+    update_withdrawal_status(withdraw_id, "rejected")
 
 def approve_withdrawal_request(withdraw_id):
-    withdraw = get_withdraw_by_id(withdraw_id)
+    withdraw = get_withdrawal_by_id(withdraw_id)
     if not withdraw or withdraw["status"] != "pending":
         return
 
@@ -340,6 +340,10 @@ def approve_withdrawal_request(withdraw_id):
     user = get_user_by_email(email)
     if not user or float(user["wallet"].get("available", 0)) < amount:
         return
+
+    update_wallet_balance(email, amount, "withdraw")
+    add_transaction(email, "withdraw", amount)
+    update_withdrawal_status(withdraw_id, "approved")
 
     update_wallet_balance(email, amount, "withdraw")
     add_transaction(email, "withdraw", amount)
