@@ -11,6 +11,18 @@ API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
 def get_nowpayments_logs(email):
     res = supabase.table("nowpayments_logs").select("*").eq("email", email).order("created_at", desc=True).execute()
     return res.data if res.data else []
+def update_wallet_fields(email, new_available, new_locked):
+    wallet = {"available": new_available, "locked": new_locked}
+    supabase.table('users').update({"wallet": wallet}).eq("email", email).execute()
+def store_withdraw_request(email, amount, wallet_type, wallet_id):
+    supabase.table("withdraw_requests").insert({
+        "email": email,
+        "amount": amount,
+        "wallet_type": wallet_type,
+        "wallet_id": wallet_id,
+        "status": "pending",
+        "created_at": datetime.utcnow().isoformat()
+    }).execute()
 
 def get_user_nowpayment_logs(email):
     result = supabase.table("nowpayments_logs") \
