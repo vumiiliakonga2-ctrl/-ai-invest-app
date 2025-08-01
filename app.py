@@ -51,6 +51,28 @@ UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+@app.route('/submit_manual_deposit', methods=['POST'])
+def submit_manual_deposit():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    from database import save_manual_deposit
+    import uuid, os
+    from datetime import datetime
+
+    email = session['email']
+    amount = float(request.form['amount'])
+    screenshot = request.files['screenshot']
+
+    # Save screenshot to static/uploads/
+    filename = f"{uuid.uuid4()}.png"
+    upload_path = os.path.join('static/uploads', filename)
+    screenshot.save(upload_path)
+    screenshot_url = f"/static/uploads/{filename}"
+
+    save_manual_deposit(email, amount, screenshot_url)
+    flash("Deposit submitted successfully. Awaiting admin approval.", "success")
+    return redirect(url_for('wallet'))
 
 @app.route('/')
 def home():
