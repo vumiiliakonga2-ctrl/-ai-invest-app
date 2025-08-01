@@ -30,7 +30,7 @@
       <div class="card bg-primary text-white shadow-lg">
         <div class="card-body">
           <h5 class="card-title">Total Active Investments</h5>
-          <p class="card-text fs-3 fw-bold">$2,500.00</p>
+          <p class="card-text fs-3 fw-bold">${{ total_investment }}</p>
           <p class="card-text">Earnings are calculated daily and compound automatically.</p>
         </div>
       </div>
@@ -40,7 +40,7 @@
       <div class="card bg-dark text-white shadow-lg">
         <div class="card-body">
           <h5 class="card-title text-warning">Projected Monthly Return</h5>
-          <p class="fs-3 text-success fw-bold">+15%</p>
+          <p class="fs-3 text-success fw-bold">+{{ projected_percent }}%</p>
           <p class="small">Based on your current plans and locked capital.</p>
         </div>
       </div>
@@ -86,8 +86,8 @@
   <div class="card bg-success text-white shadow-lg mt-4">
     <div class="card-body">
       <h5 class="card-title">Your Referrals</h5>
-      <p class="fs-4 fw-bold">12 Joined</p>
-      <p>You’ve earned <strong>$120</strong> in referral rewards.</p>
+      <p class="fs-4 fw-bold">{{ referral_count }} Joined</p>
+      <p>You’ve earned <strong>${{ referral_count * 10 }}</strong> in referral rewards.</p>
     </div>
   </div>
 
@@ -115,7 +115,13 @@
   <div class="card bg-warning text-dark shadow-lg mt-4">
     <div class="card-body">
       <h5 class="card-title">KYC Status</h5>
-      <p>Status: <span class="badge bg-light">Verified</span></p>
+      <p>Status:
+        {% if kyc_status == 'verified' %}
+          <span class="badge bg-success text-white">Verified</span>
+        {% else %}
+          <span class="badge bg-warning text-dark">Pending</span>
+        {% endif %}
+      </p>
       <p>Your account is fully compliant. Thank you!</p>
     </div>
   </div>
