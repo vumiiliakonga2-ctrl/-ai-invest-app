@@ -449,15 +449,16 @@ def wallet_page():
     )
 
 
-
-@app.route('/deposit', methods=['GET'])
-def deposit_page():
+@app.route('/deposit')
+def deposit():
     if 'email' not in session:
         return redirect(url_for('login'))
 
     email = session['email']
-    logs = get_user_nowpayment_logs(email)  # 🧠 must be implemented in database.py
-    return render_template('deposit.html', email=email, logs=logs)
+    manual_logs = supabase.table("manual_deposits").select("*").eq("email", email).order("timestamp", desc=True).execute().data
+
+    return render_template("deposit.html", manual_logs=manual_logs)
+
 
 @app.route('/submit-deposit', methods=['POST'])
 def submit_deposit():
