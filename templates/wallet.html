@@ -1,72 +1,96 @@
 {% extends "base.html" %}
-{% block title %}Wallet - AI Investment{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-  <h3 class="text-center mb-4">Your Wallet</h3>
+  <h2 class="mb-4">Wallet Overview</h2>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, msg in messages %}
-      <div class="alert alert-{{ category }}">{{ msg }}</div>
-    {% endfor %}
-  {% endwith %}
-
-  <div class="row mb-4">
-    <div class="col-md-6">
-      <div class="card p-3 border-success">
-        <h5 class="text-success">Available Balance</h5>
-        <p class="fs-4 fw-bold text-success">${{ wallet.available }}</p>
+  <!-- Wallet Balance Summary -->
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <div class="card border-success shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title text-success">Available Balance</h5>
+          <p class="card-text h4">${{ wallet.available }}</p>
+        </div>
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="card p-3 border-warning">
-        <h5 class="text-warning">Locked Balance</h5>
-        <p class="fs-4 fw-bold text-warning">${{ wallet.locked }}</p>
+    <div class="col-md-6 mb-3">
+      <div class="card border-warning shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title text-warning">Locked Balance</h5>
+          <p class="card-text h4">${{ wallet.locked }}</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="d-flex justify-content-center gap-4 mb-4">
-    <a href="{{ url_for('deposit') }}" class="btn btn-outline-success px-4 py-2">Deposit</a>
-    <a href="{{ url_for('withdraw') }}" class="btn btn-outline-danger px-4 py-2">Withdraw</a>
+  <!-- Action Buttons -->
+  <div class="d-flex justify-content-center my-4 gap-3">
+    <a href="{{ url_for('deposit') }}" class="btn btn-outline-primary px-4 py-2">Deposit</a>
+    <a href="{{ url_for('withdraw_request') }}" class="btn btn-outline-danger px-4 py-2">Withdraw</a>
   </div>
 
-  <hr class="my-4">
+  <!-- Summary Stats -->
+  <div class="row text-center my-4">
+    <div class="col-md-4">
+      <h6>Total Deposited</h6>
+      <p class="text-primary h5">${{ total_deposit }}</p>
+    </div>
+    <div class="col-md-4">
+      <h6>Total Withdrawn</h6>
+      <p class="text-danger h5">${{ total_withdrawn }}</p>
+    </div>
+    <div class="col-md-4">
+      <h6>Pending Withdrawals</h6>
+      <p class="text-warning h5">{{ pending_withdrawals | length }}</p>
+    </div>
+  </div>
 
-  {% if transactions %}
-  <h5 class="mb-3">Recent Transactions</h5>
-  <table class="table table-sm table-striped">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Amount</th>
-        <th>Status</th>
-        <th>Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for tx in transactions %}
-      <tr>
-        <td>{{ tx.tx_type|capitalize }}</td>
-        <td>${{ tx.amount }}</td>
-        <td>
-          {% if tx.status == 'finished' %}
-            <span class="badge bg-success">Success</span>
-          {% elif tx.status == 'pending' %}
-            <span class="badge bg-warning text-dark">Pending</span>
-          {% elif tx.status == 'rejected' %}
-            <span class="badge bg-danger">Rejected</span>
-          {% else %}
-            <span class="badge bg-secondary">{{ tx.status }}</span>
-          {% endif %}
-        </td>
-        <td>{{ tx.timestamp.split('T')[0] }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <div class="alert alert-info text-center">No transactions yet.</div>
-  {% endif %}
+  <!-- Transactions Table -->
+  <div class="card mt-4 shadow-sm">
+    <div class="card-header">
+      <h5 class="mb-0">Transaction History</h5>
+    </div>
+    <div class="card-body p-0">
+      {% if transactions %}
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Type</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for tx in transactions %}
+            <tr>
+              <td>{{ tx.timestamp[:19].replace('T', ' ') }}</td>
+              <td class="text-capitalize">{{ tx.tx_type }}</td>
+              <td>${{ tx.amount }}</td>
+              <td>
+                {% if tx.status == 'approved' %}
+                  <span class="badge bg-success">{{ tx.status }}</span>
+                {% elif tx.status == 'pending' %}
+                  <span class="badge bg-warning text-dark">{{ tx.status }}</span>
+                {% elif tx.status == 'rejected' %}
+                  <span class="badge bg-danger">{{ tx.status }}</span>
+                {% else %}
+                  <span class="badge bg-secondary">{{ tx.status }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <div class="p-3 text-center text-muted">
+          No transactions found.
+        </div>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}
