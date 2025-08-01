@@ -10,6 +10,7 @@ from database import get_referrals_for_user
 from database import get_referral_badge
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database import get_all_withdrawals as get_user_withdrawals
+from database import approve_withdrawal_request, get_withdrawal_by_id
 
 import os
 import requests  # ✅ ADD THIS LINE
