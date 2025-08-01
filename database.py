@@ -8,6 +8,20 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+def get_user_transactions(email):
+    response = supabase.table("transactions").select("*").eq("email", email).order("timestamp", desc=True).limit(10).execute()
+    if response.data:
+        return [
+            {
+                "date": tx["timestamp"].split("T")[0],
+                "type": tx["tx_type"].capitalize(),
+                "amount": f"${float(tx['amount']):.2f}",
+                "status": tx.get("status", "completed").capitalize()
+            }
+            for tx in response.data
+        ]
+    return []
+
 def get_user_withdrawals(email):
     response = supabase.table("withdraw_requests").select("*").eq("email", email).order("created_at", desc=True).execute()
     if response.data:
