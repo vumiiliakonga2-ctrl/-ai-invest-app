@@ -50,10 +50,10 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/admin/nowpayments_logs')
-def nowpayments_logs    ():
-    from database import     get_all_nowpayments_logs
-    logs = get_all_nowpaymen    ts_logs()
-    return render_template('admi    n_nowpayments_logs.html', logs=logs)
+def nowpayments_logs():
+    from database import get_all_nowpayments_logs
+    logs = get_all_nowpayments_logs()
+    return render_template('admin_nowpayments_logs.html', logs=logs)
     
 @app.route('/index')
 def index():    
