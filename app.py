@@ -611,23 +611,11 @@ def approve_withdrawal_route(withdraw_id):
 
     # Approve in DB
     approve_withdrawal(withdraw_id)
-    
-    # Auto-withdraw via Binance
-    try:
-        result = binance_client.withdraw(
-            coin="USDT",
-            address=withdraw['wallet_address'],
-            amount=withdraw['amount'],
-            network="BEP20"  # BEP20 = BSC, TRC20 = TRX
-        )
-        print("Auto-withdraw result:", result)
-        flash("Withdrawal approved and sent via Binance", "success")
-    except Exception as e:
-        print("Auto-withdraw failed:", e)
-        flash("Approval done, but auto-withdraw failed.", "warning")
+
+    # Binance auto-withdraw removed (manual processing required)
+    flash("Withdrawal approved. Please process manually via Binance or Bitget.", "info")
     
     return redirect(url_for('admin'))
-
 
 @app.route('/admin/reject-withdraw/<withdraw_id>')
 def reject_withdrawal_route(withdraw_id):
