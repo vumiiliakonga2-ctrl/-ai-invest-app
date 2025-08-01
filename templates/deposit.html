@@ -11,51 +11,57 @@
     {% endfor %}
   {% endwith %}
 
-  <form id="deposit-form" method="POST" action="{{ url_for('create_invoice') }}">
+  <div class="alert alert-info text-center">
+    <p><strong>Send USDT to this wallet:</strong></p>
+    <p class="text-monospace fs-5 mb-1">0xa5dbce593386fe2dc1a94d98c08a8ae085d7cfff</p>
+    <small class="text-muted">Network: TRC20</small>
+  </div>
+
+  <form method="POST" action="{{ url_for('submit_manual_deposit') }}" enctype="multipart/form-data">
     <div class="mb-3">
       <label for="amount" class="form-label">Amount (USDT)</label>
-      <input type="number" class="form-control" name="amount" required step="0.01" min="1">
+      <input type="number" class="form-control" name="amount" step="0.01" min="1" required>
     </div>
 
-    <div class="text-center mb-3">
-      <p>Deposit will be processed via <strong>NowPayments</strong> using USDT (TRC20).</p>
-      <p>You’ll be redirected to complete payment securely.</p>
+    <div class="mb-3">
+      <label for="screenshot" class="form-label">Upload Payment Screenshot</label>
+      <input type="file" class="form-control" name="screenshot" accept="image/*" required>
     </div>
 
-    <button type="submit" class="btn btn-success w-100">Proceed to Pay</button>
+    <button type="submit" class="btn btn-primary w-100">Submit Deposit</button>
   </form>
 
-  {% if logs %}
+  {% if manual_logs %}
   <div class="mt-5">
-    <h5 class="mb-3">Your Deposit History</h5>
+    <h5 class="mb-3">Your Deposit Submissions</h5>
     <table class="table table-sm table-striped">
       <thead>
         <tr>
-          <th>Order ID</th>
           <th>Amount</th>
           <th>Status</th>
-          <th>Currency</th>
+          <th>Screenshot</th>
           <th>Date</th>
         </tr>
       </thead>
       <tbody>
-        {% for log in logs %}
+        {% for log in manual_logs %}
         <tr>
-          <td>{{ log.order_id }}</td>
           <td>{{ log.amount }}</td>
           <td>
-            {% if log.status == 'finished' %}
-              <span class="badge bg-success">Success</span>
-            {% elif log.status == 'waiting' %}
+            {% if log.status == 'approved' %}
+              <span class="badge bg-success">Approved</span>
+            {% elif log.status == 'pending' %}
               <span class="badge bg-warning text-dark">Pending</span>
-            {% elif log.status == 'failed' %}
-              <span class="badge bg-danger">Failed</span>
+            {% elif log.status == 'rejected' %}
+              <span class="badge bg-danger">Rejected</span>
             {% else %}
               <span class="badge bg-secondary">{{ log.status }}</span>
             {% endif %}
           </td>
-          <td>{{ log.currency }}</td>
-          <td>{{ log.created_at.split('T')[0] }}</td>
+          <td>
+            <a href="{{ log.screenshot_url }}" target="_blank">View</a>
+          </td>
+          <td>{{ log.timestamp.split('T')[0] }}</td>
         </tr>
         {% endfor %}
       </tbody>
