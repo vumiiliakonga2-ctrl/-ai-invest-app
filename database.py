@@ -8,6 +8,12 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+def get_user_kyc_status(email):
+    user = get_user_by_email(email)
+    if not user:
+        return "Not Submitted"
+    return user.get("kyc_status", "Not Submitted")
+
 def get_user_referrals(email):
     user = get_user_by_email(email)
     if not user or "referrals" not in user:
