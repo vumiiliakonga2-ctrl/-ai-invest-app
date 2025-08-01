@@ -9,6 +9,8 @@ from datetime import datetime, timezone  # make sure this is at the top of your 
 from database import get_referrals_for_user
 from database import get_referral_badge
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from database import get_all_withdrawals as get_user_withdrawals
+
 import os
 import requests  # ✅ ADD THIS LINE
 from database import get_user_nowpayment_logs
