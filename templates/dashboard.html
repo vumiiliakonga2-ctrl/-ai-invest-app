@@ -76,9 +76,26 @@
       <table class="table table-striped">
         <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
         <tbody>
-          <tr><td>2025-07-29</td><td>Deposit</td><td>$500</td><td><span class="badge bg-success">Completed</span></td></tr>
-          <tr><td>2025-07-28</td><td>Withdraw</td><td>$150</td><td><span class="badge bg-warning">Pending</span></td></tr>
-        </tbody>
+  {% for tx in transactions %}
+    <tr>
+      <td>{{ tx.timestamp[:10] }}</td>
+      <td>{{ tx.tx_type }}</td>
+      <td>${{ tx.amount }}</td>
+      <td>
+        {% if tx.status == 'completed' %}
+          <span class="badge bg-success">Completed</span>
+        {% elif tx.status == 'pending' %}
+          <span class="badge bg-warning text-dark">Pending</span>
+        {% elif tx.status == 'failed' %}
+          <span class="badge bg-danger">Failed</span>
+        {% else %}
+          <span class="badge bg-secondary">{{ tx.status }}</span>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</tbody>
+
       </table>
     </div>
   </div>
