@@ -135,7 +135,7 @@ def create_nowpayments_invoice(amount, currency, order_id):
     data = {
         "price_amount": amount,
         "price_currency": "usd",
-        "pay_currency": currency.lower(),
+        "pay_currency": "usdtbsc", ,
         "order_id": order_id,
         "ipn_callback_url": "https://your-domain.com/ipn-handler"
     }
