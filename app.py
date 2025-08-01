@@ -110,7 +110,7 @@ def create_invoice():
     payload = {
         "price_amount": float(amount),
         "price_currency": "usd",
-        "pay_currency": "usdttrc20",  # ✅ TRC20 USDT
+        "pay_currency": "usdtbsc",  # ✅ TRC20 USDT
         "ipn_callback_url": "https://ai-invest-app-l8ug.onrender.com/nowpayments_callback",
         "order_id": f"{user_email}-{uuid.uuid4()}",
         "order_description": "Deposit to Investment App",
@@ -141,7 +141,7 @@ def nowpayments_callback():
 
     order_id = data.get('order_id')
     user_email = order_id.rsplit("-", 1)[0] if order_id else "unknown"
-    amount_received = float(data.get('pay_amount', 0))
+    amount_received = float(data.get('actually_paid', 0))  # ✅ FIXED
     pay_currency = data.get('pay_currency', 'unknown')
     status = data.get('payment_status', 'unknown')
 
@@ -156,18 +156,13 @@ def nowpayments_callback():
         raw_data=data
     )
 
-    # ✅ Only credit wallet if status is finished
-    if status == 'finished':
-        from database import update_wallet_balance
-        update_wallet_balance(
-            user_email,
-            amount_received,
-            tx_type="deposit",
-            method="NowPayments"
-        )
+    # ✅ Only credit wallet if valid status
+    if status in ['finished', 'confirmed', 'partially_paid']:  # ✅ FIXED
+        from database import update_wallet_balance, add_transaction
+        update_wallet_balance(user_email, amount_received, tx_type="deposit")
+        add_transaction(user_email, "deposit", amount_received)
 
     return '', 200
-
 
 @app.route('/confirm_investment', methods=['POST'])
 def confirm_investment():
