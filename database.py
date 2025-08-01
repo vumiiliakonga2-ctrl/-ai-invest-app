@@ -8,6 +8,34 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+def migrate_wallet_to_json():
+    # Fetch all users
+    result = supabase.table("users").select("id", "wallet").execute()
+    
+    if not result.data:
+        print("No users found.")
+        return
+
+    for user in result.data:
+        user_id = user["id"]
+        wallet = user["wallet"]
+
+        # Only migrate if wallet is a float, not already a dict
+        if isinstance(wallet, float) or isinstance(wallet, int):
+            new_wallet = {
+                "available": float(wallet),
+                "locked": 0.0
+            }
+
+            # Update in Supabase
+            update_result = supabase.table("users").update({
+                "wallet": new_wallet
+            }).eq("id", user_id).execute()
+
+            print(f"Migrated user {user_id}: {update_result.status_code}")
+        else:
+            print(f"User {user_id} already migrated.")
+
 def get_nowpayments_logs(email):
     res = supabase.table("nowpayments_logs").select("*").eq("email", email).order("created_at", desc=True).execute()
     return res.data if res.data else []
