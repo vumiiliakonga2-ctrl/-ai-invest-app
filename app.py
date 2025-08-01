@@ -148,7 +148,7 @@ def nowpayments_callback():
         amount=amount_received,
         currency=pay_currency,
         status=status,
-        raw_data=data,
+        raw_data=data
     )
 
     # ✅ Only credit wallet if status is finished
