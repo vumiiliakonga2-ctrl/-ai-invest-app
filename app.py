@@ -604,17 +604,18 @@ def reject_deposit_route(deposit_id):
 def approve_withdrawal_route(withdraw_id):
     from database import approve_withdrawal, get_withdrawal_by_id
     withdraw = get_withdrawal_by_id(withdraw_id)
-    
+
     if not withdraw:
         flash("Withdrawal not found", "danger")
         return redirect(url_for('admin'))
 
-    # Approve in DB
+    # Only approve if 24hrs passed (optional feature)
+    # check timestamp logic here if needed
+
     approve_withdrawal(withdraw_id)
 
-    # Binance auto-withdraw removed (manual processing required)
-    flash("Withdrawal approved. Please process manually via Binance or Bitget.", "info")
-    
+    # Manual processing required, show wallet_id
+    flash(f"Withdrawal approved. Send manually to Bitget Wallet ID: {withdraw['wallet_id']}", "info")
     return redirect(url_for('admin'))
 
 @app.route('/admin/reject-withdraw/<withdraw_id>')
