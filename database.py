@@ -241,10 +241,11 @@ def add_withdraw_request(email, amount, wallet_id):
 def get_pending_withdrawals():
     result = supabase.table("withdraw_requests").select("*").eq("status", "pending").execute()
     return result.data if result.data else []
-
-def get_withdraw_by_id(withdraw_id):
+def get_withdrawal_by_id(withdraw_id):
     result = supabase.table("withdraw_requests").select("*").eq("id", withdraw_id).single().execute()
-    return result.data if result.data else None
+    if result.data:
+        return result.data
+    return None
 
 def update_withdraw_status(withdraw_id, status):
     supabase.table("withdraw_requests").update({"status": status}).eq("id", withdraw_id).execute()
