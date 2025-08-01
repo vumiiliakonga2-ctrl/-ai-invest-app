@@ -8,6 +8,16 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+def get_user_total_investment(email):
+    user = get_user_by_email(email)
+    if not user or 'investments' not in user:
+        return 0.0
+    total = 0.0
+    for inv in user['investments']:
+        if inv.get("status") == "active":
+            total += float(inv.get("amount", 0))
+    return total
+
 def migrate_wallet_to_json():
     # Fetch all users
     result = supabase.table("users").select("id", "wallet").execute()
