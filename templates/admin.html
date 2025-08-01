@@ -1,26 +1,72 @@
-<h4 class="mt-5">Pending Withdrawals</h4>
-<table class="table table-bordered mt-3">
-  <thead>
-    <tr>
-      <th>Email</th>
-      <th>Amount (USDT)</th>
-      <th>Bitget Wallet ID</th>
-      <th>Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for withdraw in pending_withdrawals %}
-    <tr>
-      <td>{{ withdraw.email }}</td>
-      <td>{{ withdraw.amount }}</td>
-      <td>{{ withdraw.wallet_id }}</td>
-      <td>{{ withdraw.status }}</td>
-      <td>
-        <a href="{{ url_for('approve_withdrawal_route', withdraw_id=withdraw.id) }}" class="btn btn-success btn-sm">Approve</a>
-        <a href="{{ url_for('reject_withdrawal_route', withdraw_id=withdraw.id) }}" class="btn btn-danger btn-sm">Reject</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Admin Dashboard</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ category }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <!-- Pending Deposits Section -->
+    <h4 class="mt-5">Pending Deposits</h4>
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Amount (USDT)</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for deposit in pending_deposits %}
+            <tr>
+                <td>{{ deposit.email }}</td>
+                <td>{{ deposit.amount }}</td>
+                <td>{{ deposit.status }}</td>
+                <td>{{ deposit.timestamp }}</td>
+                <td>
+                    <a href="{{ url_for('approve_deposit_route', deposit_id=deposit.id) }}" class="btn btn-success btn-sm">Approve</a>
+                    <a href="{{ url_for('reject_deposit_route', deposit_id=deposit.id) }}" class="btn btn-danger btn-sm">Reject</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pending Withdrawals Section -->
+    <h4 class="mt-5">Pending Withdrawals</h4>
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Amount (USDT)</th>
+                <th>Bitget Wallet ID</th>
+                <th>Status</th>
+                <th>Requested</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for withdraw in pending_withdrawals %}
+            <tr>
+                <td>{{ withdraw.email }}</td>
+                <td>{{ withdraw.amount }}</td>
+                <td>{{ withdraw.wallet_id }}</td>
+                <td>{{ withdraw.status }}</td>
+                <td>{{ withdraw.timestamp }}</td>
+                <td>
+                    <a href="{{ url_for('approve_withdrawal_route', withdraw_id=withdraw.id) }}" class="btn btn-success btn-sm">Approve</a>
+                    <a href="{{ url_for('reject_withdrawal_route', withdraw_id=withdraw.id) }}" class="btn btn-danger btn-sm">Reject</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
