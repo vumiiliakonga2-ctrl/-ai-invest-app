@@ -51,6 +51,15 @@ UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+@app.route('/admin/manual-deposits')
+def view_manual_deposits():
+    if session.get('email') != 'vumiiliakonga2@gmail.com':
+        return redirect(url_for('login'))
+
+    from database import get_pending_manual_deposits
+    deposits = get_pending_manual_deposits()
+    return render_template('admin_manual_deposits.html', deposits=deposits)
+
 @app.route('/submit_manual_deposit', methods=['POST'])
 def submit_manual_deposit():
     if 'email' not in session:
