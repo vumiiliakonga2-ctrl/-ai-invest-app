@@ -22,9 +22,9 @@ from database import (
     approve_withdrawal_request, reject_withdrawal_request
 )
 from database import get_withdrawal_by_id, get_user_by_email, update_withdrawal_status, update_wallet_balance, add_transaction
-from database import get_user_by_email, process_user_earnings
-import smtplib
-from email.mime.text import MIMEText
+    from database import get_user_by_email, process_user_earnings
+impo        rt smtplib
+from email.m    ime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import secrets
 from datetime import datetime, timedelta
@@ -49,14 +49,14 @@ UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/admin/nowpayments_logs')
-def nowpayments_logs():
-    from database import get_all_nowpayments_logs
-    logs = get_all_nowpayments_logs()
-    return render_template('admin_nowpayments_logs.html', logs=logs)
-
-@app.route('/')
-def index():
+@app.route('/adm    in/nowpayments_logs')
+def nowpayments_logs    ():
+    from database import     get_all_nowpayments_logs
+    logs = get_all_nowpaymen    ts_logs()
+    return render_template('admi    n_nowpayments_logs.html', logs=logs)
+    
+@app        .route('/')
+def index():    
     return redirect(url_for('login'))
 from supabase import create_client
 
@@ -65,17 +65,17 @@ key = os.getenv("SUPABASE_KEY")
 supabase = create_client(url, key)
 
 @app.route("/deposit_success")
-def deposit_success():
-    flash("Deposit completed successfully!", "success")
-    return redirect(url_for("wallet"))
-
-@app.route("/deposit_cancel")
-def deposit_cancel():
-    flash("Deposit was cancelled.", "warning")
-    return redirect(url_for("deposit"))
-
-@app.route('/ipn-handler', methods=['POST'])
-def ipn_handler():
+def deposit_succ    ess():
+    flash("Deposit c    ompleted successfully!", "success")
+    return redirect(url_    for("wallet"))
+    
+@app    .route("/deposit_cancel")
+def depo    sit_cancel():
+    flash("D        eposit was cancelled.", "warning")
+    return redirect(    url_for("deposit"))
+    
+@app    .route('/ipn-handler', methods=['POST'])
+def ipn_    handler():
     data = request.get_json()
     if data.get('payment_status') == 'finished':
         # Confirm payment and update user balance
@@ -144,16 +144,16 @@ def nowpayments_callback():
     from database import log_nowpayments_transaction
     log_nowpayments_transaction(
         user_email=user_email,
-        order_id=order_id,
+        orde    r_id=order_id,
         amount=amount_received,
         currency=pay_currency,
-        status=status,
-        raw_data=data
+        status=s    tatus,
+        raw_data=dat    a
     )
 
-    # ✅ Only credit wallet if status is finished
-    if status == 'finished':
-        from database import update_wallet_balance
+    # ✅ Only credit wa    llet if status is finished
+    if status == 'finished'    :
+        from database import up    date_wallet_balance
         update_wallet_balance(
             user_email,
             amount_received,
@@ -173,19 +173,19 @@ def confirm_investment():
     user = get_user_by_email(email)
 
     if not user:
-        flash("User not found", "danger")
-        return redirect(url_for('invest'))
-
-    try:
-        amount = float(request.form['amount'])
-        vip = int(request.form['vip'])
-        percent = float(request.form['percent'])
+        flash("User not found", "da    nger")
+        return redirect(url_for('invest    '))
+    
+        try:
+            amount = float(request.form['amount'])
+        vip     = int(request.form['vip'])
+        percent     = float(request.form['percent'])
     except:
-        flash("Invalid input", "danger")
+        flash("Inval    id input", "danger")
         return redirect(url_for('invest'))
 
-    # ✅ Recalculate total deposit and unlocked VIP
-    deposits = get_all_deposits(email)
+    # ✅ Recalculate to    tal deposit and unlocked VIP
+    deposits = get_all_depo    sits(email)
     total_deposit = sum(float(d["amount"]) for d in deposits) if deposits else 0.0
     unlocked_vip = get_vip_from_deposit(total_deposit)['vip']
 
@@ -327,7 +327,7 @@ def verify_code_page():
     return render_template("verify_code.html", email=email)
 @app.route('/resend-code', methods=['POST'])
 def resend_code():
-    if 'pending_email' not in session:
+    if 'pending_email' not in s    ession:
         return redirect(url_for('login'))
 
     email = session['pending_email']
@@ -349,7 +349,7 @@ def resend_code():
 def send_verification_code(email, code):
     msg = MIMEMultipart("alternative")
     msg["Subject"] = "Your AI Invest Verification Code"
-    msg["From"] = EMAIL_SENDER
+    msg["From"] = f"AI Invest <{EMAIL_SENDER}>" 
     msg["To"] = email
 
     html = f"""
