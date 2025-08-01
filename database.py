@@ -186,12 +186,11 @@ def get_user_by_email(email):
 def get_all_users():
     result = supabase.table("users").select("*").execute()
     return result.data if result.data else []
-
 def get_user_wallet(email):
     user = get_user_by_email(email)
     if not user or "wallet" not in user:
-        return 0.0
-    return float(user["wallet"].get("available", 0.0))
+        return {"available": 0.0, "locked": 0.0}
+    return user["wallet"]
 
 def update_wallet_balance(email, amount, tx_type):
     user = get_user_by_email(email)
