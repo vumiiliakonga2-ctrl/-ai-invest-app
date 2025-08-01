@@ -347,7 +347,7 @@ def approve_withdrawal_request(withdraw_id):
 
     update_wallet_balance(email, amount, "withdraw")
     add_transaction(email, "withdraw", amount)
-    update_withdraw_status(withdraw_id, "approved")
+    update_withdrawal_status(withdraw_id, "approved")
 
 ### === TRANSACTIONS ===
 
