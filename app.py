@@ -487,7 +487,7 @@ def submit_withdraw_request():
 
     email = session['email']
     amount = float(request.form['amount'])
-    address = request.form['address']
+    wallet_id = request.form['wallet_id']  # ✅ Updated here
     password = request.form['password']
 
     user = get_user_by_email(email)
@@ -510,7 +510,7 @@ def submit_withdraw_request():
         flash("Insufficient available balance", "danger")
         return redirect(url_for('withdraw_request'))
 
-    add_withdraw_request(email, amount, address)
+    add_withdraw_request(email, amount, wallet_id)  # ✅ Also here
     flash("Withdrawal request sent for admin approval", "success")
     return redirect(url_for('wallet_page'))
 
