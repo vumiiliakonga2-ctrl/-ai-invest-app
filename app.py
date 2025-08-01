@@ -176,8 +176,8 @@ def confirm_investment():
         flash("User not found", "danger")
         return redirect(url_for('invest'))
     
-        try:
-            amount = float(request.form['amount'])
+    try:
+        amount = float(request.form['amount'])
         vip= int(request.form['vip'])
         percent= float(request.form['percent'])
     except:
@@ -327,7 +327,7 @@ def verify_code_page():
     return render_template("verify_code.html", email=email)
 @app.route('/resend-code', methods=['POST'])
 def resend_code():
-    if 'pending_email' not in s    ession:
+    if 'pending_email' not in session:
         return redirect(url_for('login'))
 
     email = session['pending_email']
