@@ -147,46 +147,6 @@ def store_withdraw_request(email, amount, wallet_type, wallet_id):
         "created_at": datetime.utcnow().isoformat()
     }).execute()
 
-def get_user_nowpayment_logs(email):
-    result = supabase.table("nowpayments_logs") \
-        .select("*") \
-        .eq("user_email", email) \
-        .order("created_at", desc=True) \
-        .execute()
-    return result.data or []
-
-def get_nowpayments_logs():
-    res = supabase.table("nowpayments_logs").select("*").order("created_at", desc=True).execute()
-    return res.data if res.data else []
-
-def log_nowpayments_transaction(user_email, order_id, amount, currency, status, raw_data):
-    supabase.table('nowpayments_logs').insert({
-        "id": str(uuid.uuid4()),
-        "user_email": user_email,
-        "order_id": order_id,
-        "amount": amount,
-        "currency": currency,
-        "status": status,
-        "raw_data": raw_data
-    }).execute()
-
-
-def create_nowpayments_invoice(amount, currency, order_id):
-    url = "https://api.nowpayments.io/v1/invoice"
-    headers = {
-        "x-api-key": API_KEY,
-        "Content-Type": "application/json"
-    }
-    data = {
-        "price_amount": amount,
-        "price_currency": "usd",
-        "pay_currency": "usdtbsc", 
-        "order_id": order_id,
-        "ipn_callback_url": "https://your-domain.com/ipn-handler"
-    }
-    response = requests.post(url, json=data, headers=headers)
-    return response.json()
-
 def get_referral_badge(ref_count):
     if ref_count >= 50:
         return {"label": "🏆 Legend", "class": "bg-warning text-dark"}
@@ -396,12 +356,12 @@ def approve_withdrawal_request(withdraw_id):
 
 ### === TRANSACTIONS ===
 
-def add_transaction(email, tx_type, amount):
+def add_transaction(email, amount, tx_type, status="finished"):
     supabase.table("transactions").insert({
         "email": email,
-        "tx_type": tx_type,
         "amount": amount,
-        "timestamp": datetime.utcnow().isoformat()
+        "tx_type": tx_type,
+        "status": status
     }).execute()
 
 def get_user_transactions(email):
