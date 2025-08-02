@@ -12,10 +12,10 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from database import get_all_withdrawals as get_user_withdrawals
 from database import approve_withdrawal_request, get_withdrawal_by_id
 from database import approve_withdrawal_request, get_withdrawal_by_id
+from database import get_pending_manual_deposits, get_pending_withdraw_requests
 
 import os
 import requests  # ✅ ADD THIS LINE
-from database import get_user_nowpayment_logs
 
 import random
 from database import get_user_transactions, add_transaction, update_wallet_balance
@@ -600,18 +600,19 @@ def markets():
 @app.route('/quantify')
 def quantify():
     return render_template('quantify.html')
-
 @app.route('/admin')
 def admin():
     if 'email' not in session or session['email'] != 'vumiiliakonga2@gmail.com':
         flash("Access denied", "danger")
         return redirect(url_for('login'))
 
-    from database import get_pending_deposits, get_pending_withdrawals
-    deposits = get_pending_deposits()
-    withdrawals = get_pending_withdrawals()
+    from database import get_pending_manual_deposits, get_pending_withdraw_requests
+
+    deposits = get_pending_manual_deposits()
+    withdrawals = get_pending_withdraw_requests()
 
     return render_template('admin.html', deposits=deposits, withdrawals=withdrawals)
+
 @app.route('/admin/approve-deposit/<string:deposit_id>')
 def approve_deposit_route(deposit_id):
     from database import approve_deposit
