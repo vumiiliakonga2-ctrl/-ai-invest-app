@@ -8,6 +8,10 @@ from email_utils import send_verification_code
 import requests
 
 API_KEY = 'ZRWVXEE-83K45AK-K6BYMA9-ZQ55CJN'
+
+def get_pending_withdraw_requests():
+    return supabase.table("withdraw_requests").select("*").eq("status", "pending").order("timestamp", desc=True).execute().data
+
 def get_pending_manual_deposits():
     res = supabase.table("manual_deposits").select("*").eq("status", "pending").execute()
     return res.data
