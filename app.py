@@ -538,6 +538,13 @@ def submit_withdraw_request():
     add_withdraw_request(email, amount, wallet_id)  # ✅ Also here
     flash("Withdrawal request sent for admin approval", "success")
     return redirect(url_for('wallet_page'))
+@app.route('/admin/withdrawals')
+def admin_withdrawals():
+    if 'email' not in session or session['email'] != 'vumiiliakonga2@gmail.com':
+        return redirect(url_for('login'))
+
+    from database import get_pending_withdrawals
+    withdrawals = get
 
 @app.route('/kyc', methods=['GET', 'POST'])
 def kyc():
