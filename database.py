@@ -360,14 +360,16 @@ def approve_withdrawal_request(withdraw_id):
     update_withdrawal_status(withdraw_id, "approved")
 
 ### === TRANSACTIONS ===
-
-def add_transaction(email, amount, tx_type, status="finished"):
+def add_transaction(email, tx_type, amount, status="approved"):
+    from datetime import datetime
     supabase.table("transactions").insert({
         "email": email,
+        "tx_type": tx_type,     # ✅ CORRECT field name
         "amount": amount,
-        "tx_type": tx_type,
-        "status": status
+        "status": status,
+        "timestamp": datetime.utcnow().isoformat()
     }).execute()
+
 
 def get_user_transactions(email):
     result = supabase.table("transactions").select("*").eq("email", email).order("timestamp", desc=True).execute()
