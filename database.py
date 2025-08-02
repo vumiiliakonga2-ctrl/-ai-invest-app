@@ -315,14 +315,19 @@ def add_withdraw_request(email, amount, wallet_id):
         "id": str(uuid.uuid4()),
         "email": email,
         "amount": amount,
-        "wallet_id": wallet_id,  # ✅ Renamed field
+        "wallet_id": wallet_id,
         "status": "pending",
-        "timestamp": datetime.utcnow().isoformat()
+        "created_at": datetime.utcnow().isoformat()  # use 'created_at'
     }).execute()
 
-def get_pending_withdrawals():
-    result = supabase.table("withdraw_requests").select("*").eq("status", "pending").execute()
-    return result.data if result.data else []
+
+def get_pending_withdraw_requests():
+    return supabase.table("withdraw_requests")\
+        .select("*")\
+        .eq("status", "pending")\
+        .order("created_at", desc=True)\
+        .execute().data
+
 def get_withdrawal_by_id(withdraw_id):
     result = supabase.table("withdraw_requests").select("*").eq("id", withdraw_id).single().execute()
     if result.data:
