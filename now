@@ -16,7 +16,7 @@ from database import get_pending_manual_deposits, get_pending_withdraw_requests
 
 import os
 import requests  # ✅ ADD THIS LINE
-from database import get_user_nowpayment_logs
+
 
 import random
 from database import get_user_transactions, add_transaction, update_wallet_balance
