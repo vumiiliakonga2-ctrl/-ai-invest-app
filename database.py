@@ -392,7 +392,8 @@ def process_user_earnings(email):
             amount = float(inv["amount"])
             earnings = amount * (daily_return / 100) * days_passed
             update_wallet_balance(email, earnings, "earn")
-            add_transaction(email, "earn", earnings)
+            add_transaction(email, earnings, "earn")  # ✅ RIGHT
+
             supabase.table("user_investments").update({
                 "last_paid": now.isoformat()
             }).eq("id", inv["id"]).execute()
