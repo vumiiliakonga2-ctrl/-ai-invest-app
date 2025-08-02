@@ -341,23 +341,51 @@ def reject_withdrawal(withdraw_id):
     update_withdrawal_status(withdraw_id, "rejected")
 
 def approve_withdrawal_request(withdraw_id):
-    withdraw = get_withdrawal_by_id(withdraw_id)
-    if not withdraw or withdraw["status"] != "pending":
-        return
+    from datetime import datetime
 
-    amount = float(withdraw["amount"])
-    email = withdraw["email"]
-    user = get_user_by_email(email)
-    if not user or float(user["wallet"].get("available", 0)) < amount:
-        return
+    # Step 1: Get the withdrawal request
+    withdrawal = supabase.table("withdraw_requests").select("*").eq("id", withdraw_id).single().execute().data
+    if not withdrawal:
+        raise ValueError("Withdrawal not found")
 
-    update_wallet_balance(email, amount, "withdraw")
-    add_transaction(email, "withdraw", amount)
-    update_withdrawal_status(withdraw_id, "approved")
+    email = withdrawal["email"]
+    amount = float(withdrawal["amount"])
 
-    update_wallet_balance(email, amount, "withdraw")
-    add_transaction(email, "withdraw", amount)
-    update_withdrawal_status(withdraw_id, "approved")
+    # Step 2: Get user's current wallet
+    user = supabase.table("users").select("wallet").eq("email", email).single().execute().data
+    if not user or "wallet" not in user:
+        raise ValueError("User or wallet not found")
+
+    wallet = user["wallet"]
+    available = float(wallet.get("available", 0))
+    locked = float(wallet.get("locked", 0))
+
+    # Step 3: Check available balance before approving
+    if amount > available:
+        raise ValueError("Insufficient balance to approve withdrawal")
+
+    # Step 4: Update wallet
+    new_wallet = {
+        "available": round(available - amount, 2),
+        "locked": locked
+    }
+
+    supabase.table("users").update({"wallet": new_wallet}).eq("email", email).execute()
+
+    # Step 5: Mark withdrawal as approved
+    supabase.table("withdraw_requests").update({
+        "status": "approved",
+        "approved_at": datetime.utcnow().isoformat()
+    }).eq("id", withdraw_id).execute()
+
+    # Step 6: Log the transaction
+    supabase.table("transactions").insert({
+        "email": email,
+        "tx_type": "withdrawal",
+        "amount": amount,
+        "status": "approved",
+        "timestamp": datetime.utcnow().isoformat()
+    }).execute()
 
 ### === TRANSACTIONS ===
 def add_transaction(email, tx_type, amount, status="approved"):
