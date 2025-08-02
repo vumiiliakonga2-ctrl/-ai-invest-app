@@ -543,8 +543,9 @@ def admin_withdrawals():
     if 'email' not in session or session['email'] != 'vumiiliakonga2@gmail.com':
         return redirect(url_for('login'))
 
-    from database import get_pending_withdrawals
-    withdrawals = get
+    from database import get_pending_withdraw_requests
+    withdrawals = get_pending_withdraw_requests()
+    return render_template("admin_withdrawals.html", withdrawals=withdrawals)
 
 @app.route('/kyc', methods=['GET', 'POST'])
 def kyc():
