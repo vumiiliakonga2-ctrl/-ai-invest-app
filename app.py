@@ -10,8 +10,8 @@ from database import get_referrals_for_user
 from database import get_referral_badge
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database import get_all_withdrawals as get_user_withdrawals
-from database import approve_withdrawal_request, get_withdrawal_by_id
-from database import approve_withdrawal_request, get_withdrawal_by_id
+from database import approve_al_request, get_al_by_id
+from database import approve_al_request, get_withdrawal_by_id
 from database import get_pending_manual_deposits, get_pending_withdraw_requests
 
 import os
@@ -524,8 +524,8 @@ def submit_withdraw_request():
         flash("Amount must be greater than zero", "danger")
         return redirect(url_for('withdraw_request'))
 
-    if amount < 1:
-        flash("Minimum withdrawal is 1 USDT", "danger")
+    if amount < 10:
+        flash("Minimum withdrawal is 10 USDT", "danger")
         return redirect(url_for('withdraw_request'))
 
     wallet = get_user_wallet(email)
